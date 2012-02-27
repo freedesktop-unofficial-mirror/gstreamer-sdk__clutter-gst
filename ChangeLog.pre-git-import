@@ -1,0 +1,488 @@
+2008-10-31  Emmanuele Bassi  <ebassi@linux.intel.com>
+
+	* configure.ac:
+	* Makefile.am:
+	* clutter-gst/Makefile.am: Bump to 0.9 and require Clutter
+	from trunk.
+
+	* clutter-gst/clutter-gst-video-sink.c:
+	* clutter-gst/clutter-gst-util.c: Include <clutter/clutter.h>
+	and not sub-headers, now that we can't.
+
+2008-10-2  Robert Bragg  <robert@linux.intel.com>
+	
+	* clutter-gst/doc/reference/Makefile.am:
+	reverts previous change: It's Poky that needs changing.
+
+2008-10-2  Robert Bragg  <robert@linux.intel.com>
+
+	* clutter-gst/doc/reference/Makefile.am:
+	Dont use += to set EXTRA_DIST since there isn't a preceding = which
+	automake gets upset about. This means we can remove the patches
+	fixing this in Poky.
+
+2008-07-24  Emmanuele Bassi  <ebassi@openedhand.com>
+
+	* clutter-gst/Makefile.am: Do not install the private
+	clutter-gst-shaders.h header.
+
+2008-07-21  Chris Lord  <chris@openedhand.com>
+
+	Bug #1050 - glActiveTexture usage in clutter-gst-video-sink
+
+	* clutter-gst/clutter-gst-video-sink.c
+	(clutter_gst_video_sink_init), (clutter_gst_yv12_paint),
+	(clutter_gst_yv12_post_paint):
+	Use cogl_get_proc_address to retrieve glActiveTexture function.
+	Fixes building on platforms with old OpenGL headers.
+
+======== Clutter-GStreamer 0.8.0 ==============================================
+
+2008-07-18  Emmanuele Bassi  <ebassi@openedhand.com>
+
+	* configure.ac:
+	* Makefile.am: Allow ignoring the documentation directory when
+	building from SVN.
+
+	* doc/reference/Makefile.am: Ignore uninstalled header files.
+
+2008-07-17  Chris Lord  <chris@openedhand.com>
+
+	* clutter-gst/clutter-gst-video-sink.c:
+	(clutter_gst_video_sink_idle_func):
+	s/CoglHandle */CoglHandle/ typos
+
+2008-07-17  Chris Lord  <chris@openedhand.com>
+
+	* clutter-gst/clutter-gst-video-sink.c:
+	(clutter_gst_video_sink_init), (clutter_gst_video_sink_idle_func):
+	Use cogl_get_proc_address to get the glUniform1iARB function pointer
+
+2008-07-17  Chris Lord  <chris@openedhand.com>
+
+	* clutter-gst.pc.in:
+	Update required clutter to 0.8
+
+2008-07-17  Chris Lord  <chris@openedhand.com>
+
+	* AUTHORS:
+	* NEWS:
+	* README:
+	Update for release
+
+	* Makefile.am:
+	* clutter-gst.pc.in:
+	* clutter-gst/Makefile.am:
+	* configure.ac:
+	Update version to 0.8
+
+	* clutter-gst/clutter-gst-video-sink.c:
+	(clutter_gst_video_sink_set_property):
+	Notify on change of use_shaders property
+
+2008-07-16  Chris Lord  <chris@openedhand.com>
+
+	* clutter-gst/clutter-gst-video-sink.c
+	(clutter_gst_video_sink_set_caps):
+	Don't forget to reset bgr flag when using the AYUV shader
+
+2008-07-16  Chris Lord  <chris@openedhand.com>
+
+	* examples/video-sink.c (main):
+	Update 'tiled' to 'disable-slicing'
+
+2008-07-16  Chris Lord  <chris@openedhand.com>
+
+	* clutter-gst/clutter-gst-video-sink.c
+	(clutter_gst_video_sink_idle_func):
+	Don't forget to wrap YV12 shader bits with CLUTTER_COGL_HAS_GL
+
+2008-07-16  Chris Lord  <chris@openedhand.com>
+
+	* clutter-gst/clutter-gst-shaders.h:
+	Remove unneeded bits
+
+	* clutter-gst/clutter-gst-video-sink.c
+	(clutter_gst_video_sink_base_init), (clutter_gst_video_sink_paint),
+	(clutter_gst_yv12_paint), (clutter_gst_yv12_post_paint),
+	(clutter_gst_video_sink_set_shader),
+	(clutter_gst_video_sink_idle_func),
+	(clutter_gst_video_sink_render), (clutter_gst_video_sink_get_caps),
+	(clutter_gst_video_sink_set_caps),
+	(clutter_gst_video_sink_dispose),
+	(clutter_gst_video_sink_set_property),
+	(clutter_gst_video_sink_get_property),
+	(clutter_gst_video_sink_class_init):
+	Improve shader support, add multi-texturing YV12 acceleration, add
+	use_shader property (default FALSE), improve shaders, add support for
+	24-bit RGB/BGR textures
+	
+	* configure.ac:
+	Update for clutter 0.8
+
+	* examples/video-player.c (main):
+	Enable shader use
+
+2008-07-04  Chris Lord  <chris@openedhand.com>
+
+	* clutter-gst/Makefile.am:
+	* clutter-gst/clutter-gst-shaders.h:
+	Add some shader setup defines, taken from clutter test-shaders
+
+	* clutter-gst/clutter-gst-video-sink.c
+	(clutter_gst_video_sink_base_init),
+	(clutter_gst_video_sink_idle_func),
+	(clutter_gst_video_sink_set_caps):
+	Add shaders to decode YUV and YV12 data. YV12 is disabled by default
+
+2008-06-23  Emmanuele Bassi  <ebassi@openedhand.com>
+
+	Bug 978 - Inclusion of <gdk-pixbuf/gdk-pixbuf.h> in
+	          clutter-gst-video-texture.h
+
+	* Makefile.am:
+	* clutter-gst/Makefile.am: Substitute 0.6 with 0.7.
+
+	* clutter-gst/clutter-gst-video-texture.h: Remove inclusion
+	of gdk-pixbuf.h: Clutter-GST does not depend on GdkPixbuf. (978,
+	Haakon Sporsheim)
+
+	* examples/video-player.c:
+	(input_cb): Use clutter_actor_get_transformed_position().
+
+	(main): Remove unused GdkPixbuf variable.
+
+2008-04-25  Matthew Allum  <mallum@openedhand.com>
+
+	* clutter-gst/clutter-gst-video-texture.c:
+        Use new 'disable-slicing' prop on video texture.
+
+2008-04-25  Emmanuele Bassi  <ebassi@openedhand.com>
+
+	* examples/video-player.c (main): Do not show everything
+	before clutter_main(): the actors are all visible by default
+	now.
+
+2008-04-25  Emmanuele Bassi  <ebassi@openedhand.com>
+
+	* configure.ac: Depend on clutter-0.7.
+
+	* clutter-gst/clutter-gst-video-texture.c:
+	(clutter_gst_video_texture_new): Use :disable-slicing instead
+	of the :tiled property.
+
+	* examples/video-player.c:
+	(control_tl_cb), (show_controls),
+	(input_cb), (main): Update for upstream API changes.
+
+2008-03-12  Chris Lord  <chris@openedhand.com>
+
+	* doc/reference/clutter-gst-sections.txt:
+	* clutter-gst/clutter-gst-audio.[ch]:
+	Add clutter_gst_audio_get_playbin ()
+
+2008-03-03  Rob Bradford  <rob@openedhand.com>
+
+	* Makefile.am:
+	Do not recurse into doc if we did not explicitly enable the
+	documentation build; still recurse for dists.
+
+2008-02-18  Emmanuele Bassi  <ebassi@openedhand.com>
+
+	* configure.ac:
+	* NEWS: Brown paper bag release 0.6.1
+
+	* Makefile.am: Fix the generation of the pkg-config file.
+
+2008-02-18  Emmanuele Bassi  <ebassi@openedhand.com>
+
+	* configure.ac: Require Clutter 0.6.0
+
+	* NEWS:
+	* README: Release 0.6.0
+
+2008-01-17  Emmanuele Bassi  <ebassi@openedhand.com>
+
+	* NEWS:
+	* README: Release 0.5.0
+
+2007-11-23  Emmanuele Bassi  <ebassi@openedhand.com>
+
+	* clutter-gst/clutter-gst-audio.h:
+	* clutter-gst/clutter-gst-version.h.in:
+	* clutter-gst/clutter-gst-video-sink.h:
+	* clutter-gst/clutter-gst-video-texture.h: Add missing
+	documentation.
+
+	* doc/reference/Makefile.am: Fix EXTRA_DIST.
+
+	* doc/reference/clutter-gst-docs.sgml: Fix wording a bit.
+
+	* examples/video-player.c (effect1_tl_cb): Update for upstream
+	API changes.
+
+2007-11-22  Zeeshan Ali Khattak  <zeenix@gstreamer.net>
+
+	* clutter-gst/clutter-gst-video-sink.c:
+	Use async queue with idle function instead of messages on the bus with
+	signal handlers to allow the application thread to actually render the
+	frames. (#644)
+
+	* examples/video-sink.c:
+	Remove the now unneeded call to gst_bus_add_signal_watch().
+
+2007-08-20  Emmanuele Bassi  <ebassi@openedhand.com>
+
+	* clutter-gst/Makefile.am: Define G_LOG_DOMAIN.
+
+2007-08-20  Emmanuele Bassi  <ebassi@openedhand.com>
+
+	* examples/video-player.c: Remove useless cast.
+
+2007-08-20  Emmanuele Bassi  <ebassi@openedhand.com>
+
+	* doc/reference/clutter-gst-sections.txt:
+	* doc/reference/clutter-gst-docs.sgml:
+	* doc/reference/Makefile.am: Fix API reference generation.
+
+	* clutter-gst/clutter-gst-audio.[ch]:
+	* clutter-gst/clutter-gst-video-sink.[ch]:
+	* clutter-gst/clutter-gst-video-texture.[ch]:
+	* clutter-gst/clutter-gst-video-util.c:
+	* clutter-gst/clutter-gst-version.h.in: Fix API reference
+	documentation.
+
+2007-08-15  Emmanuele Bassi  <ebassi@openedhand.com>
+
+	* configure.ac: 
+	* REAMDE:
+	* Makefile.am:
+	* clutter-gst.pc.in:
+	* clutter-gst/Makefile.am: Require Clutter 0.5 and bump
+	up version to 0.5 as well.
+
+2007-08-07  Emmanuele Bassi  <ebassi@openedhand.com>
+
+	* configure.ac: Bump to 0.4.0. Require clutter-0.4
+
+	* README:
+	* clutter-gst.pc.in: Update clutter requirements.
+
+2007-07-21  Matthew Allum  <mallum@openedhand.com>
+
+	* clutter-gst.pc.in:
+	Add missing gstreamer-base-0.10 dep. See #399
+
+2007-07-17  Emmanuele Bassi  <ebassi@openedhand.com>
+
+	* clutter-gst/Makefile.am: Install headers under the clutter-0.x
+	include directory, so that the clutter integration libraries header
+	files are all self-contained into the version they are linking to.
+
+	* Makefile.am:
+	* clutter-gst.pc.in: Update pkgconfig file template.
+
+2007-07-10  Emmanuele Bassi  <ebassi@openedhand.com>
+
+	* examples/Makefile.am:
+	* examples/video-cube.c: Remove the video-cube example: it
+	has been broken for a while now.
+
+2007-07-06  Emmanuele Bassi  <ebassi@openedhand.com>
+
+	* configure.ac: Bump up to 0.3.1
+
+2007-07-06  Emmanuele Bassi  <ebassi@openedhand.com>
+
+	* clutter-gst/clutter-gst-video-sink.c: Code style
+	consistency check here, too. And leak plugging as well. The
+	video sink keeps a reference on the texture, so it's always
+	present; this should work, because the texture itself does
+	not keep a reference on the video sink (GStreamer does), so
+	it's not a circular reference.
+
+2007-07-06  Emmanuele Bassi  <ebassi@openedhand.com>
+
+	* clutter-gst/clutter-gst-video-texture.c: General code clean
+	up and code style consistency check. Fix a memory leak, where
+	we allocated the space of the private data structure but never
+	freed it inside the ::finalize method; use GObject private
+	data pointer instead.
+
+	(clutter_gst_video_texture_get_playbin): Implement the function
+	we advertise in the header.
+
+2007-07-06  Emmanuele Bassi  <ebassi@openedhand.com>
+
+	* configure.ac: Use the same M4 macros clutter-core uses to set
+	the various libtool flags and simplify the release process.
+
+	* clutter-gst/clutter-gst.h:
+	* clutter-gst/clutter-gst-version.h.in: Add version header and
+	macros for clutter-gst.
+
+	* clutter-gst/*.[ch]: Fix copyright and attributions.
+
+	* clutter-gst/clutter-gst-util.[hc]: Fix second argument of
+	clutter_gst_init() function call: the underlying libraries
+	require a pointer to the arguments vector to remove their own
+	arguments from it.
+
+	* README: Flesh out the description a little.
+
+2007-07-05  Emmanuele Bassi  <ebassi@openedhand.com>
+
+	* clutter-gst.pc.in: Bump to use Clutter 0.3 here, too.
+
+2007-06-22  Matthew Allum  <mallum@openedhand.com>
+
+	* configure.ac:
+	Bump up to use Clutter 0.3 (trunk)
+
+	* clutter-gst/clutter-gst-video-sink.c:
+	Improve caps usage and switch to BGRA data, taking advantage
+	of newer texture api and thus giving an alpha channel to video 
+	textures.
+	Collect pixel aspect ratio info but do not expose as yet.
+
+	* clutter-gst/clutter-gst-video-texture.c:
+	Minor change to object creation.
+
+	* examples/Makefile.am:
+	* examples/audio.c:
+	* examples/video-player.c:
+	* examples/video-sink.c:
+	Update for 0.3 API
+
+2007-04-26  Matthew Allum  <mallum@openedhand.com>
+
+	* clutter-gst/Makefile.am:
+	* clutter-gst/clutter-gst-util.c:
+	* clutter-gst/clutter-gst-util.h:
+	* clutter-gst/clutter-gst.h:
+	Add a clutter_gst_init() call mainly for binding usage.
+
+	* clutter-gst/clutter-gst-video-sink.c:
+	* clutter-gst/clutter-gst-video-sink.h:
+	* clutter-gst/clutter-gst-video-texture.c:
+	* examples/Makefile.am:
+	* examples/README:
+	* examples/video-sink.c:
+	Addition of clutter texture gstreamer video sink from
+	Jonathan Matthew (#296)
+
+2007-03-20  Matthew Allum  <mallum@openedhand.com>
+
+	* clutter-gst/clutter-gst-audio.c: (bus_message_eos_cb):
+	Patch from Iain to reset audio pipeline on EOS and thus
+	allow for easy re-playback of sounds.
+
+2007-01-18 =================== 0.1.1 Released ===========================
+
+2007-03-19  Matthew Allum  <mallum@openedhand.com>
+
+	* NEWS:
+	* configure.ac:
+	Prepare for 0.1.1 release
+
+2007-03-19  Matthew Allum  <mallum@openedhand.com>
+
+	* clutter-gst/clutter-gst-video-texture.c: (fakesink_handoff_cb):
+	Fix via Iain for leaking on dropped frames (fixes #242) 
+
+2007-02-18  Matthew Allum  <mallum@openedhand.com>
+
+	* clutter-gst.pc.in:
+	Fix requires to point at clutter-0.2 (Fixes #219)
+
+2007-01-18  Emmanuele Bassi  <ebassi@openedhand.com>
+
+	* configure.ac: Post release bump to 0.2.0
+
+2007-01-18 =================== 0.1.0 Released ===========================
+
+2007-01-18  Matthew Allum  <mallum@openedhand.com>
+
+	* configure.ac:
+	Check for clutter-0.2.pc
+
+2007-01-18  Emmanuele Bassi  <ebassi@openedhand.com>
+
+	* configure.ac: Fix summary.
+
+2007-01-18  Matthew Allum  <mallum@openedhand.com>
+
+	* doc/reference/clutter-gst-docs.sgml:
+	Add missing docs file.
+
+2007-01-04  Matthew Allum  <mallum@openedhand.com>
+
+	* clutter-gst.pc.in:
+	Fix version substitution
+
+2006-12-04  Emmanuele Bassi  <ebassi@openedhand.com>
+
+	A examples/clutter-logo-800x600.png
+
+	* examples/clutter-logo-800x600.png: Add back the
+	background image.
+
+2006-11-30  Matthew Allum  <mallum@openedhand.com>
+
+	* clutter-gst.doap:
+	Update.
+
+2006-09-23  Jorn Baayen  <jorn@openedhand.com>
+
+	* examples/video-player.c:
+
+	Preserve aspect ratio in all cases. Fixes #158.
+
+2006-09-23  Jorn Baayen  <jorn@openedhand.com>
+
+	* clutter-gst/clutter-gst-video-texture.c:
+
+	Remove traces of unused force-aspect-ratio prop.
+	
+	* examples/video-player.c: (size_change):
+
+	Remove redundant call to clutter_texture_get_base_size().
+
+2006-09-22  Jorn Baayen  <jorn@openedhand.com>
+
+	* clutter-gst/clutter-gst-video-texture.c: (lay_pipeline):
+
+	Unref video_filtercaps only once.
+
+2006-09-16  Jorn Baayen  <jorn@openedhand.com>
+
+	* clutter-gst/clutter-gst-video-texture.h:
+
+	s/GstVideoTexture/ClutterGstVideoTexture
+
+2006-09-01  Matthew Allum  <mallum@openedhand.com>
+
+	* clutter-gst/Makefile.am:
+	* clutter-gst/clutter-gst-audio.c:
+	* clutter-gst/clutter-gst-audio.h:
+	* clutter-gst/clutter-gst-media.c:
+	* clutter-gst/clutter-gst-media.h:
+	* clutter-gst/clutter-gst-video-texture.c:
+	* clutter-gst/clutter-gst-video-texture.h:
+	* clutter-gst/clutter-gst.h:
+	* examples/audio.c:
+	* examples/video-cube.c:
+	* examples/video-player.c:
+	clutter-gst-media -> clutter-media
+
+2006-08-30  Jorn Baayen  <jorn@openedhand.com>
+
+	* examples/audio.c: (main):
+	* examples/video-cube.c: (main):
+	* examples/video-player.c: (main):
+
+	Call gst_init().
+
+2006-08-30  Jorn Baayen  <jorn@openedhand.com>
+
+	* Split off from clutter

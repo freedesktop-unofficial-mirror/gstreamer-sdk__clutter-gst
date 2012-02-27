@@ -1,0 +1,183 @@
+<!-- ##### SECTION Title ##### -->
+ClutterGstVideoTexture
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT ClutterGstVideoTexture ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG ClutterGstVideoTexture:idle-material ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT ClutterGstVideoTextureClass ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION clutter_gst_video_texture_new ##### -->
+<para>
+
+</para>
+
+@void: 
+@Returns: 
+
+
+<!-- ##### FUNCTION clutter_gst_video_texture_get_pipeline ##### -->
+<para>
+
+</para>
+
+@texture: 
+@Returns: 
+
+
+<!-- ##### FUNCTION clutter_gst_video_texture_get_idle_material ##### -->
+<para>
+
+</para>
+
+@texture: 
+@Returns: 
+
+
+<!-- ##### FUNCTION clutter_gst_video_texture_set_idle_material ##### -->
+<para>
+
+</para>
+
+@texture: 
+@material: 
+
+
+<!-- ##### FUNCTION clutter_gst_video_texture_get_user_agent ##### -->
+<para>
+
+</para>
+
+@texture: 
+@Returns: 
+
+
+<!-- ##### FUNCTION clutter_gst_video_texture_set_user_agent ##### -->
+<para>
+
+</para>
+
+@texture: 
+@user_agent: 
+
+
+<!-- ##### FUNCTION clutter_gst_video_texture_set_seek_flags ##### -->
+<para>
+
+</para>
+
+@texture: 
+@flags: 
+
+
+<!-- ##### FUNCTION clutter_gst_video_texture_get_seek_flags ##### -->
+<para>
+
+</para>
+
+@texture: 
+@Returns: 
+
+
+<!-- ##### FUNCTION clutter_gst_video_texture_get_buffering_mode ##### -->
+<para>
+
+</para>
+
+@texture: 
+@Returns: 
+
+
+<!-- ##### FUNCTION clutter_gst_video_texture_set_buffering_mode ##### -->
+<para>
+
+</para>
+
+@texture: 
+@mode: 
+
+
+<!-- ##### FUNCTION clutter_gst_video_texture_get_audio_streams ##### -->
+<para>
+
+</para>
+
+@texture: 
+@Returns: 
+
+
+<!-- ##### FUNCTION clutter_gst_video_texture_get_audio_stream ##### -->
+<para>
+
+</para>
+
+@texture: 
+@Returns: 
+
+
+<!-- ##### FUNCTION clutter_gst_video_texture_set_audio_stream ##### -->
+<para>
+
+</para>
+
+@texture: 
+@index_: 
+
+
+<!-- ##### FUNCTION clutter_gst_video_texture_get_subtitle_tracks ##### -->
+<para>
+
+</para>
+
+@texture: 
+@Returns: 
+
+
+<!-- ##### FUNCTION clutter_gst_video_texture_get_subtitle_track ##### -->
+<para>
+
+</para>
+
+@texture: 
+@Returns: 
+
+
+<!-- ##### FUNCTION clutter_gst_video_texture_set_subtitle_track ##### -->
+<para>
+
+</para>
+
+@texture: 
+@index_: 
+
+

@@ -1,0 +1,274 @@
+<!-- ##### SECTION Title ##### -->
+ClutterGstPlayer
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT ClutterGstPlayer ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### SIGNAL ClutterGstPlayer::download-buffering ##### -->
+<para>
+
+</para>
+
+@cluttergstplayer: the object which received the signal.
+@arg1: 
+@arg2: 
+
+<!-- ##### ARG ClutterGstPlayer:audio-stream ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG ClutterGstPlayer:audio-streams ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG ClutterGstPlayer:idle ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG ClutterGstPlayer:seek-flags ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG ClutterGstPlayer:subtitle-track ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG ClutterGstPlayer:subtitle-tracks ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG ClutterGstPlayer:user-agent ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT ClutterGstPlayerIface ##### -->
+<para>
+
+</para>
+
+@get_pipeline: 
+@get_user_agent: 
+@set_user_agent: 
+@get_seek_flags: 
+@set_seek_flags: 
+@get_buffering_mode: 
+@set_buffering_mode: 
+@get_audio_streams: 
+@get_audio_stream: 
+@set_audio_stream: 
+@get_subtitle_tracks: 
+@get_subtitle_track: 
+@set_subtitle_track: 
+@get_idle: 
+@_iface_reserved15: 
+@_iface_reserved16: 
+@_iface_reserved17: 
+@_iface_reserved18: 
+@_iface_reserved19: 
+@_iface_reserved20: 
+@_iface_reserved21: 
+@_iface_reserved22: 
+@_iface_reserved23: 
+@_iface_reserved24: 
+@_iface_reserved25: 
+@_iface_reserved26: 
+@_iface_reserved27: 
+@_iface_reserved28: 
+@_iface_reserved29: 
+@_iface_reserved30: 
+@_iface_reserved31: 
+@_iface_reserved32: 
+@_iface_reserved33: 
+@_iface_reserved34: 
+@_iface_reserved35: 
+@download_buffering: 
+@_clutter_reserved2: 
+@_clutter_reserved3: 
+@_clutter_reserved4: 
+@_clutter_reserved5: 
+@_clutter_reserved6: 
+@_clutter_reserved7: 
+@_clutter_reserved8: 
+@_clutter_reserved9: 
+@_clutter_reserved10: 
+
+<!-- ##### FUNCTION clutter_gst_player_class_init ##### -->
+<para>
+
+</para>
+
+@object_class: 
+
+
+<!-- ##### FUNCTION clutter_gst_player_init ##### -->
+<para>
+
+</para>
+
+@player: 
+@Returns: 
+
+
+<!-- ##### FUNCTION clutter_gst_player_deinit ##### -->
+<para>
+
+</para>
+
+@player: 
+
+
+<!-- ##### FUNCTION clutter_gst_player_get_pipeline ##### -->
+<para>
+
+</para>
+
+@player: 
+@Returns: 
+
+
+<!-- ##### FUNCTION clutter_gst_player_get_idle ##### -->
+<para>
+
+</para>
+
+@player: 
+@Returns: 
+
+
+<!-- ##### FUNCTION clutter_gst_player_get_user_agent ##### -->
+<para>
+
+</para>
+
+@player: 
+@Returns: 
+
+
+<!-- ##### FUNCTION clutter_gst_player_set_user_agent ##### -->
+<para>
+
+</para>
+
+@player: 
+@user_agent: 
+
+
+<!-- ##### FUNCTION clutter_gst_player_set_seek_flags ##### -->
+<para>
+
+</para>
+
+@player: 
+@flags: 
+
+
+<!-- ##### FUNCTION clutter_gst_player_get_seek_flags ##### -->
+<para>
+
+</para>
+
+@player: 
+@Returns: 
+
+
+<!-- ##### FUNCTION clutter_gst_player_get_buffering_mode ##### -->
+<para>
+
+</para>
+
+@player: 
+@Returns: 
+
+
+<!-- ##### FUNCTION clutter_gst_player_set_buffering_mode ##### -->
+<para>
+
+</para>
+
+@player: 
+@mode: 
+
+
+<!-- ##### FUNCTION clutter_gst_player_get_audio_streams ##### -->
+<para>
+
+</para>
+
+@player: 
+@Returns: 
+
+
+<!-- ##### FUNCTION clutter_gst_player_get_audio_stream ##### -->
+<para>
+
+</para>
+
+@player: 
+@Returns: 
+
+
+<!-- ##### FUNCTION clutter_gst_player_set_audio_stream ##### -->
+<para>
+
+</para>
+
+@player: 
+@index_: 
+
+
+<!-- ##### FUNCTION clutter_gst_player_get_subtitle_tracks ##### -->
+<para>
+
+</para>
+
+@player: 
+@Returns: 
+
+
+<!-- ##### FUNCTION clutter_gst_player_get_subtitle_track ##### -->
+<para>
+
+</para>
+
+@player: 
+@Returns: 
+
+
+<!-- ##### FUNCTION clutter_gst_player_set_subtitle_track ##### -->
+<para>
+
+</para>
+
+@player: 
+@index_: 
+
+

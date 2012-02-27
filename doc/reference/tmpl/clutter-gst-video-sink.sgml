@@ -1,0 +1,53 @@
+<!-- ##### SECTION Title ##### -->
+ClutterGstVideoSink
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### STRUCT ClutterGstVideoSink ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### ARG ClutterGstVideoSink:texture ##### -->
+<para>
+
+</para>
+
+<!-- ##### ARG ClutterGstVideoSink:update-priority ##### -->
+<para>
+
+</para>
+
+<!-- ##### STRUCT ClutterGstVideoSinkClass ##### -->
+<para>
+
+</para>
+
+
+<!-- ##### FUNCTION clutter_gst_video_sink_new ##### -->
+<para>
+
+</para>
+
+@texture: 
+@Returns: 
+
+

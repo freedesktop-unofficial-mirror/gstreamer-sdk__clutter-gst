@@ -1,0 +1,46 @@
+<!-- ##### SECTION Title ##### -->
+Utilities
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### FUNCTION clutter_gst_init ##### -->
+<para>
+
+</para>
+
+@argc: 
+@argv: 
+@Returns: 
+
+
+<!-- ##### FUNCTION clutter_gst_init_with_args ##### -->
+<para>
+
+</para>
+
+@argc: 
+@argv: 
+@parameter_string: 
+@entries: 
+@translation_domain: 
+@error: 
+@Returns: 
+
+

@@ -1,0 +1,74 @@
+<!-- ##### SECTION Title ##### -->
+Versioning Macros
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### MACRO CLUTTER_GST_MAJOR_VERSION ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO CLUTTER_GST_MINOR_VERSION ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO CLUTTER_GST_MICRO_VERSION ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO CLUTTER_GST_VERSION ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO CLUTTER_GST_VERSION_S ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO CLUTTER_GST_VERSION_HEX ##### -->
+<para>
+
+</para>
+
+
+
+<!-- ##### MACRO CLUTTER_GST_CHECK_VERSION ##### -->
+<para>
+
+</para>
+
+@major: 
+@minor: 
+@micro: 
+
+

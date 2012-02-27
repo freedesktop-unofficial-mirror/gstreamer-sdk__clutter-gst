@@ -1,0 +1,5 @@
+clutter_gst_buffering_mode_get_type
+clutter_gst_player_get_type
+clutter_gst_seek_flags_get_type
+clutter_gst_video_sink_get_type
+clutter_gst_video_texture_get_type

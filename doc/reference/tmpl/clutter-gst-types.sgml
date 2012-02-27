@@ -1,0 +1,38 @@
+<!-- ##### SECTION Title ##### -->
+ClutterGstTypes
+
+<!-- ##### SECTION Short_Description ##### -->
+
+
+<!-- ##### SECTION Long_Description ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION See_Also ##### -->
+<para>
+
+</para>
+
+<!-- ##### SECTION Stability_Level ##### -->
+
+
+<!-- ##### SECTION Image ##### -->
+
+
+<!-- ##### ENUM ClutterGstSeekFlags ##### -->
+<para>
+
+</para>
+
+@CLUTTER_GST_SEEK_FLAG_NONE: 
+@CLUTTER_GST_SEEK_FLAG_ACCURATE: 
+
+<!-- ##### ENUM ClutterGstBufferingMode ##### -->
+<para>
+
+</para>
+
+@CLUTTER_GST_BUFFERING_MODE_STREAM: 
+@CLUTTER_GST_BUFFERING_MODE_DOWNLOAD: 
+
