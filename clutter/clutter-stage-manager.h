@@ -28,8 +28,7 @@
 #ifndef __CLUTTER_STAGE_MANAGER_H__
 #define __CLUTTER_STAGE_MANAGER_H__
 
-#include <glib-object.h>
-#include <clutter/clutter-stage.h>
+#include <clutter/clutter-types.h>
 
 G_BEGIN_DECLS
 
@@ -76,11 +75,6 @@ ClutterStageManager *clutter_stage_manager_get_default       (void);
 ClutterStage *       clutter_stage_manager_get_default_stage (ClutterStageManager *stage_manager);
 GSList *             clutter_stage_manager_list_stages       (ClutterStageManager *stage_manager);
 const GSList *       clutter_stage_manager_peek_stages       (ClutterStageManager *stage_manager);
-
-#ifndef CLUTTER_DISABLE_DEPRECATED
-void                 clutter_stage_manager_set_default_stage (ClutterStageManager *stage_manager,
-                                                              ClutterStage        *stage);
-#endif
 
 G_END_DECLS
 

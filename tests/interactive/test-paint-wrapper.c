@@ -1,6 +1,5 @@
 #include <gmodule.h>
 
-#undef CLUTTER_DISABLE_DEPRECATED
 #include <clutter/clutter.h>
 
 #if defined (_MSC_VER) && !defined (_USE_MATH_DEFINES)
@@ -32,6 +31,8 @@ typedef struct SuperOH
   ClutterBehaviour *scaler_1;
   ClutterBehaviour *scaler_2;
   ClutterTimeline *timeline;
+
+  guint frame_id;
 
   gboolean *paint_guards;
 } SuperOH;
@@ -188,6 +189,16 @@ hand_post_paint (ClutterActor *actor,
   oh->paint_guards[actor_num] = FALSE;
 }
 
+static void
+stop_and_quit (ClutterActor *actor,
+               SuperOH      *oh)
+{
+  g_signal_handler_disconnect (oh->timeline, oh->frame_id);
+  clutter_timeline_stop (oh->timeline);
+
+  clutter_main_quit ();
+}
+
 G_MODULE_EXPORT int
 test_paint_wrapper_main (int argc, char *argv[])
 {
@@ -218,7 +229,9 @@ test_paint_wrapper_main (int argc, char *argv[])
       return EXIT_FAILURE;
     }
 
-  stage = clutter_stage_get_default ();
+  oh = g_new(SuperOH, 1);
+
+  stage = clutter_stage_new ();
   clutter_actor_set_size (stage, 800, 600);
 
   if (use_alpha != 255)
@@ -228,17 +241,18 @@ test_paint_wrapper_main (int argc, char *argv[])
     }
 
   clutter_stage_set_title (CLUTTER_STAGE (stage), "Paint Test");
-  clutter_stage_set_color (CLUTTER_STAGE (stage), &stage_color);
+  clutter_actor_set_background_color (stage, &stage_color);
+  g_signal_connect (stage, "destroy", G_CALLBACK (stop_and_quit), oh);
 
-  oh = g_new(SuperOH, 1);
   oh->stage = stage;
 
   /* Create a timeline to manage animation */
   oh->timeline = clutter_timeline_new (6000);
-  clutter_timeline_set_loop (oh->timeline, TRUE);
+  clutter_timeline_set_repeat_count (oh->timeline, -1);
 
   /* fire a callback for frame change */
-  g_signal_connect (oh->timeline, "new-frame", G_CALLBACK (frame_cb), oh);
+  oh->frame_id =
+    g_signal_connect (oh->timeline, "new-frame", G_CALLBACK (frame_cb), oh);
 
   /* Set up some behaviours to handle scaling  */
   alpha = clutter_alpha_new_with_func (oh->timeline, my_sine_wave, NULL, NULL);
@@ -347,4 +361,10 @@ test_paint_wrapper_main (int argc, char *argv[])
   g_free (oh);
 
   return 0;
+}
+
+G_MODULE_EXPORT const char *
+test_paint_wrapper_describe (void)
+{
+  return "Wrap an actor's paint cycle for pre and post processing.";
 }

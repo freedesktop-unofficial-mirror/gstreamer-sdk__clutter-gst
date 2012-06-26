@@ -48,20 +48,12 @@
  *   in both columns and rows.</para></listitem>
  * </itemizedlist>
  *
- * <figure id="flow-layout-horizontal">
+ * <figure id="flow-layout-image">
  *   <title>Horizontal flow layout</title>
  *   <para>The image shows a #ClutterFlowLayout with the
  *   #ClutterFlowLayout:orientation propert set to
  *   %CLUTTER_FLOW_HORIZONTAL.</para>
- *   <graphic fileref="flow-layout-horizontal.png" format="PNG"/>
- * </figure>
- *
- * <figure id="flow-layout-vertical">
- *   <title>Vertical flow layout</title>
- *   <para>The image shows a #ClutterFlowLayout with the
- *   #ClutterFlowLayout:orientation propert set to
- *   %CLUTTER_FLOW_VERTICAL.</para>
- *   <graphic fileref="flow-layout-vertical.png" format="PNG"/>
+ *   <graphic fileref="flow-layout.png" format="PNG"/>
  * </figure>
  *
  * #ClutterFlowLayout is available since Clutter 1.2
@@ -72,6 +64,9 @@
 #endif
 
 #include <math.h>
+
+#define CLUTTER_DISABLE_DEPRECATION_WARNINGS
+#include "deprecated/clutter-container.h"
 
 #include "clutter-actor.h"
 #include "clutter-animatable.h"
@@ -202,11 +197,12 @@ clutter_flow_layout_get_preferred_width (ClutterLayoutManager *manager,
                                          gfloat               *nat_width_p)
 {
   ClutterFlowLayoutPrivate *priv = CLUTTER_FLOW_LAYOUT (manager)->priv;
-  GList *l, *children = clutter_container_get_children (container);
   gint n_rows, line_item_count, line_count;
   gfloat total_min_width, total_natural_width;
   gfloat line_min_width, line_natural_width;
   gfloat max_min_width, max_natural_width;
+  ClutterActor *actor, *child;
+  ClutterActorIter iter;
   gfloat item_y;
 
   n_rows = get_rows (CLUTTER_FLOW_LAYOUT (manager), for_height);
@@ -222,6 +218,8 @@ clutter_flow_layout_get_preferred_width (ClutterLayoutManager *manager,
 
   item_y = 0;
 
+  actor = CLUTTER_ACTOR (container);
+
   /* clear the line width arrays */
   if (priv->line_min != NULL)
     g_array_free (priv->line_min, TRUE);
@@ -236,14 +234,14 @@ clutter_flow_layout_get_preferred_width (ClutterLayoutManager *manager,
                                           sizeof (gfloat),
                                           16);
 
-  if (children)
+  if (clutter_actor_get_n_children (actor) != 0)
     line_count = 1;
 
   max_min_width = max_natural_width = 0;
 
-  for (l = children; l != NULL; l = l->next)
+  clutter_actor_iter_init (&iter, actor);
+  while (clutter_actor_iter_next (&iter, &child))
     {
-      ClutterActor *child = l->data;
       gfloat child_min, child_natural;
       gfloat new_y, item_height;
 
@@ -300,8 +298,6 @@ clutter_flow_layout_get_preferred_width (ClutterLayoutManager *manager,
           line_count += 1;
         }
     }
-
-  g_list_free (children);
 
   priv->col_width = max_natural_width;
 
@@ -365,7 +361,7 @@ clutter_flow_layout_get_preferred_width (ClutterLayoutManager *manager,
   priv->req_height = for_height;
 
   if (min_width_p)
-    *min_width_p = total_min_width;
+    *min_width_p = max_min_width;
 
   if (nat_width_p)
     *nat_width_p = total_natural_width;
@@ -379,11 +375,12 @@ clutter_flow_layout_get_preferred_height (ClutterLayoutManager *manager,
                                           gfloat               *nat_height_p)
 {
   ClutterFlowLayoutPrivate *priv = CLUTTER_FLOW_LAYOUT (manager)->priv;
-  GList *l, *children = clutter_container_get_children (container);
   gint n_columns, line_item_count, line_count;
   gfloat total_min_height, total_natural_height;
   gfloat line_min_height, line_natural_height;
   gfloat max_min_height, max_natural_height;
+  ClutterActor *actor, *child;
+  ClutterActorIter iter;
   gfloat item_x;
 
   n_columns = get_columns (CLUTTER_FLOW_LAYOUT (manager), for_width);
@@ -399,6 +396,8 @@ clutter_flow_layout_get_preferred_height (ClutterLayoutManager *manager,
 
   item_x = 0;
 
+  actor = CLUTTER_ACTOR (container);
+
   /* clear the line height arrays */
   if (priv->line_min != NULL)
     g_array_free (priv->line_min, TRUE);
@@ -413,14 +412,14 @@ clutter_flow_layout_get_preferred_height (ClutterLayoutManager *manager,
                                           sizeof (gfloat),
                                           16);
 
-  if (children)
+  if (clutter_actor_get_n_children (actor) != 0)
     line_count = 1;
 
   max_min_height = max_natural_height = 0;
 
-  for (l = children; l != NULL; l = l->next)
+  clutter_actor_iter_init (&iter, actor);
+  while (clutter_actor_iter_next (&iter, &child))
     {
-      ClutterActor *child = l->data;
       gfloat child_min, child_natural;
       gfloat new_x, item_width;
 
@@ -478,8 +477,6 @@ clutter_flow_layout_get_preferred_height (ClutterLayoutManager *manager,
           line_count += 1;
         }
     }
-
-  g_list_free (children);
 
   priv->row_height = max_natural_height;
 
@@ -542,7 +539,7 @@ clutter_flow_layout_get_preferred_height (ClutterLayoutManager *manager,
   priv->req_width = for_width;
 
   if (min_height_p)
-    *min_height_p = total_min_height;
+    *min_height_p = max_min_height;
 
   if (nat_height_p)
     *nat_height_p = total_natural_height;
@@ -555,7 +552,8 @@ clutter_flow_layout_allocate (ClutterLayoutManager   *manager,
                               ClutterAllocationFlags  flags)
 {
   ClutterFlowLayoutPrivate *priv = CLUTTER_FLOW_LAYOUT (manager)->priv;
-  GList *l, *children = clutter_container_get_children (container);
+  ClutterActor *actor, *child;
+  ClutterActorIter iter;
   gfloat x_off, y_off;
   gfloat avail_width, avail_height;
   gfloat item_x, item_y;
@@ -563,7 +561,8 @@ clutter_flow_layout_allocate (ClutterLayoutManager   *manager,
   gint items_per_line;
   gint line_index;
 
-  if (children == NULL)
+  actor = CLUTTER_ACTOR (container);
+  if (clutter_actor_get_n_children (actor) == 0)
     return;
 
   clutter_actor_box_get_origin (allocation, &x_off, &y_off);
@@ -573,8 +572,8 @@ clutter_flow_layout_allocate (ClutterLayoutManager   *manager,
    * available size in case the FlowLayout wasn't given the exact
    * size it requested
    */
-  if ((priv->req_width > 0 && avail_width != priv->req_width) ||
-      (priv->req_height > 0 && avail_height != priv->req_height))
+  if ((priv->req_width >= 0 && avail_width != priv->req_width) ||
+      (priv->req_height >= 0 && avail_height != priv->req_height))
     {
       clutter_flow_layout_get_preferred_width (manager, container,
                                                avail_height,
@@ -593,9 +592,9 @@ clutter_flow_layout_allocate (ClutterLayoutManager   *manager,
   line_item_count = 0;
   line_index = 0;
 
-  for (l = children; l != NULL; l = l->next)
+  clutter_actor_iter_init (&iter, actor);
+  while (clutter_actor_iter_next (&iter, &child))
     {
-      ClutterActor *child = l->data;
       ClutterActorBox child_alloc;
       gfloat item_width, item_height;
       gfloat new_x, new_y;
@@ -703,8 +702,6 @@ clutter_flow_layout_allocate (ClutterLayoutManager   *manager,
 
       line_item_count += 1;
     }
-
-  g_list_free (children);
 }
 
 static void

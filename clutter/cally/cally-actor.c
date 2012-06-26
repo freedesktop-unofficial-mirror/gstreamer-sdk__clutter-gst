@@ -43,41 +43,12 @@
  * clutter_stage_set_key_focus. So, we will use this approach: all actors are
  * focusable, and we get the currently focused using clutter_stage_get_key_focus
  * This affects focus related stateset and some atk_componenet focus methods (like
- * grab focus)
+ * grab focus).
  *
- * ####
- *
- * #ClutterContainer : cally_actor implements some of his methods based on
- * #ClutterContainer interface, although there are the posibility to not
- * implement it. Could be strange to do that but:
- *   * Some methods (like get_n_children and ref_child) are easily implemented using
- *     this interface so a general implementation can be done
- *   * #ClutterContainer is a popular interface, so several classes will implement
- *     that.
- *   * So we can implement a a11y class similar to GailContainer for each clutter
- *     object implementing that, and their clutter subclasses will have a proper
- *     a11y class, but not if they are parallel classes (ie: #ClutterGroup,
- *     #TinyFrame, #TinyScrollView)
- *   * So, on all this objects, will be required to reimplement again some methods
- *     on the objects.
- *   * A auxiliar object (a kind of a11y specific #ClutterContainer implementation)
- *     could be used to implement this methods in only a place, anyway, this will
- *     require some code on each concrete class to manage it.
- *   * So this implementation is based in that is better to manage a interface
- *     on the top abstract object, instead that C&P some code, with the minor
- *     problem that we need to check if we are implementing or not the interface.
- *
- * This methods can be reimplemented, in concrete cases that we can get ways more
- * efficient to implement that. Take a look to #CallyGroup as a example of this.
- *
- * Anyway, there are several examples of behaviour changes depending of the current
- * type of the object you are granting access.
- *
- * TODO,FIXME: check if an option would be to use a dynamic type, as
- * it has been done on the webkit a11y implementation:
- *      See: https://bugs.webkit.org/show_bug.cgi?id=21546
- *
- * ###
+ * In the same way, we will manage the focus state change management
+ * on the cally-stage object. The reason is avoid missing a focus
+ * state change event if the object is focused just before the
+ * accessibility object being created.
  *
  * #AtkAction implementation: on previous releases ClutterActor added
  * the actions "press", "release" and "click", as at that time some
@@ -137,8 +108,6 @@ struct _CallyActorActionInfo
   GDestroyNotify notify;
 };
 
-static void cally_actor_class_init (CallyActorClass *klass);
-static void cally_actor_init       (CallyActor *cally_actor);
 static void cally_actor_initialize (AtkObject *obj,
                                    gpointer   data);
 static void cally_actor_finalize   (GObject *obj);
@@ -147,7 +116,6 @@ static void cally_actor_finalize   (GObject *obj);
 static AtkObject*            cally_actor_get_parent          (AtkObject *obj);
 static gint                  cally_actor_get_index_in_parent (AtkObject *obj);
 static AtkStateSet*          cally_actor_ref_state_set       (AtkObject *obj);
-static const gchar*          cally_actor_get_name            (AtkObject *obj);
 static gint                  cally_actor_get_n_children      (AtkObject *obj);
 static AtkObject*            cally_actor_ref_child           (AtkObject *obj,
                                                              gint       i);
@@ -177,12 +145,6 @@ static void     cally_actor_get_extents              (AtkComponent *component,
                                                      AtkCoordType  coord_type);
 static gint     cally_actor_get_mdi_zorder           (AtkComponent *component);
 static gboolean cally_actor_grab_focus               (AtkComponent *component);
-static guint    cally_actor_add_focus_handler        (AtkComponent *component,
-                                                      AtkFocusHandler handler);
-static void     cally_actor_remove_focus_handler     (AtkComponent *component,
-                                                      guint handler_id);
-static void     cally_actor_focus_event              (AtkObject   *obj,
-                                                      gboolean    focus_in);
 
 /* AtkAction.h */
 static void                  cally_actor_action_interface_init  (AtkActionIface *iface);
@@ -210,10 +172,6 @@ static void cally_actor_notify_clutter          (GObject    *obj,
                                                 GParamSpec *pspec);
 static void cally_actor_real_notify_clutter     (GObject    *obj,
                                                  GParamSpec *pspec);
-static gboolean cally_actor_focus_clutter       (ClutterActor *actor,
-                                                 gpointer      data);
-static gboolean cally_actor_real_focus_clutter  (ClutterActor *actor,
-                                                 gpointer      data);
 
 G_DEFINE_TYPE_WITH_CODE (CallyActor,
                          cally_actor,
@@ -277,54 +235,35 @@ cally_actor_initialize (AtkObject *obj,
   priv = self->priv;
   actor = CLUTTER_ACTOR (data);
 
-  g_signal_connect_after (actor,
-                          "key-focus-in",
-                          G_CALLBACK (cally_actor_focus_clutter),
-                          GINT_TO_POINTER (TRUE));
-  g_signal_connect_after (actor,
-                          "key-focus-out",
-                          G_CALLBACK (cally_actor_focus_clutter),
-                          GINT_TO_POINTER (FALSE));
   g_signal_connect (actor,
                     "notify",
                     G_CALLBACK (cally_actor_notify_clutter),
                     NULL);
-  atk_component_add_focus_handler (ATK_COMPONENT (self),
-                                   cally_actor_focus_event);
 
   g_object_set_data (G_OBJECT (obj), "atk-component-layer",
                      GINT_TO_POINTER (ATK_LAYER_MDI));
 
-  /* Depends if the object implement ClutterContainer */
-  if (CLUTTER_IS_CONTAINER(actor))
-    {
-      priv->children = clutter_container_get_children (CLUTTER_CONTAINER (actor));
+  priv->children = clutter_actor_get_children (actor);
 
-      /*
-       * We store the handler ids for these signals in case some objects
-       * need to remove these handlers.
-       */
-      handler_id = g_signal_connect (actor,
-                                     "actor-added",
-                                     G_CALLBACK (cally_actor_add_actor),
-                                     obj);
-      g_object_set_data (G_OBJECT (obj), "cally-add-handler-id",
-                         GUINT_TO_POINTER (handler_id));
-      handler_id = g_signal_connect (actor,
-                                     "actor-removed",
-                                     G_CALLBACK (cally_actor_remove_actor),
-                                     obj);
-      g_object_set_data (G_OBJECT (obj), "cally-remove-handler-id",
-                         GUINT_TO_POINTER (handler_id));
+  /*
+   * We store the handler ids for these signals in case some objects
+   * need to remove these handlers.
+   */
+  handler_id = g_signal_connect (actor,
+                                 "actor-added",
+                                 G_CALLBACK (cally_actor_add_actor),
+                                 obj);
+  g_object_set_data (G_OBJECT (obj), "cally-add-handler-id",
+                     GUINT_TO_POINTER (handler_id));
+  handler_id = g_signal_connect (actor,
+                                 "actor-removed",
+                                 G_CALLBACK (cally_actor_remove_actor),
+                                 obj);
+  g_object_set_data (G_OBJECT (obj), "cally-remove-handler-id",
+                     GUINT_TO_POINTER (handler_id));
 
-      obj->role = ATK_ROLE_PANEL; /* typically objects implementing ClutterContainer
-                                     interface would be a panel */
-    }
-  else
-    {
-      priv->children = NULL;
-      obj->role = ATK_ROLE_UNKNOWN;
-    }
+  obj->role = ATK_ROLE_PANEL; /* typically objects implementing ClutterContainer
+                                 interface would be a panel */
 }
 
 static void
@@ -333,7 +272,6 @@ cally_actor_class_init (CallyActorClass *klass)
   AtkObjectClass *class         = ATK_OBJECT_CLASS (klass);
   GObjectClass   *gobject_class = G_OBJECT_CLASS (klass);
 
-  klass->focus_clutter  = cally_actor_real_focus_clutter;
   klass->notify_clutter = cally_actor_real_notify_clutter;
   klass->add_actor      = cally_actor_real_add_actor;
   klass->remove_actor   = cally_actor_real_remove_actor;
@@ -342,7 +280,6 @@ cally_actor_class_init (CallyActorClass *klass)
   gobject_class->finalize = cally_actor_finalize;
 
   /* AtkObject */
-  class->get_name            = cally_actor_get_name;
   class->get_parent          = cally_actor_get_parent;
   class->get_index_in_parent = cally_actor_get_index_in_parent;
   class->ref_state_set       = cally_actor_ref_state_set;
@@ -403,29 +340,6 @@ cally_actor_finalize (GObject *obj)
 
 /* AtkObject */
 
-static const gchar*
-cally_actor_get_name (AtkObject *obj)
-{
-  const gchar* name = NULL;
-
-  g_return_val_if_fail (CALLY_IS_ACTOR (obj), NULL);
-
-  name = ATK_OBJECT_CLASS (cally_actor_parent_class)->get_name (obj);
-  if (name == NULL)
-    {
-      CallyActor *cally_actor = NULL;
-      ClutterActor *actor = NULL;
-
-      cally_actor = CALLY_ACTOR (obj);
-      actor = CALLY_GET_CLUTTER_ACTOR (cally_actor);
-      if (actor == NULL) /* State is defunct */
-        name = NULL;
-      else
-        name = clutter_actor_get_name (actor);
-    }
-  return name;
-}
-
 static AtkObject *
 cally_actor_get_parent (AtkObject *obj)
 {
@@ -462,11 +376,11 @@ cally_actor_get_parent (AtkObject *obj)
 static gint
 cally_actor_get_index_in_parent (AtkObject *obj)
 {
-  CallyActor    *cally_actor   = NULL;
-  ClutterActor *actor        = NULL;
+  CallyActor *cally_actor = NULL;
+  ClutterActor *actor = NULL;
   ClutterActor *parent_actor = NULL;
-  GList        *children     = NULL;
-  gint          index        = -1;
+  ClutterActor *iter;
+  gint index = -1;
 
   g_return_val_if_fail (CALLY_IS_ACTOR (obj), -1);
 
@@ -496,14 +410,17 @@ cally_actor_get_index_in_parent (AtkObject *obj)
   if (actor == NULL) /* Object is defunct */
     return -1;
 
-  parent_actor = clutter_actor_get_parent(actor);
-  if ((parent_actor == NULL)||(!CLUTTER_IS_CONTAINER(parent_actor)))
+  index = 0;
+  parent_actor = clutter_actor_get_parent (actor);
+  if (parent_actor == NULL)
     return -1;
 
-  children = clutter_container_get_children(CLUTTER_CONTAINER(parent_actor));
-
-  index = g_list_index (children, actor);
-  g_list_free (children);
+  for (iter = clutter_actor_get_first_child (parent_actor);
+       iter != NULL && iter != actor;
+       iter = clutter_actor_get_next_sibling (iter))
+    {
+      index += 1;
+    }
 
   return index;
 }
@@ -551,14 +468,12 @@ cally_actor_ref_state_set (AtkObject *obj)
       atk_state_set_add_state (state_set, ATK_STATE_FOCUSABLE);
 
       stage = CLUTTER_STAGE (clutter_actor_get_stage (actor));
-      /* If for any reason this actor doesn't have a stage
-         associated, we try the default one as fallback */
-      if (stage == NULL)
-          stage = CLUTTER_STAGE (clutter_stage_get_default ());
-
-      focus_actor = clutter_stage_get_key_focus (stage);
-      if (focus_actor == actor)
-        atk_state_set_add_state (state_set, ATK_STATE_FOCUSED);
+      if (stage != NULL)
+        {
+          focus_actor = clutter_stage_get_key_focus (stage);
+          if (focus_actor == actor)
+            atk_state_set_add_state (state_set, ATK_STATE_FOCUSED);
+        }
     }
 
   return state_set;
@@ -567,9 +482,7 @@ cally_actor_ref_state_set (AtkObject *obj)
 static gint
 cally_actor_get_n_children (AtkObject *obj)
 {
-  ClutterActor     *actor    = NULL;
-  GList            *children = NULL;
-  gint              num      = 0;
+  ClutterActor *actor = NULL;
 
   g_return_val_if_fail (CALLY_IS_ACTOR (obj), 0);
 
@@ -580,57 +493,32 @@ cally_actor_get_n_children (AtkObject *obj)
 
   g_return_val_if_fail (CLUTTER_IS_ACTOR (actor), 0);
 
-  if (CLUTTER_IS_CONTAINER (actor))
-    {
-      children = clutter_container_get_children (CLUTTER_CONTAINER (actor));
-      num = g_list_length (children);
-
-      g_list_free (children);
-    }
-  else
-    {
-      num = 0;
-    }
-
-  return num;
+  return clutter_actor_get_n_children (actor);
 }
 
 static AtkObject*
 cally_actor_ref_child (AtkObject *obj,
-                      gint       i)
+                       gint       i)
 {
-  ClutterActor     *actor    = NULL;
-  ClutterActor     *child    = NULL;
-  GList            *children = NULL;
-  AtkObject        *result   = NULL;
+  ClutterActor *actor = NULL;
+  ClutterActor *child = NULL;
 
   g_return_val_if_fail (CALLY_IS_ACTOR (obj), NULL);
 
   actor = CALLY_GET_CLUTTER_ACTOR (obj);
-
   if (actor == NULL) /* State is defunct */
-    {
-      return NULL;
-    }
+    return NULL;
 
   g_return_val_if_fail (CLUTTER_IS_ACTOR (actor), NULL);
 
-  if (CLUTTER_IS_CONTAINER (actor))
-    {
-      children = clutter_container_get_children (CLUTTER_CONTAINER (actor));
-      child = g_list_nth_data (children, i);
+  if (i >= clutter_actor_get_n_children (actor))
+    return NULL;
 
-      result = clutter_actor_get_accessible (child);
+  child = clutter_actor_get_child_at_index (actor, i);
+  if (child == NULL)
+    return NULL;
 
-      g_object_ref (result);
-      g_list_free (children);
-    }
-  else
-    {
-      result = NULL;
-    }
-
-  return result;
+  return g_object_ref (clutter_actor_get_accessible (child));
 }
 
 static AtkAttributeSet *
@@ -684,8 +572,8 @@ cally_actor_remove_actor (ClutterActor *container,
 
 static gint
 cally_actor_real_add_actor (ClutterActor *container,
-                           ClutterActor *actor,
-                           gpointer      data)
+                            ClutterActor *actor,
+                            gpointer      data)
 {
   AtkObject        *atk_parent = ATK_OBJECT (data);
   AtkObject        *atk_child  = clutter_actor_get_accessible (actor);
@@ -700,8 +588,7 @@ cally_actor_real_add_actor (ClutterActor *container,
 
   g_list_free (priv->children);
 
-  priv->children =
-    clutter_container_get_children (CLUTTER_CONTAINER(container));
+  priv->children = clutter_actor_get_children (CLUTTER_ACTOR (container));
 
   index = g_list_index (priv->children, actor);
   g_signal_emit_by_name (atk_parent, "children_changed::add",
@@ -712,8 +599,8 @@ cally_actor_real_add_actor (ClutterActor *container,
 
 static gint
 cally_actor_real_remove_actor (ClutterActor *container,
-                              ClutterActor *actor,
-                              gpointer      data)
+                               ClutterActor *actor,
+                               gpointer      data)
 {
   AtkPropertyValues  values      = { NULL };
   AtkObject*         atk_parent  = NULL;
@@ -743,7 +630,8 @@ cally_actor_real_remove_actor (ClutterActor *container,
   priv = CALLY_ACTOR (atk_parent)->priv;
   index = g_list_index (priv->children, actor);
   g_list_free (priv->children);
-  priv->children = clutter_container_get_children (CLUTTER_CONTAINER(container));
+
+  priv->children = clutter_actor_get_children (CLUTTER_ACTOR (container));
 
   if (index >= 0 && index <= g_list_length (priv->children))
     g_signal_emit_by_name (atk_parent, "children_changed::remove",
@@ -763,8 +651,6 @@ cally_actor_component_interface_init (AtkComponentIface *iface)
 
   /* focus management */
   iface->grab_focus           = cally_actor_grab_focus;
-  iface->add_focus_handler    = cally_actor_add_focus_handler;
-  iface->remove_focus_handler = cally_actor_remove_focus_handler;
 }
 
 static void
@@ -780,6 +666,7 @@ cally_actor_get_extents (AtkComponent *component,
   gint          top_level_x, top_level_y;
   gfloat        f_width, f_height;
   ClutterVertex verts[4];
+  ClutterActor  *stage = NULL;
 
   g_return_if_fail (CALLY_IS_ACTOR (component));
 
@@ -787,6 +674,12 @@ cally_actor_get_extents (AtkComponent *component,
   actor = CALLY_GET_CLUTTER_ACTOR (cally_actor);
 
   if (actor == NULL) /* actor is defunct */
+    return;
+
+  /* If the actor is not placed in any stage, we can't compute the
+   * extents */
+  stage = clutter_actor_get_stage (actor);
+  if (stage == NULL)
     return;
 
   clutter_actor_get_abs_allocation_vertices (actor, verts);
@@ -847,46 +740,6 @@ cally_actor_grab_focus (AtkComponent    *component)
 
   return TRUE;
 }
-
-/*
- * These methods are basically taken from gail, as I don't see any
- * reason to modify it. It makes me wonder why it is really required
- * to be implemented in the toolkit
- */
-static guint
-cally_actor_add_focus_handler (AtkComponent *component,
-                               AtkFocusHandler handler)
-{
-  GSignalMatchType match_type;
-  gulong ret;
-  guint signal_id;
-
-  match_type = G_SIGNAL_MATCH_ID | G_SIGNAL_MATCH_FUNC;
-  signal_id = g_signal_lookup ("focus-event", ATK_TYPE_OBJECT);
-
-  ret = g_signal_handler_find (component, match_type, signal_id, 0, NULL,
-                               (gpointer) handler, NULL);
-  if (!ret)
-    {
-      return g_signal_connect_closure_by_id (component,
-                                             signal_id, 0,
-                                             g_cclosure_new (G_CALLBACK (handler), NULL,
-                                                             (GClosureNotify) NULL),
-                                             FALSE);
-    }
-  else
-    {
-      return 0;
-    }
-}
-
-static void
-cally_actor_remove_focus_handler (AtkComponent *component,
-                                  guint handler_id)
-{
-  g_signal_handler_disconnect (component, handler_id);
-}
-
 
 /*
  *
@@ -1126,42 +979,6 @@ cally_actor_action_get_keybinding (AtkAction *action,
 /* Misc functions */
 
 /*
- * This function is a signal handler for key_focus_in and
- * key_focus_out signal which gets emitted on a ClutterActor
- */
-static gboolean
-cally_actor_focus_clutter (ClutterActor *actor,
-                           gpointer      data)
-{
-  CallyActor      *cally_actor = NULL;
-  CallyActorClass *klass       = NULL;
-
-  cally_actor = CALLY_ACTOR (clutter_actor_get_accessible (actor));
-  klass = CALLY_ACTOR_GET_CLASS (cally_actor);
-  if (klass->focus_clutter)
-    return klass->focus_clutter (actor, data);
-  else
-    return FALSE;
-}
-
-static gboolean
-cally_actor_real_focus_clutter (ClutterActor *actor,
-                                gpointer      data)
-{
-  CallyActor *cally_actor = NULL;
-  gboolean return_val = FALSE;
-  gboolean in = FALSE;
-
-  in = GPOINTER_TO_INT (data);
-  cally_actor = CALLY_ACTOR (clutter_actor_get_accessible (actor));
-
-  g_signal_emit_by_name (cally_actor, "focus_event", in, &return_val);
-  atk_focus_tracker_notify (ATK_OBJECT (cally_actor));
-
-  return FALSE;
-}
-
-/*
  * This function is a signal handler for notify signal which gets emitted
  * when a property changes value on the ClutterActor associated with the object.
  *
@@ -1218,14 +1035,6 @@ cally_actor_real_notify_clutter (GObject    *obj,
 
   atk_object_notify_state_change (atk_obj, state, value);
 }
-
-static void
-cally_actor_focus_event (AtkObject   *obj,
-                         gboolean    focus_in)
-{
-  atk_object_notify_state_change (obj, ATK_STATE_FOCUSED, focus_in);
-}
-
 
 static void
 _cally_actor_clean_action_list (CallyActor *cally_actor)

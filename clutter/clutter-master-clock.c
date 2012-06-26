@@ -46,6 +46,19 @@
 #define CLUTTER_IS_MASTER_CLOCK_CLASS(klass)    (G_TYPE_CHECK_CLASS_TYPE ((klass), CLUTTER_TYPE_MASTER_CLOCK))
 #define CLUTTER_MASTER_CLASS_GET_CLASS(obj)     (G_TYPE_INSTANCE_GET_CLASS ((obj), CLUTTER_TYPE_MASTER_CLOCK, ClutterMasterClockClass))
 
+#ifdef CLUTTER_ENABLE_DEBUG
+#define clutter_warn_if_over_budget(master_clock,start_time,section)    G_STMT_START  { \
+  gint64 __delta = g_get_monotonic_time () - start_time;                                \
+  gint64 __budget = master_clock->remaining_budget;                                     \
+  if (__budget > 0 && __delta >= __budget) {                                            \
+    _clutter_diagnostic_message ("%s took %" G_GINT64_FORMAT " microseconds "           \
+                                 "over a budget of %" G_GINT64_FORMAT " microseconds",  \
+                                 section, __delta, __budget);                           \
+  }                                                                     } G_STMT_END
+#else
+#define clutter_warn_if_over_budget(master_clock,start_time,section)
+#endif
+
 typedef struct _ClutterClockSource              ClutterClockSource;
 typedef struct _ClutterMasterClockClass         ClutterMasterClockClass;
 
@@ -61,6 +74,11 @@ struct _ClutterMasterClock
 
   /* the previous state of the clock, in usecs, used to compute the delta */
   gint64 prev_tick;
+
+#ifdef CLUTTER_ENABLE_DEBUG
+  gint64 frame_budget;
+  gint64 remaining_budget;
+#endif
 
   /* an idle source, used by the Master Clock to queue
    * a redraw on the stage and drive the animations
@@ -95,14 +113,14 @@ static gboolean clutter_clock_dispatch (GSource     *source,
                                         GSourceFunc  callback,
                                         gpointer     user_data);
 
-static ClutterMasterClock *default_clock = NULL;
-
 static GSourceFuncs clock_funcs = {
   clutter_clock_prepare,
   clutter_clock_check,
   clutter_clock_dispatch,
   NULL
 };
+
+#define clutter_master_clock_get_type   _clutter_master_clock_get_type
 
 G_DEFINE_TYPE (ClutterMasterClock, clutter_master_clock, G_TYPE_OBJECT);
 
@@ -206,15 +224,7 @@ master_clock_next_frame_delay (ClutterMasterClock *master_clock)
   /* Otherwise, wait at least 1/frame_rate seconds since we last
    * started a frame
    */
-#if GLIB_CHECK_VERSION (2, 27, 3)
   now = g_source_get_time (master_clock->source);
-#else
-  {
-    GTimeVal source_time;
-    g_source_get_current_time (master_clock->source, &source_time);
-    now = source_time.tv_sec * 1000000L + source_time.tv_usec;
-  }
-#endif
 
   next = master_clock->prev_tick;
 
@@ -243,6 +253,149 @@ master_clock_next_frame_delay (ClutterMasterClock *master_clock)
 
       return (next - now) / 1000;
     }
+}
+
+static void
+master_clock_process_events (ClutterMasterClock *master_clock,
+                             GSList             *stages)
+{
+  GSList *l;
+#ifdef CLUTTER_ENABLE_DEBUG
+  gint64 start = g_get_monotonic_time ();
+#endif
+
+  CLUTTER_STATIC_TIMER (master_event_process,
+                        "Master Clock",
+                        "Event Processing",
+                        "The time spent processing events on all stages",
+                        0);
+
+  CLUTTER_TIMER_START (_clutter_uprof_context, master_event_process);
+
+  /* Process queued events */
+  for (l = stages; l != NULL; l = l->next)
+    {
+      /* NB: If a stage is busy waiting for a swap-buffers completion then
+       * we don't process its events so we can maximize the benefits of
+       * motion compression, and avoid multiple picks per frame.
+       */
+      if (_clutter_stage_get_pending_swaps (l->data) == 0)
+        _clutter_stage_process_queued_events (l->data);
+    }
+
+  CLUTTER_TIMER_STOP (_clutter_uprof_context, master_event_process);
+
+#ifdef CLUTTER_ENABLE_DEBUG
+  if (_clutter_diagnostic_enabled ())
+    clutter_warn_if_over_budget (master_clock, start, "Event processing");
+
+  master_clock->remaining_budget -= (g_get_monotonic_time () - start);
+#endif
+}
+
+/*
+ * master_clock_advance_timelines:
+ * @master_clock: a #ClutterMasterClock
+ *
+ * Advances all the timelines held by the master clock. This function
+ * should be called before calling _clutter_stage_do_update() to
+ * make sure that all the timelines are advanced and the scene is updated.
+ */
+static void
+master_clock_advance_timelines (ClutterMasterClock *master_clock)
+{
+  GSList *timelines, *l;
+#ifdef CLUTTER_ENABLE_DEBUG
+  gint64 start = g_get_monotonic_time ();
+#endif
+
+  CLUTTER_STATIC_TIMER (master_timeline_advance,
+                        "Master Clock",
+                        "Timelines Advancement",
+                        "The time spent advancing all timelines",
+                        0);
+
+  /* we protect ourselves from timelines being removed during
+   * the advancement by other timelines by copying the list of
+   * timelines, taking a reference on them, iterating over the
+   * copied list and then releasing the reference.
+   *
+   * we cannot simply take a reference on the timelines and still
+   * use the list held by the master clock because the do_tick()
+   * might result in the creation of a new timeline, which gets
+   * added at the end of the list with no reference increase and
+   * thus gets disposed at the end of the iteration.
+   *
+   * this implies that a newly added timeline will not be advanced
+   * by this clock iteration, which is perfectly fine since we're
+   * in its first cycle.
+   *
+   * we also cannot steal the master clock timelines list because
+   * a timeline might be removed as the direct result of do_tick()
+   * and remove_timeline() would not find the timeline, failing
+   * and leaving a dangling pointer behind.
+   */
+  timelines = g_slist_copy (master_clock->timelines);
+  g_slist_foreach (timelines, (GFunc) g_object_ref, NULL);
+
+  CLUTTER_TIMER_START (_clutter_uprof_context, master_timeline_advance);
+
+  for (l = timelines; l != NULL; l = l->next)
+    _clutter_timeline_do_tick (l->data, master_clock->cur_tick / 1000);
+
+  CLUTTER_TIMER_STOP (_clutter_uprof_context, master_timeline_advance);
+
+  g_slist_foreach (timelines, (GFunc) g_object_unref, NULL);
+  g_slist_free (timelines);
+
+#ifdef CLUTTER_ENABLE_DEBUG
+  if (_clutter_diagnostic_enabled ())
+    clutter_warn_if_over_budget (master_clock, start, "Animations");
+
+  master_clock->remaining_budget -= (g_get_monotonic_time () - start);
+#endif
+}
+
+static gboolean
+master_clock_update_stages (ClutterMasterClock *master_clock,
+                            GSList             *stages)
+{
+  gboolean stages_updated = FALSE;
+  GSList *l;
+#ifdef CLUTTER_ENABLE_DEBUG
+  gint64 start = g_get_monotonic_time ();
+#endif
+
+  _clutter_run_repaint_functions (CLUTTER_REPAINT_FLAGS_PRE_PAINT);
+
+  /* Update any stage that needs redraw/relayout after the clock
+   * is advanced.
+   */
+  for (l = stages; l != NULL; l = l->next)
+    {
+      /* If a stage has a swap-buffers pending we don't want to draw to it
+       * in case the driver may block the CPU while it waits for the next
+       * backbuffer to become available.
+       *
+       * TODO: We should be able to identify if we are running triple or N
+       * buffered and in these cases we can still draw if there is 1 swap
+       * pending so we can hopefully always be ready to swap for the next
+       * vblank and really match the vsync frequency.
+       */
+      if (_clutter_stage_get_pending_swaps (l->data) == 0)
+        stages_updated |= _clutter_stage_do_update (l->data);
+    }
+
+  _clutter_run_repaint_functions (CLUTTER_REPAINT_FLAGS_POST_PAINT);
+
+#ifdef CLUTTER_ENABLE_DEBUG
+  if (_clutter_diagnostic_enabled ())
+    clutter_warn_if_over_budget (master_clock, start, "Updating the stage");
+
+  master_clock->remaining_budget -= (g_get_monotonic_time () - start);
+#endif
+
+  return stages_updated;
 }
 
 /*
@@ -277,6 +430,20 @@ clutter_clock_prepare (GSource *source,
   int delay;
 
   clutter_threads_enter ();
+
+  if (G_UNLIKELY (clutter_paint_debug_flags &
+                  CLUTTER_DEBUG_CONTINUOUS_REDRAW))
+    {
+      ClutterStageManager *stage_manager = clutter_stage_manager_get_default ();
+      const GSList *stages, *l;
+
+      stages = clutter_stage_manager_peek_stages (stage_manager);
+
+      /* Queue a full redraw on all of the stages */
+      for (l = stages; l != NULL; l = l->next)
+        clutter_actor_queue_redraw (l->data);
+    }
+
   delay = master_clock_next_frame_delay (master_clock);
   clutter_threads_leave ();
 
@@ -308,17 +475,12 @@ clutter_clock_dispatch (GSource     *source,
   ClutterMasterClock *master_clock = clock_source->master_clock;
   ClutterStageManager *stage_manager = clutter_stage_manager_get_default ();
   gboolean stages_updated = FALSE;
-  GSList *stages, *l;
+  GSList *stages;
 
   CLUTTER_STATIC_TIMER (master_dispatch_timer,
                         "Mainloop",
                         "Master Clock",
                         "Master clock dispatch",
-                        0);
-  CLUTTER_STATIC_TIMER (master_event_process,
-                        "Master Clock",
-                        "Event Processing",
-                        "The time spent processing events on all stages",
                         0);
 
   CLUTTER_TIMER_START (_clutter_uprof_context, master_dispatch_timer);
@@ -328,15 +490,10 @@ clutter_clock_dispatch (GSource     *source,
   clutter_threads_enter ();
 
   /* Get the time to use for this frame */
-#if GLIB_CHECK_VERSION (2, 27, 3)
   master_clock->cur_tick = g_source_get_time (source);
-#else
-  {
-    GTimeVal source_time;
-    g_source_get_current_time (source, &source_time);
-    master_clock->cur_tick = source_time.tv_sec * 1000000L
-                           + source_time.tv_usec;
-  }
+
+#ifdef CLUTTER_ENABLE_DEBUG
+  master_clock->remaining_budget = master_clock->frame_budget;
 #endif
 
   /* We need to protect ourselves against stages being destroyed during
@@ -345,44 +502,21 @@ clutter_clock_dispatch (GSource     *source,
   stages = clutter_stage_manager_list_stages (stage_manager);
   g_slist_foreach (stages, (GFunc) g_object_ref, NULL);
 
-  CLUTTER_TIMER_START (_clutter_uprof_context, master_event_process);
-
   master_clock->idle = FALSE;
 
-  /* Process queued events */
-  for (l = stages; l != NULL; l = l->next)
-    {
-      /* NB: If a stage is busy waiting for a swap-buffers completion then
-       * we don't process its events so we can maximize the benefits of
-       * motion compression, and avoid multiple picks per frame.
-       */
-      if (_clutter_stage_get_pending_swaps (l->data) == 0)
-        _clutter_stage_process_queued_events (l->data);
-    }
+  /* Each frame is split into three separate phases: */
 
-  CLUTTER_TIMER_STOP (_clutter_uprof_context, master_event_process);
-
-  _clutter_master_clock_advance (master_clock);
-
-  _clutter_run_repaint_functions ();
-
-  /* Update any stage that needs redraw/relayout after the clock
-   * is advanced.
+  /* 1. process all the events; each stage goes through its events queue
+   *    and processes each event according to its type, then emits the
+   *    various signals that are associated with the event
    */
-  for (l = stages; l != NULL; l = l->next)
-    {
-      /* If a stage has a swap-buffers pending we don't want to draw to it
-       * in case the driver may block the CPU while it waits for the next
-       * backbuffer to become available.
-       *
-       * TODO: We should be able to identify if we are running triple or N
-       * buffered and in these cases we can still draw if there is 1 swap
-       * pending so we can hopefully always be ready to swap for the next
-       * vblank and really match the vsync frequency.
-       */
-      if (_clutter_stage_get_pending_swaps (l->data) == 0)
-        stages_updated |= _clutter_stage_do_update (l->data);
-    }
+  master_clock_process_events (master_clock, stages);
+
+  /* 2. advance the timelines */
+  master_clock_advance_timelines (master_clock);
+
+  /* 3. relayout and redraw the stages */
+  stages_updated = master_clock_update_stages (master_clock, stages);
 
   /* The master clock goes idle if no stages were updated and falls back
    * to polling for timeline progressions... */
@@ -430,6 +564,10 @@ clutter_master_clock_init (ClutterMasterClock *self)
   self->idle = FALSE;
   self->ensure_next_iteration = FALSE;
 
+#ifdef CLUTTER_ENABLE_DEBUG
+  self->frame_budget = G_USEC_PER_SEC / 60;
+#endif
+
   g_source_set_priority (source, CLUTTER_PRIORITY_REDRAW);
   g_source_set_can_recurse (source, FALSE);
   g_source_attach (source, NULL);
@@ -447,12 +585,12 @@ clutter_master_clock_init (ClutterMasterClock *self)
 ClutterMasterClock *
 _clutter_master_clock_get_default (void)
 {
-  if (G_LIKELY (default_clock != NULL))
-    return default_clock;
+  ClutterMainContext *context = _clutter_context_get_default ();
 
-  default_clock = g_object_new (CLUTTER_TYPE_MASTER_CLOCK, NULL);
+  if (G_UNLIKELY (context->master_clock == NULL))
+    context->master_clock = g_object_new (CLUTTER_TYPE_MASTER_CLOCK, NULL);
 
-  return default_clock;
+  return context->master_clock;
 }
 
 /*
@@ -513,61 +651,6 @@ _clutter_master_clock_start_running (ClutterMasterClock *master_clock)
   g_main_context_wakeup (NULL);
 }
 
-/*
- * _clutter_master_clock_advance:
- * @master_clock: a #ClutterMasterClock
- *
- * Advances all the timelines held by the master clock. This function
- * should be called before calling clutter_redraw() to make sure that
- * all the timelines are advanced and the scene is updated.
- */
-void
-_clutter_master_clock_advance (ClutterMasterClock *master_clock)
-{
-  GSList *timelines, *l;
-
-  CLUTTER_STATIC_TIMER (master_timeline_advance,
-                        "Master Clock",
-                        "Timelines Advancement",
-                        "The time spent advancing all timelines",
-                        0);
-
-  g_return_if_fail (CLUTTER_IS_MASTER_CLOCK (master_clock));
-
-  CLUTTER_TIMER_START (_clutter_uprof_context, master_timeline_advance);
-
-  /* we protect ourselves from timelines being removed during
-   * the advancement by other timelines by copying the list of
-   * timelines, taking a reference on them, iterating over the
-   * copied list and then releasing the reference.
-   *
-   * we cannot simply take a reference on the timelines and still
-   * use the list held by the master clock because the do_tick()
-   * might result in the creation of a new timeline, which gets
-   * added at the end of the list with no reference increase and
-   * thus gets disposed at the end of the iteration.
-   *
-   * this implies that a newly added timeline will not be advanced
-   * by this clock iteration, which is perfectly fine since we're
-   * in its first cycle.
-   *
-   * we also cannot steal the master clock timelines list because
-   * a timeline might be removed as the direct result of do_tick()
-   * and remove_timeline() would not find the timeline, failing
-   * and leaving a dangling pointer behind.
-   */
-  timelines = g_slist_copy (master_clock->timelines);
-  g_slist_foreach (timelines, (GFunc) g_object_ref, NULL);
-
-  for (l = timelines; l != NULL; l = l->next)
-    _clutter_timeline_do_tick (l->data, master_clock->cur_tick / 1000);
-
-  g_slist_foreach (timelines, (GFunc) g_object_unref, NULL);
-  g_slist_free (timelines);
-
-  CLUTTER_TIMER_STOP (_clutter_uprof_context, master_timeline_advance);
-}
-
 /**
  * _clutter_master_clock_ensure_next_iteration:
  * @master_clock: a #ClutterMasterClock
@@ -581,4 +664,3 @@ _clutter_master_clock_ensure_next_iteration (ClutterMasterClock *master_clock)
 
   master_clock->ensure_next_iteration = TRUE;
 }
-

@@ -5,7 +5,7 @@
 <title>ClutterBehaviourRotate</title>
 <meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
 <link rel="home" href="index.html" title="Clutter Reference Manual">
-<link rel="up" href="ch09.html" title="Behaviours">
+<link rel="up" href="deprecated.html" title="Part X. Deprecated Classes">
 <link rel="prev" href="ClutterBehaviourPath.html" title="ClutterBehaviourPath">
 <link rel="next" href="ClutterBehaviourScale.html" title="ClutterBehaviourScale">
 <meta name="generator" content="GTK-Doc V1.18.1 (XML mode)">
@@ -15,7 +15,7 @@
 <table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
 <tr valign="middle">
 <td><a accesskey="p" href="ClutterBehaviourPath.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
-<td><a accesskey="u" href="ch09.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="u" href="deprecated.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
 <td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
 <th width="100%" align="center">Clutter Reference Manual</th>
 <td><a accesskey="n" href="ClutterBehaviourScale.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
@@ -214,10 +214,6 @@ The <a class="link" href="ClutterBehaviourRotate.html#ClutterBehaviourRotateClas
                                                          <em class="parameter"><code><a class="link" href="ClutterBehaviourRotate.html#ClutterRotateDirection" title="enum ClutterRotateDirection"><span class="type">ClutterRotateDirection</span></a> direction</code></em>,
                                                          <em class="parameter"><code><span class="type">gdouble</span> angle_start</code></em>,
                                                          <em class="parameter"><code><span class="type">gdouble</span> angle_end</code></em>);</pre>
-<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
-<h3 class="title">Warning</h3>
-<p><code class="literal">clutter_behaviour_rotate_new</code> is deprecated and should not be used in newly-written code.</p>
-</div>
 <p>
 Creates a new <a class="link" href="ClutterBehaviourRotate.html" title="ClutterBehaviourRotate"><span class="type">ClutterBehaviourRotate</span></a>. This behaviour will rotate actors
 bound to it on <em class="parameter"><code>axis</code></em>, following <em class="parameter"><code>direction</code></em>, between <em class="parameter"><code>angle_start</code></em> and
@@ -267,10 +263,6 @@ it can be set later with <a class="link" href="ClutterBehaviour.html#clutter-beh
 <a name="clutter-behaviour-rotate-set-axis"></a><h3>clutter_behaviour_rotate_set_axis ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                clutter_behaviour_rotate_set_axis   (<em class="parameter"><code><a class="link" href="ClutterBehaviourRotate.html" title="ClutterBehaviourRotate"><span class="type">ClutterBehaviourRotate</span></a> *rotate</code></em>,
                                                          <em class="parameter"><code><a class="link" href="ClutterBehaviourRotate.html#ClutterRotateAxis" title="enum ClutterRotateAxis"><span class="type">ClutterRotateAxis</span></a> axis</code></em>);</pre>
-<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
-<h3 class="title">Warning</h3>
-<p><code class="literal">clutter_behaviour_rotate_set_axis</code> is deprecated and should not be used in newly-written code.</p>
-</div>
 <p>
 Sets the axis used by the rotate behaviour.
 </p>
@@ -295,10 +287,6 @@ Sets the axis used by the rotate behaviour.
 <div class="refsect2">
 <a name="clutter-behaviour-rotate-get-axis"></a><h3>clutter_behaviour_rotate_get_axis ()</h3>
 <pre class="programlisting"><a class="link" href="ClutterBehaviourRotate.html#ClutterRotateAxis" title="enum ClutterRotateAxis"><span class="returnvalue">ClutterRotateAxis</span></a>   clutter_behaviour_rotate_get_axis   (<em class="parameter"><code><a class="link" href="ClutterBehaviourRotate.html" title="ClutterBehaviourRotate"><span class="type">ClutterBehaviourRotate</span></a> *rotate</code></em>);</pre>
-<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
-<h3 class="title">Warning</h3>
-<p><code class="literal">clutter_behaviour_rotate_get_axis</code> is deprecated and should not be used in newly-written code.</p>
-</div>
 <p>
 Retrieves the <a class="link" href="ClutterBehaviourRotate.html#ClutterRotateAxis" title="enum ClutterRotateAxis"><span class="type">ClutterRotateAxis</span></a> used by the rotate behaviour.
 </p>
@@ -324,10 +312,6 @@ Retrieves the <a class="link" href="ClutterBehaviourRotate.html#ClutterRotateAxi
 <pre class="programlisting"><span class="returnvalue">void</span>                clutter_behaviour_rotate_set_direction
                                                         (<em class="parameter"><code><a class="link" href="ClutterBehaviourRotate.html" title="ClutterBehaviourRotate"><span class="type">ClutterBehaviourRotate</span></a> *rotate</code></em>,
                                                          <em class="parameter"><code><a class="link" href="ClutterBehaviourRotate.html#ClutterRotateDirection" title="enum ClutterRotateDirection"><span class="type">ClutterRotateDirection</span></a> direction</code></em>);</pre>
-<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
-<h3 class="title">Warning</h3>
-<p><code class="literal">clutter_behaviour_rotate_set_direction</code> is deprecated and should not be used in newly-written code.</p>
-</div>
 <p>
 Sets the rotation direction used by the rotate behaviour.
 </p>
@@ -352,10 +336,6 @@ Sets the rotation direction used by the rotate behaviour.
 <a name="clutter-behaviour-rotate-get-direction"></a><h3>clutter_behaviour_rotate_get_direction ()</h3>
 <pre class="programlisting"><a class="link" href="ClutterBehaviourRotate.html#ClutterRotateDirection" title="enum ClutterRotateDirection"><span class="returnvalue">ClutterRotateDirection</span></a> clutter_behaviour_rotate_get_direction
                                                         (<em class="parameter"><code><a class="link" href="ClutterBehaviourRotate.html" title="ClutterBehaviourRotate"><span class="type">ClutterBehaviourRotate</span></a> *rotate</code></em>);</pre>
-<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
-<h3 class="title">Warning</h3>
-<p><code class="literal">clutter_behaviour_rotate_get_direction</code> is deprecated and should not be used in newly-written code.</p>
-</div>
 <p>
 Retrieves the <a class="link" href="ClutterBehaviourRotate.html#ClutterRotateDirection" title="enum ClutterRotateDirection"><span class="type">ClutterRotateDirection</span></a> used by the rotate behaviour.
 </p>
@@ -381,10 +361,6 @@ Retrieves the <a class="link" href="ClutterBehaviourRotate.html#ClutterRotateDir
 <pre class="programlisting"><span class="returnvalue">void</span>                clutter_behaviour_rotate_set_bounds (<em class="parameter"><code><a class="link" href="ClutterBehaviourRotate.html" title="ClutterBehaviourRotate"><span class="type">ClutterBehaviourRotate</span></a> *rotate</code></em>,
                                                          <em class="parameter"><code><span class="type">gdouble</span> angle_start</code></em>,
                                                          <em class="parameter"><code><span class="type">gdouble</span> angle_end</code></em>);</pre>
-<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
-<h3 class="title">Warning</h3>
-<p><code class="literal">clutter_behaviour_rotate_set_bounds</code> is deprecated and should not be used in newly-written code.</p>
-</div>
 <p>
 Sets the initial and final angles of a rotation behaviour; angles &gt;= 360
 degrees get clamped to the canonical interval &lt;0, 360).
@@ -415,10 +391,6 @@ degrees get clamped to the canonical interval &lt;0, 360).
 <pre class="programlisting"><span class="returnvalue">void</span>                clutter_behaviour_rotate_get_bounds (<em class="parameter"><code><a class="link" href="ClutterBehaviourRotate.html" title="ClutterBehaviourRotate"><span class="type">ClutterBehaviourRotate</span></a> *rotate</code></em>,
                                                          <em class="parameter"><code><span class="type">gdouble</span> *angle_start</code></em>,
                                                          <em class="parameter"><code><span class="type">gdouble</span> *angle_end</code></em>);</pre>
-<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
-<h3 class="title">Warning</h3>
-<p><code class="literal">clutter_behaviour_rotate_get_bounds</code> is deprecated and should not be used in newly-written code.</p>
-</div>
 <p>
 Retrieves the rotation boundaries of the rotate behaviour.
 </p>
@@ -451,10 +423,6 @@ Retrieves the rotation boundaries of the rotate behaviour.
                                                          <em class="parameter"><code><span class="type">gint</span> x</code></em>,
                                                          <em class="parameter"><code><span class="type">gint</span> y</code></em>,
                                                          <em class="parameter"><code><span class="type">gint</span> z</code></em>);</pre>
-<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
-<h3 class="title">Warning</h3>
-<p><code class="literal">clutter_behaviour_rotate_set_center</code> is deprecated and should not be used in newly-written code.</p>
-</div>
 <p>
 Sets the center of rotation. The coordinates are relative to the plane
 normal to the rotation axis set with <a class="link" href="ClutterBehaviourRotate.html#clutter-behaviour-rotate-set-axis" title="clutter_behaviour_rotate_set_axis ()"><code class="function">clutter_behaviour_rotate_set_axis()</code></a>.
@@ -490,10 +458,6 @@ normal to the rotation axis set with <a class="link" href="ClutterBehaviourRotat
                                                          <em class="parameter"><code><span class="type">gint</span> *x</code></em>,
                                                          <em class="parameter"><code><span class="type">gint</span> *y</code></em>,
                                                          <em class="parameter"><code><span class="type">gint</span> *z</code></em>);</pre>
-<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
-<h3 class="title">Warning</h3>
-<p><code class="literal">clutter_behaviour_rotate_get_center</code> is deprecated and should not be used in newly-written code.</p>
-</div>
 <p>
 Retrieves the center of rotation set using
 <a class="link" href="ClutterBehaviourRotate.html#clutter-behaviour-rotate-set-center" title="clutter_behaviour_rotate_set_center ()"><code class="function">clutter_behaviour_rotate_set_center()</code></a>.

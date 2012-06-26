@@ -55,21 +55,25 @@ typedef struct _ClutterContainerIface   ClutterContainerIface;
 
 /**
  * ClutterContainerIface:
- * @add: virtual function for adding an actor to the container. The
- *   implementation of this virtual function is required.
- * @remove: virtual function for removing an actor from the container. The
- *   implementation of this virtual function is required.
+ * @add: virtual function for adding an actor to the container. This virtual
+ *   function is deprecated, and it should not be overridden.
+ * @remove: virtual function for removing an actor from the container. This
+ *   virtual function is deprecated, and it should not be overridden.
  * @foreach: virtual function for iterating over the container's children.
- *   The implementation of this virtual function is required.
+ *   This virtual function is deprecated, and it should not be overridden.
  * @foreach_with_internals: virtual functions for iterating over the
  *   container's children, both added using the #ClutterContainer API
  *   and internal children. The implementation of this virtual function
  *   is required only if the #ClutterContainer implementation has
- *   internal children.
- * @raise: virtual function for raising a child
- * @lower: virtual function for lowering a child
+ *   internal children. This virtual function is deprecated, and it should
+ *   not be overridden.
+ * @raise: virtual function for raising a child. This virtual function is
+ *   deprecated and it should not be overridden.
+ * @lower: virtual function for lowering a child. This virtual function is
+ *   deprecated and it should not be overridden.
  * @sort_depth_order: virtual function for sorting the children of a
- *   container depending on their depth
+ *   container depending on their depth. This virtual function is deprecated
+ *   and it should not be overridden.
  * @child_meta_type: The GType used for storing auxiliary information about
  *   each of the containers children.
  * @create_child_meta: virtual function that gets called for each added
@@ -139,39 +143,8 @@ struct _ClutterContainerIface
 
 GType         clutter_container_get_type         (void) G_GNUC_CONST;
 
-void          clutter_container_add              (ClutterContainer *container,
-                                                  ClutterActor     *first_actor,
-                                                  ...) G_GNUC_NULL_TERMINATED;
-void          clutter_container_add_actor        (ClutterContainer *container,
-                                                  ClutterActor     *actor);
-void          clutter_container_add_valist       (ClutterContainer *container,
-                                                  ClutterActor     *first_actor,
-                                                  va_list           var_args);
-void          clutter_container_remove           (ClutterContainer *container,
-                                                  ClutterActor     *first_actor,
-                                                  ...) G_GNUC_NULL_TERMINATED;
-void          clutter_container_remove_actor     (ClutterContainer *container,
-                                                  ClutterActor     *actor);
-void          clutter_container_remove_valist    (ClutterContainer *container,
-                                                  ClutterActor     *first_actor,
-                                                  va_list           var_args);
-GList *       clutter_container_get_children           (ClutterContainer *container);
-void          clutter_container_foreach                (ClutterContainer *container,
-                                                        ClutterCallback   callback,
-                                                        gpointer          user_data);
-void          clutter_container_foreach_with_internals (ClutterContainer *container,
-                                                        ClutterCallback   callback,
-                                                        gpointer          user_data);
 ClutterActor *clutter_container_find_child_by_name     (ClutterContainer *container,
                                                         const gchar      *child_name);
-void          clutter_container_raise_child            (ClutterContainer *container,
-                                                        ClutterActor     *actor,
-                                                        ClutterActor     *sibling);
-void          clutter_container_lower_child            (ClutterContainer *container,
-                                                        ClutterActor     *actor,
-                                                        ClutterActor     *sibling);
-void          clutter_container_sort_depth_order       (ClutterContainer *container);
-
 
 GParamSpec *      clutter_container_class_find_child_property   (GObjectClass     *klass,
                                                                  const gchar      *property_name);

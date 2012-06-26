@@ -5,7 +5,7 @@
 <title>ClutterShaderEffect</title>
 <meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
 <link rel="home" href="index.html" title="Clutter Reference Manual">
-<link rel="up" href="ch07.html" title="Effects">
+<link rel="up" href="ch06.html" title="Effects">
 <link rel="prev" href="ClutterOffscreenEffect.html" title="ClutterOffscreenEffect">
 <link rel="next" href="ClutterDeformEffect.html" title="ClutterDeformEffect">
 <meta name="generator" content="GTK-Doc V1.18.1 (XML mode)">
@@ -15,7 +15,7 @@
 <table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
 <tr valign="middle">
 <td><a accesskey="p" href="ClutterOffscreenEffect.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
-<td><a accesskey="u" href="ch07.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="u" href="ch06.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
 <td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
 <th width="100%" align="center">Clutter Reference Manual</th>
 <td><a accesskey="n" href="ClutterDeformEffect.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
@@ -95,36 +95,43 @@ successfull) to the buffer before painting it on screen.
 <div class="refsect2">
 <a name="ClutterShaderEffect-implementing"></a><h3>Implementing a ClutterShaderEffect</h3>
 <p>Creating a sub-class of <a class="link" href="ClutterShaderEffect.html" title="ClutterShaderEffect"><span class="type">ClutterShaderEffect</span></a> requires the
-  overriding of the <code class="function"><code class="function">pre_paint()</code></code> virtual function
-  from the <a class="link" href="ClutterEffect.html" title="ClutterEffect"><span class="type">ClutterEffect</span></a> class.</p>
-<p>The <code class="function"><code class="function">pre_paint()</code></code> should set the shader's
-  source and eventually set the uniforms. The sub-class should call
-  <a class="link" href="ClutterShaderEffect.html#clutter-shader-effect-set-shader-source" title="clutter_shader_effect_set_shader_source ()"><code class="function">clutter_shader_effect_set_shader_source()</code></a> to set the shader source
-  code, and  <a class="link" href="ClutterShaderEffect.html#clutter-shader-effect-set-uniform-value" title="clutter_shader_effect_set_uniform_value ()"><code class="function">clutter_shader_effect_set_uniform_value()</code></a> or
-  <a class="link" href="ClutterShaderEffect.html#clutter-shader-effect-set-uniform" title="clutter_shader_effect_set_uniform ()"><code class="function">clutter_shader_effect_set_uniform()</code></a> to set the values of the shader
-  uniforms, if any; the sub-class should then chain up to the
-  <a class="link" href="ClutterShaderEffect.html" title="ClutterShaderEffect"><span class="type">ClutterShaderEffect</span></a> implementation.</p>
+  overriding of the <code class="function"><code class="function">paint_target()</code></code> virtual
+  function from the <a class="link" href="ClutterOffscreenEffect.html" title="ClutterOffscreenEffect"><span class="type">ClutterOffscreenEffect</span></a> class as well as the
+  <code class="function"><code class="function">get_static_shader_source()</code></code> virtual from the
+  <a class="link" href="ClutterShaderEffect.html" title="ClutterShaderEffect"><span class="type">ClutterShaderEffect</span></a> class.</p>
+<p>The <code class="function"><code class="function">get_static_shader_source()</code></code>
+  function should return a copy of the shader source to use. This
+  function is only called once per subclass of <a class="link" href="ClutterShaderEffect.html" title="ClutterShaderEffect"><span class="type">ClutterShaderEffect</span></a>
+  regardless of how many instances of the effect are created. The
+  source for the shader is typically stored in a static const
+  string which is returned from this function via
+  <code class="function">g_strdup()</code>.</p>
+<p>The <code class="function"><code class="function">paint_target()</code></code> should set the
+  shader's uniforms if any. This is done by calling
+  <a class="link" href="ClutterShaderEffect.html#clutter-shader-effect-set-uniform-value" title="clutter_shader_effect_set_uniform_value ()"><code class="function">clutter_shader_effect_set_uniform_value()</code></a> or
+  <a class="link" href="ClutterShaderEffect.html#clutter-shader-effect-set-uniform" title="clutter_shader_effect_set_uniform ()"><code class="function">clutter_shader_effect_set_uniform()</code></a>. The sub-class should then
+  chain up to the <a class="link" href="ClutterShaderEffect.html" title="ClutterShaderEffect"><span class="type">ClutterShaderEffect</span></a> implementation.</p>
 <div class="example">
-<a name="ClutterShaderEffect-example-uniforms"></a><p class="title"><b>Example 11. Setting uniforms on a ClutterShaderEffect</b></p>
+<a name="ClutterShaderEffect-example-uniforms"></a><p class="title"><b>Example 9. Setting uniforms on a ClutterShaderEffect</b></p>
 <div class="example-contents">
 <p>The example below shows a typical implementation of the
-    <code class="function"><code class="function">pre_paint()</code></code> phase of a <a class="link" href="ClutterShaderEffect.html" title="ClutterShaderEffect"><span class="type">ClutterShaderEffect</span></a>
-    sub-class.</p>
+    <code class="function"><code class="function">get_static_shader_source()</code></code> and
+    <code class="function"><code class="function">paint_target()</code></code> phases of a
+    <a class="link" href="ClutterShaderEffect.html" title="ClutterShaderEffect"><span class="type">ClutterShaderEffect</span></a> sub-class.</p>
 <pre class="programlisting">
+ static gchar *
+ my_effect_get_static_shader_source (ClutterShaderEffect *effect)
+ {
+   return g_strdup (shader_source);
+ }
+
  static gboolean
- my_effect_pre_paint (ClutterEffect *effect)
+ my_effect_paint_target (ClutterOffscreenEffect *effect)
  {
    MyEffect *self = MY_EFFECT (effect);
    ClutterShaderEffect *shader = CLUTTER_SHADER_EFFECT (effect);
    ClutterEffectClass *parent_class;
    gfloat component_r, component_g, component_b;
-
-   /* if the effect is not enabled we can bail out now */
-   if (!clutter_actor_meta_get_enabled (CLUTTER_ACTOR_META (effect)))
-     return FALSE;
-
-   /* this function is a no-op after the first call */
-   clutter_shader_effect_set_shader_source (shader, shader_source);
 
    /* the "tex" uniform is declared in the shader as:
     *
@@ -151,8 +158,8 @@ successfull) to the buffer before painting it on screen.
                                       component_b);
 
    /* chain up to the parent's implementation */
-   parent_class = CLUTTER_EFFECT_CLASS (my_effect_parent_class);
-   return parent_class-&gt;pre_paint (effect);
+   parent_class = CLUTTER_OFFSCREEN_EFFECT_CLASS (my_effect_parent_class);
+   return parent_class-&gt;paint_target (effect);
  }
     </pre>
 </div>
@@ -208,12 +215,24 @@ only private data and should be accessed using the provided API
 <div class="refsect2">
 <a name="ClutterShaderEffectClass"></a><h3>struct ClutterShaderEffectClass</h3>
 <pre class="programlisting">struct ClutterShaderEffectClass {
+  gchar * (* get_static_shader_source) (ClutterShaderEffect *effect);
 };
 </pre>
 <p>
 The <span class="structname">ClutterShaderEffectClass</span> structure contains
 only private data
 </p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><em class="structfield"><code><a name="ClutterShaderEffectClass.get-static-shader-source"></a>get_static_shader_source</code></em> ()</span></p></td>
+<td>Returns the GLSL source code to use for
+instances of this shader effect. Note that this function is only
+called once per subclass of <a class="link" href="ClutterShaderEffect.html" title="ClutterShaderEffect"><span class="type">ClutterShaderEffect</span></a> regardless of how
+many instances are used. It is expected that subclasses will return
+a copy of a static string from this function.</td>
+</tr></tbody>
+</table></div>
 <p class="since">Since 1.4</p>
 </div>
 <hr>

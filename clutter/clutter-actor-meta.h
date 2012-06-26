@@ -75,6 +75,15 @@ struct _ClutterActorMetaClass
   GInitiallyUnownedClass parent_class;
 
   /*< public >*/
+
+  /**
+   * ClutterActorMetaClass::set_actor:
+   * @meta: a #ClutterActorMeta
+   * @actor: (allow-none): the actor attached to @meta, or %NULL
+   *
+   * Virtual function, called when @meta is attached or detached
+   * from a #ClutterActor.
+   */
   void (* set_actor) (ClutterActorMeta *meta,
                       ClutterActor     *actor);
 

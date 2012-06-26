@@ -188,7 +188,7 @@ invoke the function multiple times to catch up missing frames if
 </tr>
 <tr>
 <td><p><span class="term"><em class="parameter"><code>data</code></em> :</span></p></td>
-<td>data to pass to the function, or <a href="/home/ebassi/gnome3/install/share/gtk-doc/html/liboil/liboil-liboiljunk.html#NULL--CAPS"><code class="literal">NULL</code></a>
+<td>data to pass to the function, or <a href="/home/ebassi/gnome3/install/share/gtk-doc/html/liboil/liboil-liboiljunk.html#NULL--CAPS"><code class="literal">NULL</code></a>. <span class="annotation">[<acronym title="This parameter is a 'user_data', for callbacks; many bindings can pass NULL here."><span class="acronym">closure</span></acronym>]</span>
 </td>
 </tr>
 <tr>
@@ -346,6 +346,10 @@ range between <code class="literal">G_PRIORITY_DEFAULT</code> and <code class="l
   CoglFixed default_value;
 };
 </pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">ClutterParamSpecFixed</code> is deprecated and should not be used in newly-written code. Use <span class="type">GParamSpecInt</span> instead</p>
+</div>
 <p>
 <span class="type">GParamSpec</span> subclass for fixed point based properties
 </p>
@@ -378,6 +382,10 @@ range between <code class="literal">G_PRIORITY_DEFAULT</code> and <code class="l
                                                          <em class="parameter"><code><span class="type">CoglFixed</span> maximum</code></em>,
                                                          <em class="parameter"><code><span class="type">CoglFixed</span> default_value</code></em>,
                                                          <em class="parameter"><code><span class="type">GParamFlags</span> flags</code></em>);</pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">clutter_param_spec_fixed</code> has been deprecated since version 1.10 and should not be used in newly-written code. Use <span class="type">GParamSpecInt</span> instead.</p>
+</div>
 <p>
 Creates a <span class="type">GParamSpec</span> for properties using <span class="type">CoglFixed</span> values
 </p>
@@ -414,7 +422,7 @@ Creates a <span class="type">GParamSpec</span> for properties using <span class=
 </tr>
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
-<td>the newly created <span class="type">GParamSpec</span>
+<td>the newly created <span class="type">GParamSpec</span>. <span class="annotation">[<acronym title="Free data after the code is done."><span class="acronym">transfer full</span></acronym>]</span>
 </td>
 </tr>
 </tbody>
@@ -426,6 +434,10 @@ Creates a <span class="type">GParamSpec</span> for properties using <span class=
 <a name="CLUTTER-VALUE-HOLDS-FIXED:CAPS"></a><h3>CLUTTER_VALUE_HOLDS_FIXED()</h3>
 <pre class="programlisting">#define CLUTTER_VALUE_HOLDS_FIXED(x)    (G_VALUE_HOLDS ((x), COGL_TYPE_FIXED))
 </pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">CLUTTER_VALUE_HOLDS_FIXED</code> has been deprecated since version 1.10 and should not be used in newly-written code. Use <code class="literal">G_VALUE_HOLDS_INT</code> instead</p>
+</div>
 <p>
 Evaluates to <code class="literal">TRUE</code> if <em class="parameter"><code>x</code></em> holds a <span class="type">CoglFixed</span>   .
 </p>
@@ -444,6 +456,10 @@ Evaluates to <code class="literal">TRUE</code> if <em class="parameter"><code>x<
 <a name="clutter-value-set-fixed"></a><h3>clutter_value_set_fixed ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                clutter_value_set_fixed             (<em class="parameter"><code><span class="type">GValue</span> *value</code></em>,
                                                          <em class="parameter"><code><span class="type">CoglFixed</span> fixed_</code></em>);</pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">clutter_value_set_fixed</code> has been deprecated since version 1.10 and should not be used in newly-written code. Use <code class="function">g_value_set_int()</code> instead.</p>
+</div>
 <p>
 Sets <em class="parameter"><code>value</code></em> to <em class="parameter"><code>fixed_</code></em>.
 </p>
@@ -467,6 +483,10 @@ Sets <em class="parameter"><code>value</code></em> to <em class="parameter"><cod
 <div class="refsect2">
 <a name="clutter-value-get-fixed"></a><h3>clutter_value_get_fixed ()</h3>
 <pre class="programlisting"><span class="returnvalue">CoglFixed</span>           clutter_value_get_fixed             (<em class="parameter"><code>const <span class="type">GValue</span> *value</code></em>);</pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">clutter_value_get_fixed</code> has been deprecated since version 1.10 and should not be used in newly-written code. Use <code class="function">g_value_get_int()</code> instead.</p>
+</div>
 <p>
 Gets the fixed point value stored inside <em class="parameter"><code>value</code></em>.
 </p>

@@ -45,11 +45,12 @@ typedef struct _TestState
   ClutterActor    *dummy;
   CoglHandle       buffer;
   float           *quad_mesh_verts;
-  GLubyte         *quad_mesh_colors;
-  GLushort        *static_indices;
+  guint8          *quad_mesh_colors;
+  guint16         *static_indices;
   guint            n_static_indices;
   CoglHandle       indices;
   ClutterTimeline *timeline;
+  guint            frame_id;
 } TestState;
 
 static void
@@ -85,7 +86,7 @@ frame_cb (ClutterTimeline *timeline,
         float    ripple_sin = sinf (ripple_angle);
 
         float    h, s, l;
-        GLubyte *color;
+        guint8  *color;
 
         vert[2] = (wave_sin * WAVE_DEPTH) + (ripple_sin * RIPPLE_DEPTH);
 
@@ -109,14 +110,14 @@ frame_cb (ClutterTimeline *timeline,
   cogl_vertex_buffer_add (state->buffer,
                           "gl_Vertex",
                           3, /* n components */
-                          GL_FLOAT,
+                          COGL_ATTRIBUTE_TYPE_FLOAT,
                           FALSE, /* normalized */
                           0, /* stride */
                           state->quad_mesh_verts);
   cogl_vertex_buffer_add (state->buffer,
                           "gl_Color",
                           4, /* n components */
-                          GL_UNSIGNED_BYTE,
+                          COGL_ATTRIBUTE_TYPE_UNSIGNED_BYTE,
                           FALSE, /* normalized */
                           0, /* stride */
                           state->quad_mesh_colors);
@@ -156,7 +157,7 @@ init_static_index_arrays (TestState *state)
 {
   guint     n_indices;
   int       x, y;
-  GLushort *i;
+  guint16  *i;
   guint     dir;
 
   /* - Each row takes (2 + 2 * MESH_WIDTH indices)
@@ -166,7 +167,7 @@ init_static_index_arrays (TestState *state)
    * - It takes one extra index for linking between rows (MESH_HEIGHT - 1)
    * - A 2 x 3 mesh == 20 indices... */
   n_indices = (2 + 2 * MESH_WIDTH) * MESH_HEIGHT + (MESH_HEIGHT - 1);
-  state->static_indices = g_malloc (sizeof (GLushort) * n_indices);
+  state->static_indices = g_malloc (sizeof (guint16) * n_indices);
   state->n_static_indices = n_indices;
 
 #define MESH_INDEX(X, Y) (Y) * (MESH_WIDTH + 1) + (X)
@@ -257,7 +258,7 @@ init_quad_mesh (TestState *state)
 {
   int x, y;
   float *vert;
-  GLubyte *color;
+  guint8 *color;
 
   /* Note: we maintain the minimum number of vertices possible. This minimizes
    * the work required when we come to morph the geometry.
@@ -270,7 +271,7 @@ init_quad_mesh (TestState *state)
     g_malloc0 (sizeof (float) * 3 * (MESH_WIDTH + 1) * (MESH_HEIGHT + 1));
 
   state->quad_mesh_colors =
-    g_malloc0 (sizeof (GLubyte) * 4 * (MESH_WIDTH + 1) * (MESH_HEIGHT + 1));
+    g_malloc0 (sizeof (guint8) * 4 * (MESH_WIDTH + 1) * (MESH_HEIGHT + 1));
 
   vert = state->quad_mesh_verts;
   color = state->quad_mesh_colors;
@@ -324,37 +325,47 @@ create_dummy_actor (guint width, guint height)
   return group;
 }
 
+static void
+stop_and_quit (ClutterActor *actor,
+               TestState    *state)
+{
+  clutter_timeline_stop (state->timeline);
+  clutter_main_quit ();
+}
+
 G_MODULE_EXPORT int
 test_cogl_vertex_buffer_main (int argc, char *argv[])
 {
   TestState       state;
   ClutterActor   *stage;
-  ClutterColor    stage_clr = {0x0, 0x0, 0x0, 0xff};
-  ClutterGeometry stage_geom;
+  gfloat          stage_w, stage_h;
   gint            dummy_width, dummy_height;
 
   if (clutter_init (&argc, &argv) != CLUTTER_INIT_SUCCESS)
     return 1;
 
-  stage = clutter_stage_get_default ();
+  stage = clutter_stage_new ();
 
-  clutter_stage_set_color (CLUTTER_STAGE (stage), &stage_clr);
-  clutter_actor_get_geometry (stage, &stage_geom);
+  clutter_stage_set_title (CLUTTER_STAGE (stage), "Cogl Vertex Buffers");
+  clutter_stage_set_color (CLUTTER_STAGE (stage), CLUTTER_COLOR_Black);
+  g_signal_connect (stage, "destroy", G_CALLBACK (stop_and_quit), &state);
+  clutter_actor_get_size (stage, &stage_w, &stage_h);
 
   dummy_width = MESH_WIDTH * QUAD_WIDTH;
   dummy_height = MESH_HEIGHT * QUAD_HEIGHT;
   state.dummy = create_dummy_actor (dummy_width, dummy_height);
   clutter_container_add_actor (CLUTTER_CONTAINER (stage), state.dummy);
   clutter_actor_set_position (state.dummy,
-                              (stage_geom.width / 2.0) - (dummy_width / 2.0),
-                              (stage_geom.height / 2.0) - (dummy_height / 2.0));
+                              (stage_w / 2.0) - (dummy_width / 2.0),
+                              (stage_h / 2.0) - (dummy_height / 2.0));
 
   state.timeline = clutter_timeline_new (1000);
   clutter_timeline_set_loop (state.timeline, TRUE);
-  g_signal_connect (state.timeline,
-                    "new-frame",
-                    G_CALLBACK (frame_cb),
-                    &state);
+
+  state.frame_id = g_signal_connect (state.timeline,
+                                     "new-frame",
+                                     G_CALLBACK (frame_cb),
+                                     &state);
 
   g_signal_connect (state.dummy, "paint", G_CALLBACK (on_paint), &state);
 
@@ -372,3 +383,8 @@ test_cogl_vertex_buffer_main (int argc, char *argv[])
   return 0;
 }
 
+G_MODULE_EXPORT const char *
+test_cogl_vertex_buffer_describe (void)
+{
+  return "Vertex buffers support in Cogl.";
+}

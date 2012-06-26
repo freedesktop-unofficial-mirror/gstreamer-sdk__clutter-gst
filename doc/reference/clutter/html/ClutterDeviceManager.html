@@ -257,6 +257,10 @@ not be modified or freed. <span class="annotation">[<acronym title="Don't free d
 <div class="refsect2">
 <a name="clutter-get-input-device-for-id"></a><h3>clutter_get_input_device_for_id ()</h3>
 <pre class="programlisting"><a class="link" href="ClutterInputDevice.html" title="ClutterInputDevice"><span class="returnvalue">ClutterInputDevice</span></a> * clutter_get_input_device_for_id    (<em class="parameter"><code><span class="type">gint</span> id_</code></em>);</pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">clutter_get_input_device_for_id</code> has been deprecated since version 1.10 and should not be used in newly-written code. Use <a class="link" href="ClutterDeviceManager.html#clutter-device-manager-get-device" title="clutter_device_manager_get_device ()"><code class="function">clutter_device_manager_get_device()</code></a> instead.</p>
+</div>
 <p>
 Retrieves the <a class="link" href="ClutterInputDevice.html" title="ClutterInputDevice"><span class="type">ClutterInputDevice</span></a> from its <em class="parameter"><code>id_</code></em>. This is a convenience
 wrapper for <a class="link" href="ClutterDeviceManager.html#clutter-device-manager-get-device" title="clutter_device_manager_get_device ()"><code class="function">clutter_device_manager_get_device()</code></a> and it is functionally

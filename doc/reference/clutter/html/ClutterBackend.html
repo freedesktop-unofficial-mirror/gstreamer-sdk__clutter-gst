@@ -64,6 +64,8 @@ const <a href="/home/ebassi/gnome3/install/share/gtk-doc/html/cairo/cairo-cairo-
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *font_name</code></em>);
 const <span class="returnvalue">gchar</span> *       <a class="link" href="ClutterBackend.html#clutter-backend-get-font-name" title="clutter_backend_get_font_name ()">clutter_backend_get_font_name</a>       (<em class="parameter"><code><a class="link" href="ClutterBackend.html" title="ClutterBackend"><span class="type">ClutterBackend</span></a> *backend</code></em>);
 <span class="returnvalue">CoglContext</span> *       <a class="link" href="ClutterBackend.html#clutter-backend-get-cogl-context" title="clutter_backend_get_cogl_context ()">clutter_backend_get_cogl_context</a>    (<em class="parameter"><code><a class="link" href="ClutterBackend.html" title="ClutterBackend"><span class="type">ClutterBackend</span></a> *backend</code></em>);
+
+<span class="returnvalue">gboolean</span>            <a class="link" href="ClutterBackend.html#clutter-check-windowing-backend" title="clutter_check_windowing_backend ()">clutter_check_windowing_backend</a>     (<em class="parameter"><code>const <span class="type">char</span> *backend_type</code></em>);
 </pre>
 </div>
 <div class="refsect1">
@@ -134,7 +136,7 @@ need to use this. <span class="annotation">[<acronym title="Don't free data afte
                                                          <em class="parameter"><code><span class="type">gdouble</span> dpi</code></em>);</pre>
 <div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
 <h3 class="title">Warning</h3>
-<p><code class="literal">clutter_backend_set_resolution</code> is deprecated and should not be used in newly-written code. Use <a class="link" href="ClutterSettings.html#ClutterSettings--font-dpi" title='The "font-dpi" property'><span class="type">"font-dpi"</span></a> instead</p>
+<p><code class="literal">clutter_backend_set_resolution</code> has been deprecated since version 1.4 and should not be used in newly-written code. Use <a class="link" href="ClutterSettings.html#ClutterSettings--font-dpi" title='The "font-dpi" property'><span class="type">"font-dpi"</span></a> instead</p>
 </div>
 <p>
 Sets the resolution for font handling on the screen. This is a
@@ -475,6 +477,81 @@ explicitly create a CoglContext.</div>
 </table></div>
 <p class="since">Since 1.8</p>
 <p class="stability">Stability Level: Unstable</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="clutter-check-windowing-backend"></a><h3>clutter_check_windowing_backend ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>            clutter_check_windowing_backend     (<em class="parameter"><code>const <span class="type">char</span> *backend_type</code></em>);</pre>
+<p>
+Checks the run-time name of the Clutter windowing system backend, using
+the symbolic macros like <code class="literal">CLUTTER_WINDOWING_WIN32</code> or
+<code class="literal">CLUTTER_WINDOWING_X11</code>.
+</p>
+<p>
+This function should be used in conjuction with the compile-time macros
+inside applications and libraries that are using the platform-specific
+windowing system API, to ensure that they are running on the correct
+windowing system; for instance:
+</p>
+<p>
+</p>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="preproc">#ifdef</span><span class="normal"> CLUTTER_WINDOWING_X11</span>
+<span class="normal">  </span><span class="keyword">if</span><span class="normal"> </span><span class="symbol">(</span><span class="function"><a href="ClutterBackend.html#clutter-check-windowing-backend">clutter_check_windowing_backend</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">CLUTTER_WINDOWING_X11</span><span class="symbol">))</span>
+<span class="normal">    </span><span class="cbracket">{</span>
+<span class="normal">      </span><span class="comment">/* it is safe to use the clutter_x11_* API */</span>
+<span class="normal">    </span><span class="cbracket">}</span>
+<span class="normal">  </span><span class="keyword">else</span>
+<span class="preproc">#endif</span>
+<span class="preproc">#ifdef</span><span class="normal"> CLUTTER_WINDOWING_WIN32</span>
+<span class="normal">  </span><span class="keyword">if</span><span class="normal"> </span><span class="symbol">(</span><span class="function"><a href="ClutterBackend.html#clutter-check-windowing-backend">clutter_check_windowing_backend</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">CLUTTER_WINDOWING_WIN32</span><span class="symbol">))</span>
+<span class="normal">    </span><span class="cbracket">{</span>
+<span class="normal">      </span><span class="comment">/* it is safe to use the clutter_win32_* API */</span>
+<span class="normal">    </span><span class="cbracket">}</span>
+<span class="normal">  </span><span class="keyword">else</span>
+<span class="preproc">#endif</span>
+<span class="normal">    </span><span class="function">g_error</span><span class="normal"> </span><span class="symbol">(</span><span class="string">"Unknown Clutter backend."</span><span class="symbol">);</span></pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<p>
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>backend_type</code></em> :</span></p></td>
+<td>the name of the backend to check</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>
+<code class="literal">TRUE</code> if the current Clutter windowing system backend is
+the one checked, and <code class="literal">FALSE</code> otherwise</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 1.10</p>
 </div>
 </div>
 <div class="refsect1">

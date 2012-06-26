@@ -52,6 +52,9 @@ enum                <a class="link" href="ClutterScript.html#ClutterScriptError"
 <span class="returnvalue">guint</span>               <a class="link" href="ClutterScript.html#clutter-script-load-from-file" title="clutter_script_load_from_file ()">clutter_script_load_from_file</a>       (<em class="parameter"><code><a class="link" href="ClutterScript.html" title="ClutterScript"><span class="type">ClutterScript</span></a> *script</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *filename</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **error</code></em>);
+<span class="returnvalue">guint</span>               <a class="link" href="ClutterScript.html#clutter-script-load-from-resource" title="clutter_script_load_from_resource ()">clutter_script_load_from_resource</a>   (<em class="parameter"><code><a class="link" href="ClutterScript.html" title="ClutterScript"><span class="type">ClutterScript</span></a> *script</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *resource_path</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **error</code></em>);
 <span class="returnvalue">void</span>                <a class="link" href="ClutterScript.html#clutter-script-add-search-paths" title="clutter_script_add_search_paths ()">clutter_script_add_search_paths</a>     (<em class="parameter"><code><a class="link" href="ClutterScript.html" title="ClutterScript"><span class="type">ClutterScript</span></a> *script</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> * const paths[]</code></em>,
                                                          <em class="parameter"><code><span class="type">gsize</span> n_paths</code></em>);
@@ -89,6 +92,11 @@ enum                <a class="link" href="ClutterScript.html#ClutterScriptError"
 <span class="returnvalue">GType</span>               <a class="link" href="ClutterScript.html#clutter-script-get-type-from-name" title="clutter_script_get_type_from_name ()">clutter_script_get_type_from_name</a>   (<em class="parameter"><code><a class="link" href="ClutterScript.html" title="ClutterScript"><span class="type">ClutterScript</span></a> *script</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *type_name</code></em>);
 const <span class="returnvalue">gchar</span> *       <a class="link" href="ClutterScript.html#clutter-get-script-id" title="clutter_get_script_id ()">clutter_get_script_id</a>               (<em class="parameter"><code><span class="type">GObject</span> *gobject</code></em>);
+const <span class="returnvalue">gchar</span> *       <a class="link" href="ClutterScript.html#clutter-script-get-translation-domain" title="clutter_script_get_translation_domain ()">clutter_script_get_translation_domain</a>
+                                                        (<em class="parameter"><code><a class="link" href="ClutterScript.html" title="ClutterScript"><span class="type">ClutterScript</span></a> *script</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="ClutterScript.html#clutter-script-set-translation-domain" title="clutter_script_set_translation_domain ()">clutter_script_set_translation_domain</a>
+                                                        (<em class="parameter"><code><a class="link" href="ClutterScript.html" title="ClutterScript"><span class="type">ClutterScript</span></a> *script</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *domain</code></em>);
 </pre>
 </div>
 <div class="refsect1">
@@ -103,6 +111,7 @@ const <span class="returnvalue">gchar</span> *       <a class="link" href="Clutt
 <pre class="synopsis">
   "<a class="link" href="ClutterScript.html#ClutterScript--filename" title='The "filename" property'>filename</a>"                 <span class="type">gchar</span>*                : Read
   "<a class="link" href="ClutterScript.html#ClutterScript--filename-set" title='The "filename-set" property'>filename-set</a>"             <span class="type">gboolean</span>              : Read
+  "<a class="link" href="ClutterScript.html#ClutterScript--translation-domain" title='The "translation-domain" property'>translation-domain</a>"       <span class="type">gchar</span>*                : Read / Write
 </pre>
 </div>
 <div class="refsect1">
@@ -644,6 +653,43 @@ returned. You can use the merge id with <a class="link" href="ClutterScript.html
 </div>
 <hr>
 <div class="refsect2">
+<a name="clutter-script-load-from-resource"></a><h3>clutter_script_load_from_resource ()</h3>
+<pre class="programlisting"><span class="returnvalue">guint</span>               clutter_script_load_from_resource   (<em class="parameter"><code><a class="link" href="ClutterScript.html" title="ClutterScript"><span class="type">ClutterScript</span></a> *script</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *resource_path</code></em>,
+                                                         <em class="parameter"><code><span class="type">GError</span> **error</code></em>);</pre>
+<p>
+Loads the definitions from a resource file into <em class="parameter"><code>script</code></em> and merges with
+the currently loaded ones, if any.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>script</code></em> :</span></p></td>
+<td>a <a class="link" href="ClutterScript.html" title="ClutterScript"><span class="type">ClutterScript</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>resource_path</code></em> :</span></p></td>
+<td>the resource path of the file to parse</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>error</code></em> :</span></p></td>
+<td>return location for a <span class="type">GError</span>, or <a href="/home/ebassi/gnome3/install/share/gtk-doc/html/liboil/liboil-liboiljunk.html#NULL--CAPS"><code class="literal">NULL</code></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>on error, zero is returned and <em class="parameter"><code>error</code></em> is set
+accordingly. On success, the merge id for the UI definitions is
+returned. You can use the merge id with <a class="link" href="ClutterScript.html#clutter-script-unmerge-objects" title="clutter_script_unmerge_objects ()"><code class="function">clutter_script_unmerge_objects()</code></a>.</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 1.10</p>
+</div>
+<hr>
+<div class="refsect2">
 <a name="clutter-script-add-search-paths"></a><h3>clutter_script_add_search_paths ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                clutter_script_add_search_paths     (<em class="parameter"><code><a class="link" href="ClutterScript.html" title="ClutterScript"><span class="type">ClutterScript</span></a> *script</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> * const paths[]</code></em>,
@@ -998,7 +1044,8 @@ Applications should use <a class="link" href="ClutterScript.html#clutter-script-
 </tr>
 <tr>
 <td><p><span class="term"><em class="parameter"><code>func</code></em> :</span></p></td>
-<td>signal connection function</td>
+<td>signal connection function. <span class="annotation">[<acronym title="The callback is valid only during the call to the method."><span class="acronym">scope call</span></acronym>]</span>
+</td>
 </tr>
 <tr>
 <td><p><span class="term"><em class="parameter"><code>user_data</code></em> :</span></p></td>
@@ -1142,6 +1189,59 @@ should never be modified or freed.</td>
 </table></div>
 <p class="since">Since 0.6</p>
 </div>
+<hr>
+<div class="refsect2">
+<a name="clutter-script-get-translation-domain"></a><h3>clutter_script_get_translation_domain ()</h3>
+<pre class="programlisting">const <span class="returnvalue">gchar</span> *       clutter_script_get_translation_domain
+                                                        (<em class="parameter"><code><a class="link" href="ClutterScript.html" title="ClutterScript"><span class="type">ClutterScript</span></a> *script</code></em>);</pre>
+<p>
+Retrieves the translation domain set using
+<a class="link" href="ClutterScript.html#clutter-script-set-translation-domain" title="clutter_script_set_translation_domain ()"><code class="function">clutter_script_set_translation_domain()</code></a>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>script</code></em> :</span></p></td>
+<td>a <a class="link" href="ClutterScript.html" title="ClutterScript"><span class="type">ClutterScript</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the translation domain, if any is set,
+or <a href="/home/ebassi/gnome3/install/share/gtk-doc/html/liboil/liboil-liboiljunk.html#NULL--CAPS"><code class="literal">NULL</code></a>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 1.10</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="clutter-script-set-translation-domain"></a><h3>clutter_script_set_translation_domain ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                clutter_script_set_translation_domain
+                                                        (<em class="parameter"><code><a class="link" href="ClutterScript.html" title="ClutterScript"><span class="type">ClutterScript</span></a> *script</code></em>,
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *domain</code></em>);</pre>
+<p>
+Sets the translation domain for <em class="parameter"><code>script</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>script</code></em> :</span></p></td>
+<td>a <a class="link" href="ClutterScript.html" title="ClutterScript"><span class="type">ClutterScript</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>domain</code></em> :</span></p></td>
+<td>the translation domain, or <a href="/home/ebassi/gnome3/install/share/gtk-doc/html/liboil/liboil-liboiljunk.html#NULL--CAPS"><code class="literal">NULL</code></a>. <span class="annotation">[<acronym title="NULL is ok, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 1.10</p>
+</div>
 </div>
 <div class="refsect1">
 <a name="ClutterScript.property-details"></a><h2>Property Details</h2>
@@ -1166,6 +1266,21 @@ file name is stored inside the <a class="link" href="ClutterScript.html#ClutterS
 </p>
 <p>Default value: FALSE</p>
 <p class="since">Since 0.6</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ClutterScript--translation-domain"></a><h3>The <code class="literal">"translation-domain"</code> property</h3>
+<pre class="programlisting">  "translation-domain"       <span class="type">gchar</span>*                : Read / Write</pre>
+<p>
+The translation domain, used to localize strings marked as translatable
+inside a UI definition.
+</p>
+<p>
+If <a class="link" href="ClutterScript.html#ClutterScript--translation-domain" title='The "translation-domain" property'><span class="type">"translation-domain"</span></a> is set to <a href="/home/ebassi/gnome3/install/share/gtk-doc/html/liboil/liboil-liboiljunk.html#NULL--CAPS"><code class="literal">NULL</code></a>, <a class="link" href="ClutterScript.html" title="ClutterScript"><span class="type">ClutterScript</span></a>
+will use <code class="function">gettext()</code>, otherwise <code class="function">g_dgettext()</code> will be used.
+</p>
+<p>Default value: NULL</p>
+<p class="since">Since 1.10</p>
 </div>
 </div>
 </div>

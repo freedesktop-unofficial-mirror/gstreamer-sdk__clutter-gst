@@ -104,6 +104,12 @@ enum                <a class="link" href="clutter-General.html#ClutterTextDirect
 <span class="returnvalue">guint</span>               <a class="link" href="clutter-General.html#clutter-threads-add-repaint-func" title="clutter_threads_add_repaint_func ()">clutter_threads_add_repaint_func</a>    (<em class="parameter"><code><span class="type">GSourceFunc</span> func</code></em>,
                                                          <em class="parameter"><code><span class="type">gpointer</span> data</code></em>,
                                                          <em class="parameter"><code><span class="type">GDestroyNotify</span> notify</code></em>);
+enum                <a class="link" href="clutter-General.html#ClutterRepaintFlags" title="enum ClutterRepaintFlags">ClutterRepaintFlags</a>;
+<span class="returnvalue">guint</span>               <a class="link" href="clutter-General.html#clutter-threads-add-repaint-func-full" title="clutter_threads_add_repaint_func_full ()">clutter_threads_add_repaint_func_full</a>
+                                                        (<em class="parameter"><code><a class="link" href="clutter-General.html#ClutterRepaintFlags" title="enum ClutterRepaintFlags"><span class="type">ClutterRepaintFlags</span></a> flags</code></em>,
+                                                         <em class="parameter"><code><span class="type">GSourceFunc</span> func</code></em>,
+                                                         <em class="parameter"><code><span class="type">gpointer</span> data</code></em>,
+                                                         <em class="parameter"><code><span class="type">GDestroyNotify</span> notify</code></em>);
 <span class="returnvalue">void</span>                <a class="link" href="clutter-General.html#clutter-threads-remove-repaint-func" title="clutter_threads_remove_repaint_func ()">clutter_threads_remove_repaint_func</a> (<em class="parameter"><code><span class="type">guint</span> handle_id</code></em>);
 
 <a class="link" href="ClutterActor.html" title="ClutterActor"><span class="returnvalue">ClutterActor</span></a> *      <a class="link" href="clutter-General.html#clutter-get-keyboard-grab" title="clutter_get_keyboard_grab ()">clutter_get_keyboard_grab</a>           (<em class="parameter"><code><span class="type">void</span></code></em>);
@@ -132,9 +138,9 @@ functions for mainloops, events and threads
 <p>Clutter is <span class="emphasis"><em>thread-aware</em></span>: all operations
   performed by Clutter are assumed to be under the big Clutter lock,
   which is created when the threading is initialized through
-  <a class="link" href="clutter-General.html#clutter-threads-init" title="clutter_threads_init ()"><code class="function">clutter_threads_init()</code></a>.</p>
+  <a class="link" href="clutter-General.html#clutter-init" title="clutter_init ()"><code class="function">clutter_init()</code></a>.</p>
 <div class="example">
-<a name="example-Thread-Init"></a><p class="title"><b>Example 17. Thread Initialization</b></p>
+<a name="example-Thread-Init"></a><p class="title"><b>Example 15. Thread Initialization</b></p>
 <div class="example-contents">
 <p>The code below shows how to correctly initialize Clutter
     in a multi-threaded environment. These operations are mandatory for
@@ -143,12 +149,6 @@ functions for mainloops, events and threads
 int
 main (int argc, char *argv[])
 {
-  /* initialize GLib's threading support */
-  g_thread_init (NULL);
-
-  /* initialize Clutter's threading support */
-  clutter_threads_init ();
-
   /* initialize Clutter */
   clutter_init (&amp;argc, &amp;argv);
 
@@ -177,12 +177,29 @@ main (int argc, char *argv[])
   multi-threaded environment is to never access the API from a thread that
   did not call <a class="link" href="clutter-General.html#clutter-init" title="clutter_init ()"><code class="function">clutter_init()</code></a> and <a class="link" href="clutter-General.html#clutter-main" title="clutter_main ()"><code class="function">clutter_main()</code></a>.</p>
 <p>The common pattern for using threads with Clutter is to use worker
-  threads to perform blocking operations and then install idle or timeour
+  threads to perform blocking operations and then install idle or timeout
   sources with the result when the thread finished.</p>
 <p>Clutter provides thread-aware variants of <code class="function">g_idle_add()</code> and
   <code class="function">g_timeout_add()</code> that acquire the Clutter lock before invoking the provided
   callback: <a class="link" href="clutter-General.html#clutter-threads-add-idle" title="clutter_threads_add_idle ()"><code class="function">clutter_threads_add_idle()</code></a> and
   <a class="link" href="clutter-General.html#clutter-threads-add-timeout" title="clutter_threads_add_timeout ()"><code class="function">clutter_threads_add_timeout()</code></a>.</p>
+<p>The example below shows how to use a worker thread to perform a
+  blocking operation, and perform UI updates using the main loop.</p>
+<div class="example">
+<a name="worker-thread-example"></a><p class="title"><b>Example 16. A worker thread example</b></p>
+<div class="example-contents">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="normal">FIXME</span><span class="symbol">:</span><span class="normal"> MISSING XINCLUDE CONTENT</span></pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+</div>
+<br class="example-break">
 </div>
 <p>
 </p>
@@ -272,6 +289,12 @@ yourself, you can use <a class="link" href="clutter-General.html#clutter-init-wi
 pointer.</div>
 <p>
 </p>
+<p>
+If this function fails, and returns an error code, any subsequent
+Clutter API will have undefined behaviour - including segmentation
+faults and assertion failures. Make sure to handle the returned
+<a class="link" href="clutter-General.html#ClutterInitError" title="enum ClutterInitError"><span class="type">ClutterInitError</span></a> enumeration value.
+</p>
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
 <tbody>
@@ -310,6 +333,11 @@ output. Note that your program will be terminated after writing
 out the help output. Also note that, in case of error, the
 error message will be placed inside <em class="parameter"><code>error</code></em> instead of being
 printed on the display.
+</p>
+<p>
+Just like <a class="link" href="clutter-General.html#clutter-init" title="clutter_init ()"><code class="function">clutter_init()</code></a>, if this function returns an error code then
+any subsequent call to any other Clutter API will result in undefined
+behaviour - including segmentation faults.
 </p>
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
@@ -490,14 +518,18 @@ Retrieves the depth of the Clutter mainloop.
 <div class="refsect2">
 <a name="clutter-get-debug-enabled"></a><h3>clutter_get_debug_enabled ()</h3>
 <pre class="programlisting"><span class="returnvalue">gboolean</span>            clutter_get_debug_enabled           (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">clutter_get_debug_enabled</code> has been deprecated since version 1.10 and should not be used in newly-written code. This function does not do anything.</p>
+</div>
 <p>
-Check if clutter has debugging turned on.
+Check if Clutter has debugging enabled.
 </p>
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
 <tbody><tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
-<td>TRUE if debugging is turned on, FALSE otherwise.</td>
+<td><code class="literal">FALSE</code></td>
 </tr></tbody>
 </table></div>
 </div>
@@ -505,6 +537,12 @@ Check if clutter has debugging turned on.
 <div class="refsect2">
 <a name="clutter-get-show-fps"></a><h3>clutter_get_show_fps ()</h3>
 <pre class="programlisting"><span class="returnvalue">gboolean</span>            clutter_get_show_fps                (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">clutter_get_show_fps</code> has been deprecated since version 1.10 and should not be used in newly-written code. This function does not do anything. Use the environment
+  variable or the configuration file to determine whether Clutter should
+  print out the FPS counter on the console.</p>
+</div>
 <p>
 Returns whether Clutter should print out the frames per second on the
 console. You can enable this setting either using the
@@ -525,15 +563,32 @@ the <code class="literal">--clutter-show-fps</code> command line argument. *
 <div class="refsect2">
 <a name="clutter-get-timestamp"></a><h3>clutter_get_timestamp ()</h3>
 <pre class="programlisting"><span class="returnvalue">gulong</span>              clutter_get_timestamp               (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">clutter_get_timestamp</code> has been deprecated since version 1.10 and should not be used in newly-written code. Use <span class="type">GTimer</span> or <code class="function">g_get_monotonic_time()</code> for a proper
+  timing source</p>
+</div>
 <p>
-Returns the approximate number of microseconds passed since clutter was
+Returns the approximate number of microseconds passed since Clutter was
 intialised.
+</p>
+<p>
+This function shdould not be used by application code.
+</p>
+<p>
+The output of this function depends on whether Clutter was configured to
+enable its debugging code paths, so it's less useful than intended.
+</p>
+<p>
+Since Clutter 1.10, this function is an alias to <code class="function">g_get_monotonic_time()</code>
+if Clutter was configured to enable the debugging code paths.
 </p>
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
 <tbody><tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
-<td>Number of microseconds since <a class="link" href="clutter-General.html#clutter-init" title="clutter_init ()"><code class="function">clutter_init()</code></a> was called.</td>
+<td>Number of microseconds since <a class="link" href="clutter-General.html#clutter-init" title="clutter_init ()"><code class="function">clutter_init()</code></a> was called, or
+zero if Clutter was not configured with debugging code paths.</td>
 </tr></tbody>
 </table></div>
 </div>
@@ -569,6 +624,10 @@ The returned actor does not have its reference count increased. <span class="ann
 <div class="refsect2">
 <a name="clutter-set-default-frame-rate"></a><h3>clutter_set_default_frame_rate ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                clutter_set_default_frame_rate      (<em class="parameter"><code><span class="type">guint</span> frames_per_sec</code></em>);</pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">clutter_set_default_frame_rate</code> has been deprecated since version 1.10 and should not be used in newly-written code. This function does not do anything any more.</p>
+</div>
 <p>
 Sets the default frame rate. This frame rate will be used to limit
 the number of frames drawn if Clutter is not able to synchronize
@@ -658,6 +717,11 @@ Gets whether the per-actor motion events are enabled.
 <div class="refsect2">
 <a name="clutter-clear-glyph-cache"></a><h3>clutter_clear_glyph_cache ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                clutter_clear_glyph_cache           (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">clutter_clear_glyph_cache</code> has been deprecated since version 1.10 and should not be used in newly-written code. Use <a class="link" href="clutter-General.html#clutter-get-font-map" title="clutter_get_font_map ()"><code class="function">clutter_get_font_map()</code></a> and
+  <code class="function">cogl_pango_font_map_clear_glyph_cache()</code> instead.</p>
+</div>
 <p>
 Clears the internal cache of glyphs used by the Pango
 renderer. This will free up some memory and GL texture
@@ -670,6 +734,7 @@ drawn.
 <div class="refsect2">
 <a name="ClutterFontFlags"></a><h3>enum ClutterFontFlags</h3>
 <pre class="programlisting">typedef enum {
+ /*&lt; prefix=CLUTTER_FONT &gt;*/
   CLUTTER_FONT_MIPMAPPING = (1 &lt;&lt; 0),
   CLUTTER_FONT_HINTING    = (1 &lt;&lt; 1)
 } ClutterFontFlags;
@@ -699,6 +764,11 @@ Runtime flags to change the font quality. To be used with
 <div class="refsect2">
 <a name="clutter-set-font-flags"></a><h3>clutter_set_font_flags ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                clutter_set_font_flags              (<em class="parameter"><code><a class="link" href="clutter-General.html#ClutterFontFlags" title="enum ClutterFontFlags"><span class="type">ClutterFontFlags</span></a> flags</code></em>);</pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">clutter_set_font_flags</code> has been deprecated since version 1.10 and should not be used in newly-written code. Use <a class="link" href="ClutterBackend.html#clutter-backend-set-font-options" title="clutter_backend_set_font_options ()"><code class="function">clutter_backend_set_font_options()</code></a> and the
+  <span class="type">cairo_font_option_t</span> API.</p>
+</div>
 <p>
 Sets the font quality options for subsequent text rendering
 operations.
@@ -724,6 +794,11 @@ introduce some artifacts if the text is animated.
 <div class="refsect2">
 <a name="clutter-get-font-flags"></a><h3>clutter_get_font_flags ()</h3>
 <pre class="programlisting"><a class="link" href="clutter-General.html#ClutterFontFlags" title="enum ClutterFontFlags"><span class="returnvalue">ClutterFontFlags</span></a>    clutter_get_font_flags              (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">clutter_get_font_flags</code> has been deprecated since version 1.10 and should not be used in newly-written code. Use <a class="link" href="ClutterBackend.html#clutter-backend-get-font-options" title="clutter_backend_get_font_options ()"><code class="function">clutter_backend_get_font_options()</code></a> and the
+  <a href="/home/ebassi/gnome3/install/share/gtk-doc/html/cairo/cairo-cairo-font-options-t.html#cairo-font-options-t"><span class="type">cairo_font_options_t</span></a> API.</p>
+</div>
 <p>
 Gets the current font flags for rendering text. See
 <a class="link" href="clutter-General.html#clutter-set-font-flags" title="clutter_set_font_flags ()"><code class="function">clutter_set_font_flags()</code></a>.
@@ -862,7 +937,7 @@ application must temporarily release its lock as well.
 Most threaded Clutter apps won't need to use this method.
 </p>
 <p>
-This method must be called before <a class="link" href="clutter-General.html#clutter-threads-init" title="clutter_threads_init ()"><code class="function">clutter_threads_init()</code></a>, and cannot
+This method must be called before <a class="link" href="clutter-General.html#clutter-init" title="clutter_init ()"><code class="function">clutter_init()</code></a>, and cannot
 be called multiple times.
 </p>
 <div class="variablelist"><table border="0">
@@ -884,6 +959,11 @@ be called multiple times.
 <div class="refsect2">
 <a name="clutter-threads-init"></a><h3>clutter_threads_init ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                clutter_threads_init                (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">clutter_threads_init</code> has been deprecated since version 1.10 and should not be used in newly-written code. This function does not do anything. Threading support
+  is initialized when Clutter is initialized.</p>
+</div>
 <p>
 Initialises the Clutter threading mechanism, so that Clutter API can be
 called by multiple threads, using <a class="link" href="clutter-General.html#clutter-threads-enter" title="clutter_threads_enter ()"><code class="function">clutter_threads_enter()</code></a> and
@@ -1030,7 +1110,7 @@ equivalent to the following implementation:
 <span class="normal">  closure</span><span class="symbol">-&gt;</span><span class="normal">callback </span><span class="symbol">=</span><span class="normal"> callback</span><span class="symbol">;</span>
 <span class="normal">  closure</span><span class="symbol">-&gt;</span><span class="normal">data </span><span class="symbol">=</span><span class="normal"> data</span><span class="symbol">;</span>
 
-<span class="normal">  </span><span class="keyword">return</span><span class="normal"> </span><span class="function">g_add_idle_full</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">G_PRIORITY_DEFAULT_IDLE</span><span class="symbol">,</span>
+<span class="normal">  </span><span class="keyword">return</span><span class="normal"> </span><span class="function">g_idle_add_full</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">G_PRIORITY_DEFAULT_IDLE</span><span class="symbol">,</span>
 <span class="normal">                          idle_safe_callback</span><span class="symbol">,</span>
 <span class="normal">                          closure</span><span class="symbol">,</span>
 <span class="normal">                          g_free</span><span class="symbol">)</span>
@@ -1203,9 +1283,7 @@ The first call to the function will be at the end of the first <em class="parame
 <p>
 It is important to note that, due to how the Clutter main loop is
 implemented, the timing will not be accurate and it will not try to
-"keep up" with the interval. A more reliable source is available
-using <a class="link" href="clutter-General.html#clutter-threads-add-frame-source-full" title="clutter_threads_add_frame_source_full ()"><code class="function">clutter_threads_add_frame_source_full()</code></a>, which is also internally
-used by <a class="link" href="ClutterTimeline.html" title="ClutterTimeline"><span class="type">ClutterTimeline</span></a>.
+"keep up" with the interval.
 </p>
 <p>
 See also <a class="link" href="clutter-General.html#clutter-threads-add-idle-full" title="clutter_threads_add_idle_full ()"><code class="function">clutter_threads_add_idle_full()</code></a>.
@@ -1357,23 +1435,37 @@ range between <code class="literal">G_PRIORITY_DEFAULT</code> and <code class="l
                                                          <em class="parameter"><code><span class="type">gpointer</span> data</code></em>,
                                                          <em class="parameter"><code><span class="type">GDestroyNotify</span> notify</code></em>);</pre>
 <p>
-Adds a function to be called whenever Clutter is repainting a Stage.
+Adds a function to be called whenever Clutter is processing a new
+frame.
+</p>
+<p>
 If the function returns <code class="literal">FALSE</code> it is automatically removed from the
 list of repaint functions and will not be called again.
 </p>
 <p>
 This function is guaranteed to be called from within the same thread
-that called <a class="link" href="clutter-General.html#clutter-main" title="clutter_main ()"><code class="function">clutter_main()</code></a>, and while the Clutter lock is being held.
+that called <a class="link" href="clutter-General.html#clutter-main" title="clutter_main ()"><code class="function">clutter_main()</code></a>, and while the Clutter lock is being held;
+the function will be called within the main loop, so it is imperative
+that it does not block, otherwise the frame time budget may be lost.
 </p>
 <p>
 A repaint function is useful to ensure that an update of the scenegraph
 is performed before the scenegraph is repainted; for instance, uploading
-a frame from a video into a <a class="link" href="ClutterTexture.html" title="ClutterTexture"><span class="type">ClutterTexture</span></a>.
+a frame from a video into a <a class="link" href="ClutterTexture.html" title="ClutterTexture"><span class="type">ClutterTexture</span></a>. By default, a repaint
+function added using this function will be invoked prior to the frame
+being processed.
+</p>
+<p>
+Adding a repaint function does not automatically ensure that a new
+frame will be queued.
 </p>
 <p>
 When the repaint function is removed (either because it returned <code class="literal">FALSE</code>
 or because <a class="link" href="clutter-General.html#clutter-threads-remove-repaint-func" title="clutter_threads_remove_repaint_func ()"><code class="function">clutter_threads_remove_repaint_func()</code></a> has been called) the
 <em class="parameter"><code>notify</code></em> function will be called, if any is set.
+</p>
+<p>
+See also: <a class="link" href="clutter-General.html#clutter-threads-add-repaint-func-full" title="clutter_threads_add_repaint_func_full ()"><code class="function">clutter_threads_add_repaint_func_full()</code></a>
 </p>
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
@@ -1402,6 +1494,113 @@ calling <a class="link" href="clutter-General.html#clutter-threads-remove-repain
 </tbody>
 </table></div>
 <p class="since">Since 1.0</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ClutterRepaintFlags"></a><h3>enum ClutterRepaintFlags</h3>
+<pre class="programlisting">typedef enum {
+  CLUTTER_REPAINT_FLAGS_PRE_PAINT = 1 &lt;&lt; 0,
+  CLUTTER_REPAINT_FLAGS_POST_PAINT = 1 &lt;&lt; 1,
+  CLUTTER_REPAINT_FLAGS_QUEUE_REDRAW_ON_ADD = 1 &lt;&lt; 2
+} ClutterRepaintFlags;
+</pre>
+<p>
+Flags to pass to <a class="link" href="clutter-General.html#clutter-threads-add-repaint-func-full" title="clutter_threads_add_repaint_func_full ()"><code class="function">clutter_threads_add_repaint_func_full()</code></a>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><a name="CLUTTER-REPAINT-FLAGS-PRE-PAINT:CAPS"></a><span class="term"><code class="literal">CLUTTER_REPAINT_FLAGS_PRE_PAINT</code></span></p></td>
+<td>Run the repaint function prior to
+  painting the stages
+</td>
+</tr>
+<tr>
+<td><p><a name="CLUTTER-REPAINT-FLAGS-POST-PAINT:CAPS"></a><span class="term"><code class="literal">CLUTTER_REPAINT_FLAGS_POST_PAINT</code></span></p></td>
+<td>Run the repaint function after
+  painting the stages
+</td>
+</tr>
+<tr>
+<td><p><a name="CLUTTER-REPAINT-FLAGS-QUEUE-REDRAW-ON-ADD:CAPS"></a><span class="term"><code class="literal">CLUTTER_REPAINT_FLAGS_QUEUE_REDRAW_ON_ADD</code></span></p></td>
+<td>Ensure that a new frame
+  is queued after adding the repaint function
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 1.10</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="clutter-threads-add-repaint-func-full"></a><h3>clutter_threads_add_repaint_func_full ()</h3>
+<pre class="programlisting"><span class="returnvalue">guint</span>               clutter_threads_add_repaint_func_full
+                                                        (<em class="parameter"><code><a class="link" href="clutter-General.html#ClutterRepaintFlags" title="enum ClutterRepaintFlags"><span class="type">ClutterRepaintFlags</span></a> flags</code></em>,
+                                                         <em class="parameter"><code><span class="type">GSourceFunc</span> func</code></em>,
+                                                         <em class="parameter"><code><span class="type">gpointer</span> data</code></em>,
+                                                         <em class="parameter"><code><span class="type">GDestroyNotify</span> notify</code></em>);</pre>
+<p>
+Adds a function to be called whenever Clutter is processing a new
+frame.
+</p>
+<p>
+If the function returns <code class="literal">FALSE</code> it is automatically removed from the
+list of repaint functions and will not be called again.
+</p>
+<p>
+This function is guaranteed to be called from within the same thread
+that called <a class="link" href="clutter-General.html#clutter-main" title="clutter_main ()"><code class="function">clutter_main()</code></a>, and while the Clutter lock is being held;
+the function will be called within the main loop, so it is imperative
+that it does not block, otherwise the frame time budget may be lost.
+</p>
+<p>
+A repaint function is useful to ensure that an update of the scenegraph
+is performed before the scenegraph is repainted; for instance, uploading
+a frame from a video into a <a class="link" href="ClutterTexture.html" title="ClutterTexture"><span class="type">ClutterTexture</span></a>. The <em class="parameter"><code>flags</code></em> passed to this
+function will determine the section of the frame processing that will
+result in <em class="parameter"><code>func</code></em> being called.
+</p>
+<p>
+Adding a repaint function does not automatically ensure that a new
+frame will be queued.
+</p>
+<p>
+When the repaint function is removed (either because it returned <code class="literal">FALSE</code>
+or because <a class="link" href="clutter-General.html#clutter-threads-remove-repaint-func" title="clutter_threads_remove_repaint_func ()"><code class="function">clutter_threads_remove_repaint_func()</code></a> has been called) the
+<em class="parameter"><code>notify</code></em> function will be called, if any is set.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>flags</code></em> :</span></p></td>
+<td>flags for the repaint function</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>func</code></em> :</span></p></td>
+<td>the function to be called within the paint cycle</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>data</code></em> :</span></p></td>
+<td>data to be passed to the function, or <a href="/home/ebassi/gnome3/install/share/gtk-doc/html/liboil/liboil-liboiljunk.html#NULL--CAPS"><code class="literal">NULL</code></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>notify</code></em> :</span></p></td>
+<td>function to be called when removing the repaint
+function, or <a href="/home/ebassi/gnome3/install/share/gtk-doc/html/liboil/liboil-liboiljunk.html#NULL--CAPS"><code class="literal">NULL</code></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the ID (greater than 0) of the repaint function. You
+can use the returned integer to remove the repaint function by
+calling <a class="link" href="clutter-General.html#clutter-threads-remove-repaint-func" title="clutter_threads_remove_repaint_func ()"><code class="function">clutter_threads_remove_repaint_func()</code></a>.</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 1.10</p>
 </div>
 <hr>
 <div class="refsect2">
@@ -1505,8 +1704,11 @@ preferred way to intercept event delivery to reactive actors.</p>
 <p>
 </p>
 <p>
-If you wish to grab all the pointer events for a specific input device,
-you should use <a class="link" href="clutter-General.html#clutter-grab-pointer-for-device" title="clutter_grab_pointer_for_device ()"><code class="function">clutter_grab_pointer_for_device()</code></a>.
+This function should rarely be used.
+</p>
+<p>
+If a grab is required, you are strongly encouraged to use a specific
+input device by calling <a class="link" href="ClutterInputDevice.html#clutter-input-device-grab" title="clutter_input_device_grab ()"><code class="function">clutter_input_device_grab()</code></a>.
 </p>
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
@@ -1541,6 +1743,10 @@ Removes an existing grab of the pointer.
 <a name="clutter-grab-pointer-for-device"></a><h3>clutter_grab_pointer_for_device ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                clutter_grab_pointer_for_device     (<em class="parameter"><code><a class="link" href="ClutterActor.html" title="ClutterActor"><span class="type">ClutterActor</span></a> *actor</code></em>,
                                                          <em class="parameter"><code><span class="type">gint</span> id_</code></em>);</pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">clutter_grab_pointer_for_device</code> has been deprecated since version 1.10 and should not be used in newly-written code. Use <a class="link" href="ClutterInputDevice.html#clutter-input-device-grab" title="clutter_input_device_grab ()"><code class="function">clutter_input_device_grab()</code></a> instead.</p>
+</div>
 <p>
 Grabs all the pointer events coming from the device <em class="parameter"><code>id</code></em> for <em class="parameter"><code>actor</code></em>.
 </p>
@@ -1567,6 +1773,10 @@ If <em class="parameter"><code>id</code></em> is -1 then this function is equiva
 <div class="refsect2">
 <a name="clutter-ungrab-pointer-for-device"></a><h3>clutter_ungrab_pointer_for_device ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                clutter_ungrab_pointer_for_device   (<em class="parameter"><code><span class="type">gint</span> id_</code></em>);</pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">clutter_ungrab_pointer_for_device</code> has been deprecated since version 1.10 and should not be used in newly-written code. Use <a class="link" href="ClutterInputDevice.html#clutter-input-device-ungrab" title="clutter_input_device_ungrab ()"><code class="function">clutter_input_device_ungrab()</code></a> instead.</p>
+</div>
 <p>
 Removes an existing grab of the pointer events for device <em class="parameter"><code>id_</code></em>.
 </p>

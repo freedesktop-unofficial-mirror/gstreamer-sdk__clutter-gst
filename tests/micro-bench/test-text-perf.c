@@ -40,7 +40,7 @@ queue_redraw (gpointer stage)
 {
   clutter_actor_queue_redraw (CLUTTER_ACTOR (stage));
 
-  return TRUE;
+  return G_SOURCE_CONTINUE;
 }
 
 static gunichar
@@ -105,7 +105,6 @@ int
 main (int argc, char *argv[])
 {
   ClutterActor    *stage;
-  ClutterColor     stage_color = { 0x00, 0x00, 0x00, 0xff };
   ClutterActor    *label;
   int              w, h;
   int              row, col;
@@ -128,9 +127,10 @@ main (int argc, char *argv[])
 
   g_print ("Monospace %dpx, string length = %d\n", font_size, n_chars);
 
-  stage = clutter_stage_get_default ();
+  stage = clutter_stage_new ();
   clutter_actor_set_size (stage, STAGE_WIDTH, STAGE_HEIGHT);
-  clutter_stage_set_color (CLUTTER_STAGE (stage), &stage_color);
+  clutter_stage_set_color (CLUTTER_STAGE (stage), CLUTTER_COLOR_Black);
+  clutter_stage_set_title (CLUTTER_STAGE (stage), "Text Performance");
 
   g_signal_connect (stage, "paint", G_CALLBACK (on_paint), NULL);
 
@@ -179,7 +179,7 @@ main (int argc, char *argv[])
 
   clutter_actor_show_all (stage);
 
-  g_idle_add (queue_redraw, stage);
+  clutter_threads_add_idle (queue_redraw, stage);
 
   clutter_main ();
 

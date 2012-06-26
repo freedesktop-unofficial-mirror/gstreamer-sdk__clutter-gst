@@ -5,20 +5,20 @@
 <title>ClutterBehaviour</title>
 <meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
 <link rel="home" href="index.html" title="Clutter Reference Manual">
-<link rel="up" href="ch08.html" title="Base classes">
-<link rel="prev" href="ClutterAlpha.html" title="ClutterAlpha">
-<link rel="next" href="ch09.html" title="Behaviours">
+<link rel="up" href="deprecated.html" title="Part X. Deprecated Classes">
+<link rel="prev" href="clutter-Shaders.html" title="Shaders">
+<link rel="next" href="ClutterBehaviourDepth.html" title="ClutterBehaviourDepth">
 <meta name="generator" content="GTK-Doc V1.18.1 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
 <tr valign="middle">
-<td><a accesskey="p" href="ClutterAlpha.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
-<td><a accesskey="u" href="ch08.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="clutter-Shaders.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="deprecated.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
 <td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
 <th width="100%" align="center">Clutter Reference Manual</th>
-<td><a accesskey="n" href="ch09.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+<td><a accesskey="n" href="ClutterBehaviourDepth.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
 </tr>
 <tr><td colspan="5" class="shortcuts">
 <a href="#ClutterBehaviour.synopsis" class="shortcut">Top</a>
@@ -45,7 +45,7 @@
 </tr></table></div>
 <div class="refsynopsisdiv">
 <a name="ClutterBehaviour.synopsis"></a><h2>Synopsis</h2>
-<pre class="synopsis">struct              <a class="link" href="ClutterBehaviour.html#ClutterBehaviour-struct" title="struct ClutterBehaviour">ClutterBehaviour</a>;
+<pre class="synopsis">                    <a class="link" href="ClutterBehaviour.html#ClutterBehaviour-struct" title="ClutterBehaviour">ClutterBehaviour</a>;
 struct              <a class="link" href="ClutterBehaviour.html#ClutterBehaviourClass" title="struct ClutterBehaviourClass">ClutterBehaviourClass</a>;
 <span class="returnvalue">void</span>                <a class="link" href="ClutterBehaviour.html#clutter-behaviour-apply" title="clutter_behaviour_apply ()">clutter_behaviour_apply</a>             (<em class="parameter"><code><a class="link" href="ClutterBehaviour.html" title="ClutterBehaviour"><span class="type">ClutterBehaviour</span></a> *behave</code></em>,
                                                          <em class="parameter"><code><a class="link" href="ClutterActor.html" title="ClutterActor"><span class="type">ClutterActor</span></a> *actor</code></em>);
@@ -161,14 +161,14 @@ the <a class="link" href="ClutterBehaviour.html" title="ClutterBehaviour"><span 
 <div class="refsect1">
 <a name="ClutterBehaviour.details"></a><h2>Details</h2>
 <div class="refsect2">
-<a name="ClutterBehaviour-struct"></a><h3>struct ClutterBehaviour</h3>
-<pre class="programlisting">struct ClutterBehaviour;</pre>
+<a name="ClutterBehaviour-struct"></a><h3>ClutterBehaviour</h3>
+<pre class="programlisting">typedef struct _ClutterBehaviour ClutterBehaviour;</pre>
 <div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
 <h3 class="title">Warning</h3>
 <p><code class="literal">ClutterBehaviour</code> is deprecated and should not be used in newly-written code. 1.6</p>
 </div>
 <p>
-<a class="link" href="ClutterBehaviour.html#ClutterBehaviour-struct" title="struct ClutterBehaviour"><span class="type">ClutterBehaviour</span></a> contains only private data and should
+<a class="link" href="ClutterBehaviour.html#ClutterBehaviour-struct" title="ClutterBehaviour"><span class="type">ClutterBehaviour</span></a> contains only private data and should
 be accessed with the functions below.
 </p>
 <p class="since">Since 0.2</p>
@@ -224,7 +224,7 @@ must implement this virtual function</td>
                                                          <em class="parameter"><code><a class="link" href="ClutterActor.html" title="ClutterActor"><span class="type">ClutterActor</span></a> *actor</code></em>);</pre>
 <div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
 <h3 class="title">Warning</h3>
-<p><code class="literal">clutter_behaviour_apply</code> is deprecated and should not be used in newly-written code.</p>
+<p><code class="literal">clutter_behaviour_apply</code> is deprecated and should not be used in newly-written code. 1.6</p>
 </div>
 <p>
 Applies <em class="parameter"><code>behave</code></em> to <em class="parameter"><code>actor</code></em>.  This function adds a reference on
@@ -254,7 +254,7 @@ the actor.
                                                          <em class="parameter"><code><a class="link" href="ClutterActor.html" title="ClutterActor"><span class="type">ClutterActor</span></a> *actor</code></em>);</pre>
 <div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
 <h3 class="title">Warning</h3>
-<p><code class="literal">clutter_behaviour_remove</code> is deprecated and should not be used in newly-written code.</p>
+<p><code class="literal">clutter_behaviour_remove</code> is deprecated and should not be used in newly-written code. 1.6</p>
 </div>
 <p>
 Removes <em class="parameter"><code>actor</code></em> from the list of <a class="link" href="ClutterActor.html" title="ClutterActor"><span class="type">ClutterActor</span></a>s to which
@@ -283,7 +283,7 @@ Removes <em class="parameter"><code>actor</code></em> from the list of <a class=
 <pre class="programlisting"><span class="returnvalue">void</span>                clutter_behaviour_remove_all        (<em class="parameter"><code><a class="link" href="ClutterBehaviour.html" title="ClutterBehaviour"><span class="type">ClutterBehaviour</span></a> *behave</code></em>);</pre>
 <div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
 <h3 class="title">Warning</h3>
-<p><code class="literal">clutter_behaviour_remove_all</code> is deprecated and should not be used in newly-written code.</p>
+<p><code class="literal">clutter_behaviour_remove_all</code> is deprecated and should not be used in newly-written code. 1.6</p>
 </div>
 <p>
 Removes every actor from the list that <em class="parameter"><code>behave</code></em> holds.
@@ -305,7 +305,7 @@ Removes every actor from the list that <em class="parameter"><code>behave</code>
                                                          <em class="parameter"><code><a class="link" href="ClutterActor.html" title="ClutterActor"><span class="type">ClutterActor</span></a> *actor</code></em>);</pre>
 <div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
 <h3 class="title">Warning</h3>
-<p><code class="literal">clutter_behaviour_is_applied</code> is deprecated and should not be used in newly-written code.</p>
+<p><code class="literal">clutter_behaviour_is_applied</code> is deprecated and should not be used in newly-written code. 1.6</p>
 </div>
 <p>
 Check if <em class="parameter"><code>behave</code></em> applied to  <em class="parameter"><code>actor</code></em>.
@@ -375,7 +375,7 @@ will be called for each actor driven by <em class="parameter"><code>behaviour</c
                                                          <em class="parameter"><code><span class="type">gpointer</span> data</code></em>);</pre>
 <div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
 <h3 class="title">Warning</h3>
-<p><code class="literal">clutter_behaviour_actors_foreach</code> is deprecated and should not be used in newly-written code.</p>
+<p><code class="literal">clutter_behaviour_actors_foreach</code> is deprecated and should not be used in newly-written code. 1.6</p>
 </div>
 <p>
 Calls <em class="parameter"><code>func</code></em> for every actor driven by <em class="parameter"><code>behave</code></em>.
@@ -408,7 +408,7 @@ Calls <em class="parameter"><code>func</code></em> for every actor driven by <em
 <pre class="programlisting"><span class="returnvalue">GSList</span> *            clutter_behaviour_get_actors        (<em class="parameter"><code><a class="link" href="ClutterBehaviour.html" title="ClutterBehaviour"><span class="type">ClutterBehaviour</span></a> *behave</code></em>);</pre>
 <div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
 <h3 class="title">Warning</h3>
-<p><code class="literal">clutter_behaviour_get_actors</code> is deprecated and should not be used in newly-written code.</p>
+<p><code class="literal">clutter_behaviour_get_actors</code> is deprecated and should not be used in newly-written code. 1.6</p>
 </div>
 <p>
 Retrieves all the actors to which <em class="parameter"><code>behave</code></em> applies. It is not recommended
@@ -440,7 +440,7 @@ finished using it. <span class="annotation">[<acronym title="Free data container
 <pre class="programlisting"><span class="returnvalue">gint</span>                clutter_behaviour_get_n_actors      (<em class="parameter"><code><a class="link" href="ClutterBehaviour.html" title="ClutterBehaviour"><span class="type">ClutterBehaviour</span></a> *behave</code></em>);</pre>
 <div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
 <h3 class="title">Warning</h3>
-<p><code class="literal">clutter_behaviour_get_n_actors</code> is deprecated and should not be used in newly-written code.</p>
+<p><code class="literal">clutter_behaviour_get_n_actors</code> is deprecated and should not be used in newly-written code. 1.6</p>
 </div>
 <p>
 Gets the number of actors this behaviour is applied too.
@@ -468,7 +468,7 @@ Gets the number of actors this behaviour is applied too.
                                                          <em class="parameter"><code><span class="type">gint</span> index_</code></em>);</pre>
 <div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
 <h3 class="title">Warning</h3>
-<p><code class="literal">clutter_behaviour_get_nth_actor</code> is deprecated and should not be used in newly-written code.</p>
+<p><code class="literal">clutter_behaviour_get_nth_actor</code> is deprecated and should not be used in newly-written code. 1.6</p>
 </div>
 <p>
 Gets an actor the behaviour was applied to referenced by index num.
@@ -500,7 +500,7 @@ Gets an actor the behaviour was applied to referenced by index num.
 <pre class="programlisting"><a class="link" href="ClutterAlpha.html" title="ClutterAlpha"><span class="returnvalue">ClutterAlpha</span></a> *      clutter_behaviour_get_alpha         (<em class="parameter"><code><a class="link" href="ClutterBehaviour.html" title="ClutterBehaviour"><span class="type">ClutterBehaviour</span></a> *behave</code></em>);</pre>
 <div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
 <h3 class="title">Warning</h3>
-<p><code class="literal">clutter_behaviour_get_alpha</code> is deprecated and should not be used in newly-written code.</p>
+<p><code class="literal">clutter_behaviour_get_alpha</code> is deprecated and should not be used in newly-written code. 1.6</p>
 </div>
 <p>
 Retrieves the <a class="link" href="ClutterAlpha.html" title="ClutterAlpha"><span class="type">ClutterAlpha</span></a> object bound to <em class="parameter"><code>behave</code></em>.
@@ -530,7 +530,7 @@ object has been bound to this behaviour. <span class="annotation">[<acronym titl
                                                          <em class="parameter"><code><a class="link" href="ClutterAlpha.html" title="ClutterAlpha"><span class="type">ClutterAlpha</span></a> *alpha</code></em>);</pre>
 <div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
 <h3 class="title">Warning</h3>
-<p><code class="literal">clutter_behaviour_set_alpha</code> is deprecated and should not be used in newly-written code.</p>
+<p><code class="literal">clutter_behaviour_set_alpha</code> is deprecated and should not be used in newly-written code. 1.6</p>
 </div>
 <p>
 Binds <em class="parameter"><code>alpha</code></em> to a <a class="link" href="ClutterBehaviour.html" title="ClutterBehaviour"><span class="type">ClutterBehaviour</span></a>. The <a class="link" href="ClutterAlpha.html" title="ClutterAlpha"><span class="type">ClutterAlpha</span></a> object
@@ -566,6 +566,10 @@ of the <a class="link" href="ClutterAlpha.html" title="ClutterAlpha"><span class
 <div class="refsect2">
 <a name="ClutterBehaviour--alpha"></a><h3>The <code class="literal">"alpha"</code> property</h3>
 <pre class="programlisting">  "alpha"                    <a class="link" href="ClutterAlpha.html" title="ClutterAlpha"><span class="type">ClutterAlpha</span></a>*         : Read / Write</pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">ClutterBehaviour:alpha</code> is deprecated and should not be used in newly-written code. 1.6</p>
+</div>
 <p>
 The <a class="link" href="ClutterAlpha.html" title="ClutterAlpha"><span class="type">ClutterAlpha</span></a> object used to drive this behaviour. A <a class="link" href="ClutterAlpha.html" title="ClutterAlpha"><span class="type">ClutterAlpha</span></a>
 object binds a <a class="link" href="ClutterTimeline.html" title="ClutterTimeline"><span class="type">ClutterTimeline</span></a> and a function which computes a value
@@ -582,6 +586,10 @@ the alpha-notify virtual function is called.
 <pre class="programlisting"><span class="returnvalue">void</span>                user_function                      (<a class="link" href="ClutterBehaviour.html" title="ClutterBehaviour"><span class="type">ClutterBehaviour</span></a> *behaviour,
                                                         <a class="link" href="ClutterActor.html" title="ClutterActor"><span class="type">ClutterActor</span></a>     *actor,
                                                         <span class="type">gpointer</span>          user_data)      : <code class="literal">Run First</code></pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">ClutterBehaviour::applied</code> is deprecated and should not be used in newly-written code. 1.6</p>
+</div>
 <p>
 The ::apply signal is emitted each time the behaviour is applied
 to an actor.
@@ -611,6 +619,10 @@ to an actor.
 <pre class="programlisting"><span class="returnvalue">void</span>                user_function                      (<a class="link" href="ClutterBehaviour.html" title="ClutterBehaviour"><span class="type">ClutterBehaviour</span></a> *behaviour,
                                                         <a class="link" href="ClutterActor.html" title="ClutterActor"><span class="type">ClutterActor</span></a>     *actor,
                                                         <span class="type">gpointer</span>          user_data)      : <code class="literal">Run First</code></pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">ClutterBehaviour::removed</code> is deprecated and should not be used in newly-written code. 1.6</p>
+</div>
 <p>
 The ::removed signal is emitted each time a behaviour is not applied
 to an actor anymore.

@@ -22,8 +22,9 @@
 #ifndef __CLUTTER_STAGE_OSX_H__
 #define __CLUTTER_STAGE_OSX_H__
 
-#include <clutter/clutter-stage.h>
 #include <clutter/clutter-backend.h>
+#include <clutter/clutter-stage.h>
+#include <clutter/clutter-stage-window.h>
 
 #import <Foundation/Foundation.h>
 #import <AppKit/AppKit.h>
@@ -64,8 +65,6 @@ struct _ClutterStageOSX
   gint requisition_width;
   gint requisition_height;
 
-  ClutterStageState stage_state;
-
   gboolean acceptFocus;
   gboolean isHiding;
   gboolean haveRealized;
@@ -80,9 +79,6 @@ struct _ClutterStageOSXClass
 };
 
 GType _clutter_stage_osx_get_type (void) G_GNUC_CONST;
-
-ClutterStageWindow *    _clutter_stage_osx_new  (ClutterBackend *backend,
-                                                 ClutterStage   *wrapper);
 
 G_END_DECLS
 

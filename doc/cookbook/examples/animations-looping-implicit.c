@@ -39,7 +39,7 @@ main (int   argc,
   if (clutter_init (&argc, &argv) != CLUTTER_INIT_SUCCESS)
     return 1;
 
-  stage = clutter_stage_get_default ();
+  stage = clutter_stage_new ();
   clutter_actor_set_size (stage, 300, 200);
   clutter_stage_set_color (CLUTTER_STAGE (stage), &stage_color);
   g_signal_connect (stage, "destroy", G_CALLBACK (clutter_main_quit), NULL);
@@ -49,7 +49,7 @@ main (int   argc,
   clutter_actor_set_position (state->actor, 150, 50);
 
   state->timeline = clutter_timeline_new (1000);
-  clutter_timeline_set_loop (state->timeline, TRUE);
+  clutter_timeline_set_repeat_count (state->timeline, -1);
   clutter_timeline_set_auto_reverse (state->timeline, TRUE);
 
   g_signal_connect (stage,

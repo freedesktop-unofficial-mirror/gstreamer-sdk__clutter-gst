@@ -34,9 +34,11 @@
 #include <glib-object.h>
 #include <gobject/gvaluecollector.h>
 
-#include "clutter-container.h"
-#include "clutter-child-meta.h"
+#define CLUTTER_DISABLE_DEPRECATION_WARNINGS
+#include "deprecated/clutter-container.h"
 
+#include "clutter-actor-private.h"
+#include "clutter-child-meta.h"
 #include "clutter-debug.h"
 #include "clutter-main.h"
 #include "clutter-marshal.h"
@@ -63,15 +65,19 @@
 
 /**
  * SECTION:clutter-container
- * @short_description: An interface for implementing container actors
+ * @short_description: An interface for container actors
  *
- * #ClutterContainer is an interface for writing actors containing other
- * #ClutterActor<!-- -->s. It provides a standard API for adding, removing
- * and iterating on every contained actor.
+ * #ClutterContainer is an interface implemented by #ClutterActor, and
+ * it provides some common API for notifying when a child actor is added
+ * or removed, as well as the infrastructure for accessing child properties
+ * through #ClutterChildMeta.
  *
- * An actor implementing #ClutterContainer is #ClutterGroup.
- *
- * #ClutterContainer is available since Clutter 0.4
+ * Until Clutter 1.10, the #ClutterContainer interface was also the public
+ * API for implementing container actors; this part of the interface has
+ * been deprecated: #ClutterContainer has a default implementation which
+ * defers to #ClutterActor the child addition and removal, as well as the
+ * iteration. See the documentation of #ClutterContainerIface for the list
+ * of virtual functions that should be overridden.
  */
 
 enum
@@ -99,6 +105,76 @@ static void              child_notify       (ClutterContainer *container,
 typedef ClutterContainerIface   ClutterContainerInterface;
 
 G_DEFINE_INTERFACE (ClutterContainer, clutter_container, G_TYPE_OBJECT);
+
+static void
+container_real_add (ClutterContainer *container,
+                    ClutterActor     *actor)
+{
+  clutter_actor_add_child (CLUTTER_ACTOR (container), actor);
+}
+
+static void
+container_real_remove (ClutterContainer *container,
+                       ClutterActor     *actor)
+{
+  clutter_actor_remove_child (CLUTTER_ACTOR (container), actor);
+}
+
+typedef struct {
+  ClutterCallback callback;
+  gpointer data;
+} ForeachClosure;
+
+static gboolean
+foreach_cb (ClutterActor *actor,
+            gpointer      data)
+{
+  ForeachClosure *clos = data;
+
+  clos->callback (actor, clos->data);
+
+  return TRUE;
+}
+
+static void
+container_real_foreach (ClutterContainer *container,
+                        ClutterCallback   callback,
+                        gpointer          user_data)
+{
+  ForeachClosure clos;
+
+  clos.callback = callback;
+  clos.data = user_data;
+
+  _clutter_actor_foreach_child (CLUTTER_ACTOR (container),
+                                foreach_cb,
+                                &clos);
+}
+
+static void
+container_real_raise (ClutterContainer *container,
+                      ClutterActor     *child,
+                      ClutterActor     *sibling)
+{
+  ClutterActor *self = CLUTTER_ACTOR (container);
+
+  clutter_actor_set_child_above_sibling (self, child, sibling);
+}
+
+static void
+container_real_lower (ClutterContainer *container,
+                      ClutterActor     *child,
+                      ClutterActor     *sibling)
+{
+  ClutterActor *self = CLUTTER_ACTOR (container);
+
+  clutter_actor_set_child_below_sibling (self, child, sibling);
+}
+
+static void
+container_real_sort_depth_order (ClutterContainer *container)
+{
+}
 
 static void
 clutter_container_default_init (ClutterContainerInterface *iface)
@@ -169,74 +245,28 @@ clutter_container_default_init (ClutterContainerInterface *iface)
                   G_TYPE_NONE, 2,
                   CLUTTER_TYPE_ACTOR, G_TYPE_PARAM);
 
-  iface->child_meta_type    = G_TYPE_INVALID;
-  iface->create_child_meta  = create_child_meta;
+  iface->add = container_real_add;
+  iface->remove = container_real_remove;
+  iface->foreach = container_real_foreach;
+  iface->raise = container_real_raise;
+  iface->lower = container_real_lower;
+  iface->sort_depth_order = container_real_sort_depth_order;
+
+  iface->child_meta_type = G_TYPE_INVALID;
+  iface->create_child_meta = create_child_meta;
   iface->destroy_child_meta = destroy_child_meta;
-  iface->get_child_meta     = get_child_meta;
-  iface->child_notify       = child_notify;
+  iface->get_child_meta = get_child_meta;
+  iface->child_notify = child_notify;
 }
 
-/**
- * clutter_container_add: (skip)
- * @container: a #ClutterContainer
- * @first_actor: the first #ClutterActor to add
- * @...: %NULL terminated list of actors to add
- *
- * Adds a list of #ClutterActor<!-- -->s to @container. Each time and
- * actor is added, the "actor-added" signal is emitted. Each actor should
- * be parented to @container, which takes a reference on the actor. You
- * cannot add a #ClutterActor to more than one #ClutterContainer.
- *
- * Since: 0.4
- */
-void
-clutter_container_add (ClutterContainer *container,
-                       ClutterActor     *first_actor,
-                       ...)
+static inline void
+container_add_actor (ClutterContainer *container,
+                     ClutterActor     *actor)
 {
-  va_list args;
-
-  g_return_if_fail (CLUTTER_IS_CONTAINER (container));
-  g_return_if_fail (CLUTTER_IS_ACTOR (first_actor));
-
-  va_start (args, first_actor);
-  clutter_container_add_valist (container, first_actor, args);
-  va_end (args);
-}
-
-/**
- * clutter_container_add_actor:
- * @container: a #ClutterContainer
- * @actor: the first #ClutterActor to add
- *
- * Adds a #ClutterActor to @container. This function will emit the
- * "actor-added" signal. The actor should be parented to
- * @container. You cannot add a #ClutterActor to more than one
- * #ClutterContainer.
- *
- * Virtual: add
- *
- * Since: 0.4
- */
-void
-clutter_container_add_actor (ClutterContainer *container,
-                             ClutterActor     *actor)
-{
-  ClutterContainerIface *iface;
   ClutterActor *parent;
 
-  g_return_if_fail (CLUTTER_IS_CONTAINER (container));
-  g_return_if_fail (CLUTTER_IS_ACTOR (actor));
-
-  iface = CLUTTER_CONTAINER_GET_IFACE (container);
-  if (!iface->add)
-    {
-      CLUTTER_CONTAINER_WARN_NOT_IMPLEMENTED (container, "add");
-      return;
-    }
-
   parent = clutter_actor_get_parent (actor);
-  if (parent)
+  if (G_UNLIKELY (parent != NULL))
     {
       g_warning ("Attempting to add actor of type '%s' to a "
 		 "container of type '%s', but the actor has "
@@ -249,96 +279,27 @@ clutter_container_add_actor (ClutterContainer *container,
 
   clutter_container_create_child_meta (container, actor);
 
-  iface->add (container, actor);
-}
-
-/**
- * clutter_container_add_valist: (skip)
- * @container: a #ClutterContainer
- * @first_actor: the first #ClutterActor to add
- * @var_args: list of actors to add, followed by %NULL
- *
- * Alternative va_list version of clutter_container_add().
- *
- * Since: 0.4
- */
-void
-clutter_container_add_valist (ClutterContainer *container,
-                              ClutterActor     *first_actor,
-                              va_list           var_args)
-{
-  ClutterActor *actor;
-
-  g_return_if_fail (CLUTTER_IS_CONTAINER (container));
-  g_return_if_fail (CLUTTER_IS_ACTOR (first_actor));
-
-  actor = first_actor;
-  while (actor)
+#ifdef CLUTTER_ENABLE_DEBUG
+  if (G_UNLIKELY (_clutter_diagnostic_enabled ()))
     {
-      clutter_container_add_actor (container, actor);
-      actor = va_arg (var_args, ClutterActor*);
+      ClutterContainerIface *iface = CLUTTER_CONTAINER_GET_IFACE (container);
+
+      if (iface->add != container_real_add)
+        _clutter_diagnostic_message ("The ClutterContainer::add() virtual "
+                                     "function has been deprecated and it "
+                                     "should not be overridden by newly "
+                                     "written code");
     }
+#endif /* CLUTTER_ENABLE_DEBUG */
+
+  CLUTTER_CONTAINER_GET_IFACE (container)->add (container, actor);
 }
 
-/**
- * clutter_container_remove: (skip)
- * @container: a #ClutterContainer
- * @first_actor: first #ClutterActor to remove
- * @...: a %NULL-terminated list of actors to remove
- *
- * Removes a %NULL terminated list of #ClutterActor<!-- -->s from
- * @container. Each actor should be unparented, so if you want to keep it
- * around you must hold a reference to it yourself, using g_object_ref().
- * Each time an actor is removed, the "actor-removed" signal is
- * emitted by @container.
- *
- * Since: 0.4
- */
-void
-clutter_container_remove (ClutterContainer *container,
-                          ClutterActor     *first_actor,
-                          ...)
+static inline void
+container_remove_actor (ClutterContainer *container,
+                        ClutterActor     *actor)
 {
-  va_list var_args;
-
-  g_return_if_fail (CLUTTER_IS_CONTAINER (container));
-  g_return_if_fail (CLUTTER_IS_ACTOR (first_actor));
-
-  va_start (var_args, first_actor);
-  clutter_container_remove_valist (container, first_actor, var_args);
-  va_end (var_args);
-}
-
-/**
- * clutter_container_remove_actor:
- * @container: a #ClutterContainer
- * @actor: a #ClutterActor
- *
- * Removes @actor from @container. The actor should be unparented, so
- * if you want to keep it around you must hold a reference to it
- * yourself, using g_object_ref(). When the actor has been removed,
- * the "actor-removed" signal is emitted by @container.
- *
- * Virtual: remove
- *
- * Since: 0.4
- */
-void
-clutter_container_remove_actor (ClutterContainer *container,
-                                ClutterActor     *actor)
-{
-  ClutterContainerIface *iface;
   ClutterActor *parent;
-
-  g_return_if_fail (CLUTTER_IS_CONTAINER (container));
-  g_return_if_fail (CLUTTER_IS_ACTOR (actor));
-
-  iface = CLUTTER_CONTAINER_GET_IFACE (container);
-  if (!iface->remove)
-    {
-      CLUTTER_CONTAINER_WARN_NOT_IMPLEMENTED (container, "remove");
-      return;
-    }
 
   parent = clutter_actor_get_parent (actor);
   if (parent != CLUTTER_ACTOR (container))
@@ -353,7 +314,204 @@ clutter_container_remove_actor (ClutterContainer *container,
 
   clutter_container_destroy_child_meta (container, actor);
 
-  iface->remove (container, actor);
+#ifdef CLUTTER_ENABLE_DEBUG
+  if (G_UNLIKELY (_clutter_diagnostic_enabled ()))
+    {
+      ClutterContainerIface *iface = CLUTTER_CONTAINER_GET_IFACE (container);
+
+      if (iface->remove != container_real_remove)
+        _clutter_diagnostic_message ("The ClutterContainer::remove() virtual "
+                                     "function has been deprecated and it "
+                                     "should not be overridden by newly "
+                                     "written code");
+    }
+#endif /* CLUTTER_ENABLE_DEBUG */
+
+  CLUTTER_CONTAINER_GET_IFACE (container)->remove (container, actor);
+}
+
+static inline void
+container_add_valist (ClutterContainer *container,
+                      ClutterActor     *first_actor,
+                      va_list           args)
+{
+  ClutterActor *actor = first_actor;
+
+  while (actor != NULL)
+    {
+      container_add_actor (container, actor);
+      actor = va_arg (args, ClutterActor *);
+    }
+}
+
+static inline void
+container_remove_valist (ClutterContainer *container,
+                         ClutterActor     *first_actor,
+                         va_list           args)
+{
+  ClutterActor *actor = first_actor;
+
+  while (actor != NULL)
+    {
+      container_remove_actor (container, actor);
+      actor = va_arg (args, ClutterActor *);
+    }
+}
+
+/**
+ * clutter_container_add: (skip)
+ * @container: a #ClutterContainer
+ * @first_actor: the first #ClutterActor to add
+ * @...: %NULL terminated list of actors to add
+ *
+ * Adds a list of #ClutterActor<!-- -->s to @container. Each time and
+ * actor is added, the "actor-added" signal is emitted. Each actor should
+ * be parented to @container, which takes a reference on the actor. You
+ * cannot add a #ClutterActor to more than one #ClutterContainer.
+ *
+ * This function will call #ClutterContainerIface.add(), which is a
+ * deprecated virtual function. The default implementation will
+ * call clutter_actor_add_child().
+ *
+ * Since: 0.4
+ *
+ * Deprecated: 1.10: Use clutter_actor_add_child() instead.
+ */
+void
+clutter_container_add (ClutterContainer *container,
+                       ClutterActor     *first_actor,
+                       ...)
+{
+  va_list args;
+
+  g_return_if_fail (CLUTTER_IS_CONTAINER (container));
+  g_return_if_fail (CLUTTER_IS_ACTOR (first_actor));
+
+  va_start (args, first_actor);
+  container_add_valist (container, first_actor, args);
+  va_end (args);
+}
+
+/**
+ * clutter_container_add_actor:
+ * @container: a #ClutterContainer
+ * @actor: the first #ClutterActor to add
+ *
+ * Adds a #ClutterActor to @container. This function will emit the
+ * "actor-added" signal. The actor should be parented to
+ * @container. You cannot add a #ClutterActor to more than one
+ * #ClutterContainer.
+ *
+ * This function will call #ClutterContainerIface.add(), which is a
+ * deprecated virtual function. The default implementation will
+ * call clutter_actor_add_child().
+ *
+ * Virtual: add
+ *
+ * Since: 0.4
+ *
+ * Deprecated: 1.10: Use clutter_actor_add_child() instead.
+ */
+void
+clutter_container_add_actor (ClutterContainer *container,
+                             ClutterActor     *actor)
+{
+  g_return_if_fail (CLUTTER_IS_CONTAINER (container));
+  g_return_if_fail (CLUTTER_IS_ACTOR (actor));
+
+  container_add_actor (container, actor);
+}
+
+/**
+ * clutter_container_add_valist: (skip)
+ * @container: a #ClutterContainer
+ * @first_actor: the first #ClutterActor to add
+ * @var_args: list of actors to add, followed by %NULL
+ *
+ * Alternative va_list version of clutter_container_add().
+ *
+ * This function will call #ClutterContainerIface.add(), which is a
+ * deprecated virtual function. The default implementation will
+ * call clutter_actor_add_child().
+ *
+ * Since: 0.4
+ *
+ * Deprecated: 1.10: Use clutter_actor_add_child() instead.
+ */
+void
+clutter_container_add_valist (ClutterContainer *container,
+                              ClutterActor     *first_actor,
+                              va_list           var_args)
+{
+  g_return_if_fail (CLUTTER_IS_CONTAINER (container));
+  g_return_if_fail (CLUTTER_IS_ACTOR (first_actor));
+
+  container_add_valist (container, first_actor, var_args);
+}
+
+/**
+ * clutter_container_remove: (skip)
+ * @container: a #ClutterContainer
+ * @first_actor: first #ClutterActor to remove
+ * @...: a %NULL-terminated list of actors to remove
+ *
+ * Removes a %NULL terminated list of #ClutterActor<!-- -->s from
+ * @container. Each actor should be unparented, so if you want to keep it
+ * around you must hold a reference to it yourself, using g_object_ref().
+ * Each time an actor is removed, the "actor-removed" signal is
+ * emitted by @container.
+ *
+ * This function will call #ClutterContainerIface.remove(), which is a
+ * deprecated virtual function. The default implementation will call
+ * clutter_actor_remove_child().
+ *
+ * Since: 0.4
+ *
+ * Deprecated: 1.10: Use clutter_actor_remove_child() instead.
+ */
+void
+clutter_container_remove (ClutterContainer *container,
+                          ClutterActor     *first_actor,
+                          ...)
+{
+  va_list var_args;
+
+  g_return_if_fail (CLUTTER_IS_CONTAINER (container));
+  g_return_if_fail (CLUTTER_IS_ACTOR (first_actor));
+
+  va_start (var_args, first_actor);
+  container_remove_valist (container, first_actor, var_args);
+  va_end (var_args);
+}
+
+/**
+ * clutter_container_remove_actor:
+ * @container: a #ClutterContainer
+ * @actor: a #ClutterActor
+ *
+ * Removes @actor from @container. The actor should be unparented, so
+ * if you want to keep it around you must hold a reference to it
+ * yourself, using g_object_ref(). When the actor has been removed,
+ * the "actor-removed" signal is emitted by @container.
+ *
+ * This function will call #ClutterContainerIface.remove(), which is a
+ * deprecated virtual function. The default implementation will call
+ * clutter_actor_remove_child().
+ *
+ * Virtual: remove
+ *
+ * Since: 0.4
+ *
+ * Deprecated: 1.10: Use clutter_actor_remove_child() instead.
+ */
+void
+clutter_container_remove_actor (ClutterContainer *container,
+                                ClutterActor     *actor)
+{
+  g_return_if_fail (CLUTTER_IS_CONTAINER (container));
+  g_return_if_fail (CLUTTER_IS_ACTOR (actor));
+
+  container_remove_actor (container, actor);
 }
 
 /**
@@ -364,24 +522,23 @@ clutter_container_remove_actor (ClutterContainer *container,
  *
  * Alternative va_list version of clutter_container_remove().
  *
+ * This function will call #ClutterContainerIface.remove(), which is a
+ * deprecated virtual function. The default implementation will call
+ * clutter_actor_remove_child().
+ *
  * Since: 0.4
+ *
+ * Deprecated: 1.10: Use clutter_actor_remove_child() instead.
  */
 void
 clutter_container_remove_valist (ClutterContainer *container,
                                  ClutterActor     *first_actor,
                                  va_list           var_args)
 {
-  ClutterActor *actor;
-
   g_return_if_fail (CLUTTER_IS_CONTAINER (container));
   g_return_if_fail (CLUTTER_IS_ACTOR (first_actor));
 
-  actor = first_actor;
-  while (actor)
-    {
-      clutter_container_remove_actor (container, actor);
-      actor = va_arg (var_args, ClutterActor*);
-    }
+  container_remove_valist (container, first_actor, var_args);
 }
 
 static void
@@ -404,6 +561,8 @@ get_children_cb (ClutterActor *child,
  *   list when done.
  *
  * Since: 0.4
+ *
+ * Deprecated: 1.10: Use clutter_actor_get_children() instead.
  */
 GList *
 clutter_container_get_children (ClutterContainer *container)
@@ -429,26 +588,41 @@ clutter_container_get_children (ClutterContainer *container)
  * not iterate over "internal" children that are part of the
  * container's own implementation, if any.
  *
+ * This function calls the #ClutterContainerIface.foreach()
+ * virtual function, which has been deprecated.
+ *
  * Since: 0.4
+ *
+ * Deprecated: 1.10: Use clutter_actor_get_first_child() or
+ *   clutter_actor_get_last_child() to retrieve the beginning of
+ *   the list of children, and clutter_actor_get_next_sibling()
+ *   and clutter_actor_get_previous_sibling() to iterate over it;
+ *   alternatively, use the #ClutterActorIter API.
  */
 void
 clutter_container_foreach (ClutterContainer *container,
                            ClutterCallback   callback,
                            gpointer          user_data)
 {
-  ClutterContainerIface *iface;
-
   g_return_if_fail (CLUTTER_IS_CONTAINER (container));
   g_return_if_fail (callback != NULL);
 
-  iface = CLUTTER_CONTAINER_GET_IFACE (container);
-  if (!iface->foreach)
+#ifdef CLUTTER_ENABLE_DEBUG
+  if (G_UNLIKELY (_clutter_diagnostic_enabled ()))
     {
-      CLUTTER_CONTAINER_WARN_NOT_IMPLEMENTED (container, "foreach");
-      return;
-    }
+      ClutterContainerIface *iface = CLUTTER_CONTAINER_GET_IFACE (container);
 
-  iface->foreach (container, callback, user_data);
+      if (iface->foreach != container_real_foreach)
+        _clutter_diagnostic_message ("The ClutterContainer::foreach() "
+                                     "virtual function has been deprecated "
+                                     "and it should not be overridden by "
+                                     "newly written code");
+    }
+#endif /* CLUTTER_ENABLE_DEBUG */
+
+  CLUTTER_CONTAINER_GET_IFACE (container)->foreach (container,
+                                                    callback,
+                                                    user_data);
 }
 
 /**
@@ -461,7 +635,12 @@ clutter_container_foreach (ClutterContainer *container,
  * children built in to the container itself that were never added
  * by the application.
  *
+ * This function calls the #ClutterContainerIface.foreach_with_internals()
+ * virtual function, which has been deprecated.
+ *
  * Since: 1.0
+ *
+ * Deprecated: 1.10: See clutter_container_foreach().
  */
 void
 clutter_container_foreach_with_internals (ClutterContainer *container,
@@ -474,11 +653,17 @@ clutter_container_foreach_with_internals (ClutterContainer *container,
   g_return_if_fail (callback != NULL);
 
   iface = CLUTTER_CONTAINER_GET_IFACE (container);
-  if (!iface->foreach)
+
+#ifdef CLUTTER_ENABLE_DEBUG
+  if (G_UNLIKELY (_clutter_diagnostic_enabled ()))
     {
-      CLUTTER_CONTAINER_WARN_NOT_IMPLEMENTED (container, "foreach");
-      return;
+      if (iface->foreach_with_internals != NULL)
+        _clutter_diagnostic_message ("The ClutterContainer::foreach_with_internals() "
+                                     "virtual function has been deprecated "
+                                     "and it should not be overridden by "
+                                     "newly written code");
     }
+#endif /* CLUTTER_ENABLE_DEBUG */
 
   if (iface->foreach_with_internals != NULL)
     iface->foreach_with_internals (container, callback, user_data);
@@ -495,9 +680,15 @@ clutter_container_foreach_with_internals (ClutterContainer *container,
  *
  * Raises @actor to @sibling level, in the depth ordering.
  *
+ * This function calls the #ClutterContainerIface.raise() virtual function,
+ * which has been deprecated. The default implementation will call
+ * clutter_actor_set_child_above_sibling().
+ *
  * Virtual: raise
  *
  * Since: 0.6
+ *
+ * Deprecated: 1.10: Use clutter_actor_set_child_above_sibling() instead.
  */
 void
 clutter_container_raise_child (ClutterContainer *container,
@@ -505,22 +696,18 @@ clutter_container_raise_child (ClutterContainer *container,
                                ClutterActor     *sibling)
 {
   ClutterContainerIface *iface;
+  ClutterActor *self;
 
   g_return_if_fail (CLUTTER_IS_CONTAINER (container));
   g_return_if_fail (CLUTTER_IS_ACTOR (actor));
   g_return_if_fail (sibling == NULL || CLUTTER_IS_ACTOR (sibling));
 
-  iface = CLUTTER_CONTAINER_GET_IFACE (container);
-  if (!iface->raise)
-    {
-      CLUTTER_CONTAINER_NOTE_NOT_IMPLEMENTED (container, "raise");
-      return;
-    };
-
   if (actor == sibling)
     return;
 
-  if (clutter_actor_get_parent (actor) != CLUTTER_ACTOR (container))
+  self = CLUTTER_ACTOR (container);
+
+  if (clutter_actor_get_parent (actor) != self)
     {
       g_warning ("Actor of type '%s' is not a child of the container "
                  "of type '%s'",
@@ -529,8 +716,8 @@ clutter_container_raise_child (ClutterContainer *container,
       return;
     }
 
-  if (sibling &&
-      clutter_actor_get_parent (sibling) != CLUTTER_ACTOR (container))
+  if (sibling != NULL &&
+      clutter_actor_get_parent (sibling) != self)
     {
       g_warning ("Actor of type '%s' is not a child of the container "
                  "of type '%s'",
@@ -538,6 +725,19 @@ clutter_container_raise_child (ClutterContainer *container,
                  g_type_name (G_OBJECT_TYPE (container)));
       return;
     }
+
+  iface = CLUTTER_CONTAINER_GET_IFACE (container);
+
+#ifdef CLUTTER_ENABLE_DEBUG
+  if (G_UNLIKELY (_clutter_diagnostic_enabled ()))
+    {
+      if (iface->raise != container_real_raise)
+        _clutter_diagnostic_message ("The ClutterContainer::raise() "
+                                     "virtual function has been deprecated "
+                                     "and it should not be overridden by "
+                                     "newly written code");
+    }
+#endif /* CLUTTER_ENABLE_DEBUG */
 
   iface->raise (container, actor, sibling);
 }
@@ -551,9 +751,15 @@ clutter_container_raise_child (ClutterContainer *container,
  *
  * Lowers @actor to @sibling level, in the depth ordering.
  *
+ * This function calls the #ClutterContainerIface.lower() virtual function,
+ * which has been deprecated. The default implementation will call
+ * clutter_actor_set_child_below_sibling().
+ *
  * Virtual: lower
  *
  * Since: 0.6
+ *
+ * Deprecated: 1.10: Use clutter_actor_set_child_below_sibling() instead.
  */
 void
 clutter_container_lower_child (ClutterContainer *container,
@@ -561,22 +767,18 @@ clutter_container_lower_child (ClutterContainer *container,
                                ClutterActor     *sibling)
 {
   ClutterContainerIface *iface;
+  ClutterActor *self;
 
   g_return_if_fail (CLUTTER_IS_CONTAINER (container));
   g_return_if_fail (CLUTTER_IS_ACTOR (actor));
   g_return_if_fail (sibling == NULL || CLUTTER_IS_ACTOR (sibling));
 
-  iface = CLUTTER_CONTAINER_GET_IFACE (container);
-  if (!iface->lower)
-    {
-      CLUTTER_CONTAINER_NOTE_NOT_IMPLEMENTED (container, "lower");
-      return;
-    }
-
   if (actor == sibling)
     return;
 
-  if (clutter_actor_get_parent (actor) != CLUTTER_ACTOR (container))
+  self = CLUTTER_ACTOR (container);
+
+  if (clutter_actor_get_parent (actor) != self)
     {
       g_warning ("Actor of type '%s' is not a child of the container "
                  "of type '%s'",
@@ -585,8 +787,8 @@ clutter_container_lower_child (ClutterContainer *container,
       return;
     }
 
-  if (sibling &&
-      clutter_actor_get_parent (sibling) != CLUTTER_ACTOR (container))
+  if (sibling != NULL&&
+      clutter_actor_get_parent (sibling) != self)
     {
       g_warning ("Actor of type '%s' is not a child of the container "
                  "of type '%s'",
@@ -594,6 +796,19 @@ clutter_container_lower_child (ClutterContainer *container,
                  g_type_name (G_OBJECT_TYPE (container)));
       return;
     }
+
+  iface = CLUTTER_CONTAINER_GET_IFACE (container);
+
+#ifdef CLUTTER_ENABLE_DEBUG
+  if (G_UNLIKELY (_clutter_diagnostic_enabled ()))
+    {
+      if (iface->lower != container_real_lower)
+        _clutter_diagnostic_message ("The ClutterContainer::lower() "
+                                     "virtual function has been deprecated "
+                                     "and it should not be overridden by "
+                                     "newly written code");
+    }
+#endif /* CLUTTER_ENABLE_DEBUG */
 
   iface->lower (container, actor, sibling);
 }
@@ -606,6 +821,10 @@ clutter_container_lower_child (ClutterContainer *container,
  * be normally used by applications.
  *
  * Since: 0.6
+ *
+ * Deprecated: 1.10: The #ClutterContainerIface.sort_depth_order() virtual
+ *   function should not be used any more; the default implementation in
+ *   #ClutterContainer does not do anything.
  */
 void
 clutter_container_sort_depth_order (ClutterContainer *container)
@@ -615,10 +834,19 @@ clutter_container_sort_depth_order (ClutterContainer *container)
   g_return_if_fail (CLUTTER_IS_CONTAINER (container));
 
   iface = CLUTTER_CONTAINER_GET_IFACE (container);
-  if (iface->sort_depth_order)
-    iface->sort_depth_order (container);
-  else
-    CLUTTER_CONTAINER_NOTE_NOT_IMPLEMENTED (container, "sort_depth_order");
+
+#ifdef CLUTTER_ENABLE_DEBUG
+  if (G_UNLIKELY (_clutter_diagnostic_enabled ()))
+    {
+      if (iface->sort_depth_order != container_real_sort_depth_order)
+        _clutter_diagnostic_message ("The ClutterContainer::sort_depth_order() "
+                                     "virtual function has been deprecated "
+                                     "and it should not be overridden by "
+                                     "newly written code");
+    }
+#endif /* CLUTTER_ENABLE_DEBUG */
+
+  iface->sort_depth_order (container);
 }
 
 /**
@@ -1013,7 +1241,7 @@ clutter_container_child_set (ClutterContainer *container,
   name = first_prop;
   while (name)
     {
-      GValue value = { 0, };
+      GValue value = G_VALUE_INIT;
       gchar *error = NULL;
       GParamSpec *pspec;
     
@@ -1161,7 +1389,7 @@ clutter_container_child_get (ClutterContainer *container,
   name = first_prop;
   while (name)
     {
-      GValue value = { 0, };
+      GValue value = G_VALUE_INIT;
       gchar *error = NULL;
       GParamSpec *pspec;
     
@@ -1207,8 +1435,8 @@ clutter_container_child_get (ClutterContainer *container,
  * @child: a #ClutterActor
  * @pspec: a #GParamSpec
  *
- * Calls the <function>child_notify()</function> virtual function of
- * #ClutterContainer. The default implementation will emit the
+ * Calls the #ClutterContainerIface.child_notify() virtual function
+ * of #ClutterContainer. The default implementation will emit the
  * #ClutterContainer::child-notify signal.
  *
  * Since: 1.6

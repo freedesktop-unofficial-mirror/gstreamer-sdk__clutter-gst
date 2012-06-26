@@ -29,10 +29,6 @@
 #ifndef __CLUTTER_ANIMATION_H__
 #define __CLUTTER_ANIMATION_H__
 
-#include <clutter/clutter-actor.h>
-#include <clutter/clutter-alpha.h>
-#include <clutter/clutter-interval.h>
-#include <clutter/clutter-timeline.h>
 #include <clutter/clutter-types.h>
 
 G_BEGIN_DECLS
@@ -114,9 +110,6 @@ gboolean             clutter_animation_get_loop        (ClutterAnimation     *an
 void                 clutter_animation_set_timeline    (ClutterAnimation     *animation,
                                                         ClutterTimeline      *timeline);
 ClutterTimeline *    clutter_animation_get_timeline    (ClutterAnimation     *animation);
-void                 clutter_animation_set_alpha       (ClutterAnimation     *animation,
-                                                        ClutterAlpha         *alpha);
-ClutterAlpha *       clutter_animation_get_alpha       (ClutterAnimation     *animation);
 
 ClutterAnimation *   clutter_animation_bind            (ClutterAnimation     *animation,
                                                         const gchar          *property_name,
@@ -138,41 +131,34 @@ ClutterInterval     *clutter_animation_get_interval    (ClutterAnimation     *an
                                                         const gchar          *property_name);
 void                 clutter_animation_completed       (ClutterAnimation     *animation);
 
-ClutterAnimation *   clutter_actor_animate               (ClutterActor         *actor,
-                                                          gulong                mode,
-                                                          guint                 duration,
-                                                          const gchar          *first_property_name,
-                                                          ...) G_GNUC_NULL_TERMINATED;
-ClutterAnimation *   clutter_actor_animate_with_timeline (ClutterActor         *actor,
-                                                          gulong                mode,
-                                                          ClutterTimeline      *timeline,
-                                                          const gchar          *first_property_name,
-                                                          ...) G_GNUC_NULL_TERMINATED;
-ClutterAnimation *   clutter_actor_animate_with_alpha    (ClutterActor         *actor,
-                                                          ClutterAlpha         *alpha,
-                                                          const gchar          *first_property_name,
-                                                          ...) G_GNUC_NULL_TERMINATED;
+/*
+ * ClutterActor API
+ */
 
-ClutterAnimation *   clutter_actor_animatev               (ClutterActor         *actor,
-                                                           gulong                mode,
-                                                           guint                 duration,
-                                                           gint                  n_properties,
-                                                           const gchar * const   properties[],
-                                                           const GValue         *values);
-ClutterAnimation *   clutter_actor_animate_with_timelinev (ClutterActor         *actor,
-                                                           gulong                mode,
-                                                           ClutterTimeline      *timeline,
-                                                           gint                  n_properties,
-                                                           const gchar * const   properties[],
-                                                           const GValue         *values);
-ClutterAnimation *   clutter_actor_animate_with_alphav    (ClutterActor         *actor,
-                                                           ClutterAlpha         *alpha,
-                                                           gint                  n_properties,
-                                                           const gchar * const   properties[],
-                                                           const GValue         *values);
-
-ClutterAnimation *   clutter_actor_get_animation          (ClutterActor         *actor);
-void                 clutter_actor_detach_animation       (ClutterActor         *actor);
+ClutterAnimation *      clutter_actor_animate                   (ClutterActor         *actor,
+                                                                 gulong                mode,
+                                                                 guint                 duration,
+                                                                 const gchar          *first_property_name,
+                                                                 ...) G_GNUC_NULL_TERMINATED;
+ClutterAnimation *      clutter_actor_animate_with_timeline     (ClutterActor         *actor,
+                                                                 gulong                mode,
+                                                                 ClutterTimeline      *timeline,
+                                                                 const gchar          *first_property_name,
+                                                                 ...) G_GNUC_NULL_TERMINATED;
+ClutterAnimation *      clutter_actor_animatev                  (ClutterActor         *actor,
+                                                                 gulong                mode,
+                                                                 guint                 duration,
+                                                                 gint                  n_properties,
+                                                                 const gchar * const   properties[],
+                                                                 const GValue         *values);
+ClutterAnimation *      clutter_actor_animate_with_timelinev    (ClutterActor         *actor,
+                                                                 gulong                mode,
+                                                                 ClutterTimeline      *timeline,
+                                                                 gint                  n_properties,
+                                                                 const gchar * const   properties[],
+                                                                 const GValue         *values);
+ClutterAnimation *      clutter_actor_get_animation             (ClutterActor         *actor);
+void                    clutter_actor_detach_animation          (ClutterActor         *actor);
 
 G_END_DECLS
 

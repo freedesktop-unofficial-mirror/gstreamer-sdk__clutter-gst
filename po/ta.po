@@ -6,9 +6,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: clutter master\n"
-"Report-Msgid-Bugs-To: http://bugzilla.clutter-project.org/enter_bug.cgi?"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=clutter\n"
-"POT-Creation-Date: 2012-01-30 12:30+0000\n"
+"POT-Creation-Date: 2012-05-28 16:49+0100\n"
 "PO-Revision-Date: 2011-09-16 14:21+0530\n"
 "Last-Translator: I Felix <ifelix@redhat.com>\n"
 "Language-Team: Tamil <ta@li.org>\n"
@@ -19,390 +19,545 @@ msgstr ""
 "X-Generator: Lokalize 1.2\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 
-#: clutter/clutter-actor.c:3875
+#: clutter/clutter-actor.c:5409
 msgid "X coordinate"
 msgstr "X ஒருங்கமைப்பு"
 
-#: clutter/clutter-actor.c:3876
+#: clutter/clutter-actor.c:5410
 msgid "X coordinate of the actor"
 msgstr "நடிகருக்கான X ஒருங்கமைப்பு"
 
-#: clutter/clutter-actor.c:3891
+#: clutter/clutter-actor.c:5428
 msgid "Y coordinate"
 msgstr "Y ஒருங்கமைப்பு"
 
-#: clutter/clutter-actor.c:3892
+#: clutter/clutter-actor.c:5429
 msgid "Y coordinate of the actor"
 msgstr "நடிகருக்கான Y ஒருங்கமைப்பு"
 
-#: clutter/clutter-actor.c:3907 clutter/clutter-behaviour-ellipse.c:477
+#: clutter/clutter-actor.c:5447 clutter/clutter-canvas.c:214
+#: clutter/deprecated/clutter-behaviour-ellipse.c:479
 msgid "Width"
 msgstr "அகலம்"
 
-#: clutter/clutter-actor.c:3908
+#: clutter/clutter-actor.c:5448
 msgid "Width of the actor"
 msgstr "நடிகருக்கான  அகலம்"
 
-#: clutter/clutter-actor.c:3922 clutter/clutter-behaviour-ellipse.c:493
+#: clutter/clutter-actor.c:5466 clutter/clutter-canvas.c:230
+#: clutter/deprecated/clutter-behaviour-ellipse.c:495
 msgid "Height"
 msgstr "உயரம்"
 
-#: clutter/clutter-actor.c:3923
+#: clutter/clutter-actor.c:5467
 msgid "Height of the actor"
 msgstr "நடிகருக்கான  உயரம்"
 
-#: clutter/clutter-actor.c:3941
+#: clutter/clutter-actor.c:5486
 msgid "Fixed X"
 msgstr "நிலையான X"
 
-#: clutter/clutter-actor.c:3942
+#: clutter/clutter-actor.c:5487
 msgid "Forced X position of the actor"
 msgstr "நடிகருக்கான வலியுறுத்தப்பட்ட X நிலை"
 
-#: clutter/clutter-actor.c:3960
+#: clutter/clutter-actor.c:5504
 msgid "Fixed Y"
 msgstr "நிலையான Y"
 
-#: clutter/clutter-actor.c:3961
+#: clutter/clutter-actor.c:5505
 msgid "Forced Y position of the actor"
 msgstr "நடிகருக்கான வலியுறுத்தப்பட்ட Y நிலை"
 
-#: clutter/clutter-actor.c:3977
+#: clutter/clutter-actor.c:5520
 msgid "Fixed position set"
 msgstr "நிலையான நிலை அமைக்கவும்"
 
-#: clutter/clutter-actor.c:3978
+#: clutter/clutter-actor.c:5521
 msgid "Whether to use fixed positioning for the actor"
 msgstr "நடிகருக்கான நிலையான நிலையை பயன்படுத்தவா"
 
-#: clutter/clutter-actor.c:4000
+#: clutter/clutter-actor.c:5539
 msgid "Min Width"
 msgstr "குறைந்தபட்ச அகலம்"
 
-#: clutter/clutter-actor.c:4001
+#: clutter/clutter-actor.c:5540
 msgid "Forced minimum width request for the actor"
 msgstr "நடிகருக்காக வலியுறுத்தப்பட்ட குறைந்தபட்ச அகலத்திற்காக கோருகிறது"
 
-#: clutter/clutter-actor.c:4020
+#: clutter/clutter-actor.c:5558
 msgid "Min Height"
 msgstr "குறைந்தபட்ச  உயரம்"
 
-#: clutter/clutter-actor.c:4021
+#: clutter/clutter-actor.c:5559
 msgid "Forced minimum height request for the actor"
 msgstr "நடிகருக்காக வலியுறுத்தப்பட்ட குறைந்தபட்ச உயரத்திற்காக கோருகிறது"
 
-#: clutter/clutter-actor.c:4040
+#: clutter/clutter-actor.c:5577
 msgid "Natural Width"
 msgstr "இயற்கையான அகலம்"
 
-#: clutter/clutter-actor.c:4041
+#: clutter/clutter-actor.c:5578
 msgid "Forced natural width request for the actor"
 msgstr "நடிகருக்காக வலியுறுத்தப்பட்ட இயற்கை அகலத்திற்காக கோருகிறது"
 
-#: clutter/clutter-actor.c:4060
+#: clutter/clutter-actor.c:5596
 msgid "Natural Height"
 msgstr "இயற்கையான உயரம்"
 
-#: clutter/clutter-actor.c:4061
+#: clutter/clutter-actor.c:5597
 msgid "Forced natural height request for the actor"
 msgstr "நடிகருக்காக வலியுறுத்தப்பட்ட இயற்கை உயரத்திற்காக கோருகிறது"
 
-#: clutter/clutter-actor.c:4077
+#: clutter/clutter-actor.c:5612
 msgid "Minimum width set"
 msgstr "குறைந்தபட்ச அகலத்தை அமைக்கவும்"
 
-#: clutter/clutter-actor.c:4078
+#: clutter/clutter-actor.c:5613
 msgid "Whether to use the min-width property"
 msgstr "குறைந்தபட்ச அகல பண்பை பயன்படுத்தவா"
 
-#: clutter/clutter-actor.c:4093
+#: clutter/clutter-actor.c:5627
 msgid "Minimum height set"
 msgstr "குறைந்தபட்ச  உயரத்தை அமைக்கவும்"
 
-#: clutter/clutter-actor.c:4094
+#: clutter/clutter-actor.c:5628
 msgid "Whether to use the min-height property"
 msgstr "குறைந்தபட்ச உயர பண்பை பயன்படுத்தவா"
 
-#: clutter/clutter-actor.c:4109
+#: clutter/clutter-actor.c:5642
 msgid "Natural width set"
 msgstr "இயற்கையான அகலத்தை அமை"
 
-#: clutter/clutter-actor.c:4110
+#: clutter/clutter-actor.c:5643
 msgid "Whether to use the natural-width property"
 msgstr "இயற்கை அகல பண்பை பயன்படுத்தவா"
 
-#: clutter/clutter-actor.c:4127
+#: clutter/clutter-actor.c:5657
 msgid "Natural height set"
 msgstr "இயற்கையான உயரத்தை அமை"
 
-#: clutter/clutter-actor.c:4128
+#: clutter/clutter-actor.c:5658
 msgid "Whether to use the natural-height property"
 msgstr "இயற்கை உயர பண்பை பயன்படுத்தவா"
 
-#: clutter/clutter-actor.c:4147
+#: clutter/clutter-actor.c:5674
 msgid "Allocation"
 msgstr "ஒதுக்கீடு"
 
-#: clutter/clutter-actor.c:4148
+#: clutter/clutter-actor.c:5675
 msgid "The actor's allocation"
 msgstr "நடிகரின் ஒதுக்கீடு"
 
-#: clutter/clutter-actor.c:4204
+#: clutter/clutter-actor.c:5730
 msgid "Request Mode"
 msgstr "கோரிக்கை முறைமை"
 
-#: clutter/clutter-actor.c:4205
+#: clutter/clutter-actor.c:5731
 msgid "The actor's request mode"
 msgstr "நடிகரின் கோரிக்கை முறைமை"
 
-#: clutter/clutter-actor.c:4220
+#: clutter/clutter-actor.c:5750
 msgid "Depth"
 msgstr "ஆழம்"
 
-#: clutter/clutter-actor.c:4221
+#: clutter/clutter-actor.c:5751
 msgid "Position on the Z axis"
 msgstr "Z அச்சின் நிலை"
 
-#: clutter/clutter-actor.c:4235
+#: clutter/clutter-actor.c:5768
 msgid "Opacity"
 msgstr "ஒளிபுகா நிலை"
 
-#: clutter/clutter-actor.c:4236
+#: clutter/clutter-actor.c:5769
 msgid "Opacity of an actor"
 msgstr "ஒரு நடிகரின் ஒளிபுகா நிலை"
 
-#: clutter/clutter-actor.c:4255
+#: clutter/clutter-actor.c:5789
 msgid "Offscreen redirect"
 msgstr "Offscreen திரும்புகிறது"
 
-#: clutter/clutter-actor.c:4256
+#: clutter/clutter-actor.c:5790
 msgid "Flags controlling when to flatten the actor into a single image"
 msgstr "ஒரு ஒற்றை படத்தினுள் நடிகர் தட்டையாகும் போது கொடிகள் கட்டுபடுத்துகின்றன"
 
-#: clutter/clutter-actor.c:4274
+#: clutter/clutter-actor.c:5804
 msgid "Visible"
 msgstr "காணக்கூடியது"
 
-#: clutter/clutter-actor.c:4275
+#: clutter/clutter-actor.c:5805
 msgid "Whether the actor is visible or not"
 msgstr "நடிகர் காணக்கூடியவரா அல்லது இல்லையா"
 
-#: clutter/clutter-actor.c:4290
+#: clutter/clutter-actor.c:5819
 msgid "Mapped"
 msgstr "வரைபடமாக்கப்பட்டது"
 
-#: clutter/clutter-actor.c:4291
+#: clutter/clutter-actor.c:5820
 msgid "Whether the actor will be painted"
 msgstr "நடிகர் வண்ணம் செய்வாரா"
 
-#: clutter/clutter-actor.c:4305
+#: clutter/clutter-actor.c:5833
 msgid "Realized"
 msgstr "உணரப்பட்டது"
 
-#: clutter/clutter-actor.c:4306
+#: clutter/clutter-actor.c:5834
 msgid "Whether the actor has been realized"
 msgstr "நடிகர் உணர்ந்தாரா"
 
-#: clutter/clutter-actor.c:4322
+#: clutter/clutter-actor.c:5849
 msgid "Reactive"
 msgstr "எதிர்ச்செயல்"
 
-#: clutter/clutter-actor.c:4323
+#: clutter/clutter-actor.c:5850
 msgid "Whether the actor is reactive to events"
 msgstr "நடிகர் நிகழ்வுகளுக்கு எதிராக செயல்படுவாரா"
 
-#: clutter/clutter-actor.c:4335
+#: clutter/clutter-actor.c:5861
 msgid "Has Clip"
 msgstr "கிளிப்பை கொண்டுள்ளது"
 
-#: clutter/clutter-actor.c:4336
+#: clutter/clutter-actor.c:5862
 msgid "Whether the actor has a clip set"
 msgstr "நடிகர் ஒரு சிப் அமைப்பை கொண்டிருந்தால்"
 
-#: clutter/clutter-actor.c:4351
+#: clutter/clutter-actor.c:5876
 msgid "Clip"
 msgstr "கிளிப்"
 
-#: clutter/clutter-actor.c:4352
+#: clutter/clutter-actor.c:5877
 msgid "The clip region for the actor"
 msgstr "நடிகருக்கான கிளிப் பகுதி"
 
-#: clutter/clutter-actor.c:4366 clutter/clutter-actor-meta.c:207
+#: clutter/clutter-actor.c:5890 clutter/clutter-actor-meta.c:207
 #: clutter/clutter-binding-pool.c:319 clutter/clutter-input-device.c:236
 msgid "Name"
 msgstr "பெயர்"
 
-#: clutter/clutter-actor.c:4367
+#: clutter/clutter-actor.c:5891
 msgid "Name of the actor"
 msgstr "நடிகரின் பெயர்"
 
-#: clutter/clutter-actor.c:4381
+#: clutter/clutter-actor.c:5906
 msgid "Scale X"
 msgstr "அளவு X"
 
-#: clutter/clutter-actor.c:4382
+#: clutter/clutter-actor.c:5907
 msgid "Scale factor on the X axis"
 msgstr "X அச்சில் அளவு காரணி"
 
-#: clutter/clutter-actor.c:4397
+#: clutter/clutter-actor.c:5925
 msgid "Scale Y"
 msgstr "அளவு Y"
 
-#: clutter/clutter-actor.c:4398
+#: clutter/clutter-actor.c:5926
 msgid "Scale factor on the Y axis"
 msgstr "Y அச்சில் அளவு காரணி"
 
-#: clutter/clutter-actor.c:4413
+#: clutter/clutter-actor.c:5942
 msgid "Scale Center X"
 msgstr "அளவு மையம் X"
 
-#: clutter/clutter-actor.c:4414
+#: clutter/clutter-actor.c:5943
 msgid "Horizontal scale center"
 msgstr "கிடைமட்ட அளவு மையம்"
 
-#: clutter/clutter-actor.c:4429
+#: clutter/clutter-actor.c:5957
 msgid "Scale Center Y"
 msgstr "அளவு மையம் Y"
 
-#: clutter/clutter-actor.c:4430
+#: clutter/clutter-actor.c:5958
 msgid "Vertical scale center"
 msgstr "செங்குத்து அளவு மையம்"
 
-#: clutter/clutter-actor.c:4445
+#: clutter/clutter-actor.c:5972
 msgid "Scale Gravity"
 msgstr "அளவு புவிஈர்ப்பு"
 
-#: clutter/clutter-actor.c:4446
+#: clutter/clutter-actor.c:5973
 msgid "The center of scaling"
 msgstr "அளவிடுதலின் மையம்"
 
-#: clutter/clutter-actor.c:4463
+#: clutter/clutter-actor.c:5989
 msgid "Rotation Angle X"
 msgstr "சுழற்சி கோணம் X"
 
-#: clutter/clutter-actor.c:4464
+#: clutter/clutter-actor.c:5990
 msgid "The rotation angle on the X axis"
 msgstr "X அச்சின் சுழற்சி கோணம்"
 
-#: clutter/clutter-actor.c:4479
+#: clutter/clutter-actor.c:6008
 msgid "Rotation Angle Y"
 msgstr "சுழற்சி கோணம் Y"
 
-#: clutter/clutter-actor.c:4480
+#: clutter/clutter-actor.c:6009
 msgid "The rotation angle on the Y axis"
 msgstr "Y அச்சின் சுழற்சி கோணம்"
 
-#: clutter/clutter-actor.c:4495
+#: clutter/clutter-actor.c:6027
 msgid "Rotation Angle Z"
 msgstr "சுழற்சி கோணம் Z"
 
-#: clutter/clutter-actor.c:4496
+#: clutter/clutter-actor.c:6028
 msgid "The rotation angle on the Z axis"
 msgstr "Z அச்சின் சுழற்சி கோணம்"
 
-#: clutter/clutter-actor.c:4511
+#: clutter/clutter-actor.c:6044
 msgid "Rotation Center X"
 msgstr "சுழற்சி மையம் X"
 
-#: clutter/clutter-actor.c:4512
+#: clutter/clutter-actor.c:6045
 msgid "The rotation center on the X axis"
 msgstr "X அச்சின் சுழற்சி மையம்"
 
-#: clutter/clutter-actor.c:4528
+#: clutter/clutter-actor.c:6058
 msgid "Rotation Center Y"
 msgstr "சுழற்சி மையம் Y"
 
-#: clutter/clutter-actor.c:4529
+#: clutter/clutter-actor.c:6059
 msgid "The rotation center on the Y axis"
 msgstr "Y அச்சின் சுழற்சி மையம்"
 
-#: clutter/clutter-actor.c:4545
+#: clutter/clutter-actor.c:6072
 msgid "Rotation Center Z"
 msgstr "சுழற்சி மையம் Z"
 
-#: clutter/clutter-actor.c:4546
+#: clutter/clutter-actor.c:6073
 msgid "The rotation center on the Z axis"
 msgstr "Z அச்சின் சுழற்சி மையம்"
 
-#: clutter/clutter-actor.c:4562
+#: clutter/clutter-actor.c:6086
 msgid "Rotation Center Z Gravity"
 msgstr "சுழற்சி மையம் Z புவிஈர்ப்பு"
 
-#: clutter/clutter-actor.c:4563
+#: clutter/clutter-actor.c:6087
 msgid "Center point for rotation around the Z axis"
 msgstr "Z அச்சை சுற்றியுள்ள சுழற்சிக்கான மைய புள்ளி"
 
-#: clutter/clutter-actor.c:4581
+#: clutter/clutter-actor.c:6102
 msgid "Anchor X"
 msgstr "ஆங்கர் X"
 
-#: clutter/clutter-actor.c:4582
+#: clutter/clutter-actor.c:6103
 msgid "X coordinate of the anchor point"
 msgstr "ஆங்கர் புள்ளிக்கான X ஒருங்கமைப்பு"
 
-#: clutter/clutter-actor.c:4598
+#: clutter/clutter-actor.c:6118
 msgid "Anchor Y"
 msgstr "ஆங்கர் Y"
 
-#: clutter/clutter-actor.c:4599
+#: clutter/clutter-actor.c:6119
 msgid "Y coordinate of the anchor point"
 msgstr "ஆங்கர் புள்ளிக்கான Y ஒருங்கமைப்பு"
 
-#: clutter/clutter-actor.c:4614
+#: clutter/clutter-actor.c:6133
 msgid "Anchor Gravity"
 msgstr "ஆங்கர் புவிஈர்ப்பு"
 
-#: clutter/clutter-actor.c:4615
+#: clutter/clutter-actor.c:6134
 msgid "The anchor point as a ClutterGravity"
 msgstr "ஆங்கர் புள்ளியான ஒரு ClutterGravity ஆகும்"
 
-#: clutter/clutter-actor.c:4634
+#: clutter/clutter-actor.c:6151
 msgid "Show on set parent"
 msgstr "அமைக்கப்பட்ட பெற்றோரில் காட்டவும்"
 
-#: clutter/clutter-actor.c:4635
+#: clutter/clutter-actor.c:6152
 msgid "Whether the actor is shown when parented"
 msgstr "பேரண்டடின் போது நடிகர் காட்டப்படுவாரா"
 
-#: clutter/clutter-actor.c:4655
+#: clutter/clutter-actor.c:6169
 msgid "Clip to Allocation"
 msgstr "ஒதுக்கீட்டிற்கான கிளிப்"
 
-#: clutter/clutter-actor.c:4656
+#: clutter/clutter-actor.c:6170
 msgid "Sets the clip region to track the actor's allocation"
 msgstr "நடிகரின் ஒதுக்கீட்டின் தடத்திற்கு கிளிப் பகுதியை அமைக்கிறது"
 
-#: clutter/clutter-actor.c:4666
+#: clutter/clutter-actor.c:6183
 msgid "Text Direction"
 msgstr "உரை திசை"
 
-#: clutter/clutter-actor.c:4667
+#: clutter/clutter-actor.c:6184
 msgid "Direction of the text"
 msgstr "உரைக்கான திசை"
 
-#: clutter/clutter-actor.c:4685
+#: clutter/clutter-actor.c:6199
 msgid "Has Pointer"
 msgstr "பாயிண்டரை கொண்டுள்ளது"
 
-#: clutter/clutter-actor.c:4686
+#: clutter/clutter-actor.c:6200
 msgid "Whether the actor contains the pointer of an input device"
 msgstr "ஒரு உள்ளீடு சாதனத்தில் நடிகர் கட்டுப்பாடு புள்ளியை கொண்டுள்ளாரா"
 
-#: clutter/clutter-actor.c:4703
+#: clutter/clutter-actor.c:6213
 msgid "Actions"
 msgstr "செயல்கள்"
 
-#: clutter/clutter-actor.c:4704
+#: clutter/clutter-actor.c:6214
 msgid "Adds an action to the actor"
 msgstr "செயலுக்கு ஒரு செயலை சேர்க்கிறது"
 
-#: clutter/clutter-actor.c:4718
+#: clutter/clutter-actor.c:6227
 msgid "Constraints"
 msgstr "கட்டுப்பாடுகள்"
 
-#: clutter/clutter-actor.c:4719
+#: clutter/clutter-actor.c:6228
 msgid "Adds a constraint to the actor"
 msgstr "நடிகருக்கு ஒரு கட்டுப்பாட்டை சேர்க்கிறது"
+
+#: clutter/clutter-actor.c:6241
+msgid "Effect"
+msgstr ""
+
+#: clutter/clutter-actor.c:6242
+#, fuzzy
+msgid "Add an effect to be applied on the actor"
+msgstr "செயலுக்கு ஒரு செயலை சேர்க்கிறது"
+
+#: clutter/clutter-actor.c:6256
+msgid "Layout Manager"
+msgstr "தளவமைப்பு நிர்வாகி"
+
+#: clutter/clutter-actor.c:6257
+msgid "The object controlling the layout of an actor's children"
+msgstr ""
+
+#: clutter/clutter-actor.c:6272
+#, fuzzy
+msgid "X Alignment"
+msgstr "வரி ஒழுங்குப்படுத்துல் "
+
+#: clutter/clutter-actor.c:6273
+#, fuzzy
+msgid "The alignment of the actor on the X axis within its allocation"
+msgstr "அறைக்குள் நடிகரின் செங்குத்து ஒழுங்குப்படுத்தல்"
+
+#: clutter/clutter-actor.c:6288
+#, fuzzy
+msgid "Y Alignment"
+msgstr "வரி ஒழுங்குப்படுத்துல் "
+
+#: clutter/clutter-actor.c:6289
+#, fuzzy
+msgid "The alignment of the actor on the Y axis within its allocation"
+msgstr "அறைக்குள் நடிகரின் செங்குத்து ஒழுங்குப்படுத்தல்"
+
+#: clutter/clutter-actor.c:6306
+msgid "Margin Top"
+msgstr ""
+
+#: clutter/clutter-actor.c:6307
+msgid "Extra space at the top"
+msgstr ""
+
+#: clutter/clutter-actor.c:6324
+msgid "Margin Bottom"
+msgstr ""
+
+#: clutter/clutter-actor.c:6325
+msgid "Extra space at the bottom"
+msgstr ""
+
+#: clutter/clutter-actor.c:6342
+msgid "Margin Left"
+msgstr ""
+
+#: clutter/clutter-actor.c:6343
+msgid "Extra space at the left"
+msgstr ""
+
+#: clutter/clutter-actor.c:6360
+#, fuzzy
+msgid "Margin Right"
+msgstr "குறைந்தபட்ச  உயரம்"
+
+#: clutter/clutter-actor.c:6361
+msgid "Extra space at the right"
+msgstr ""
+
+#: clutter/clutter-actor.c:6375
+#, fuzzy
+msgid "Background Color Set"
+msgstr "கர்சர் வண்ணத்தை அமை"
+
+#: clutter/clutter-actor.c:6376 clutter/deprecated/clutter-box.c:275
+msgid "Whether the background color is set"
+msgstr "பின்னணி வண்ணம் அமைக்கப்பட்டால்"
+
+#: clutter/clutter-actor.c:6392
+#, fuzzy
+msgid "Background color"
+msgstr "பெட்டியின் பின்னணி வண்ணம்"
+
+#: clutter/clutter-actor.c:6393
+#, fuzzy
+msgid "The actor's background color"
+msgstr "பெட்டியின் பின்னணி வண்ணம்"
+
+#: clutter/clutter-actor.c:6408
+msgid "First Child"
+msgstr ""
+
+#: clutter/clutter-actor.c:6409
+#, fuzzy
+msgid "The actor's first child"
+msgstr "நடிகரின் கோரிக்கை முறைமை"
+
+#: clutter/clutter-actor.c:6422
+msgid "Last Child"
+msgstr ""
+
+#: clutter/clutter-actor.c:6423
+#, fuzzy
+msgid "The actor's last child"
+msgstr "நடிகரின் ஒதுக்கீடு"
+
+#: clutter/clutter-actor.c:6437
+#, fuzzy
+msgid "Content"
+msgstr "கொள்கலன்"
+
+#: clutter/clutter-actor.c:6438
+#, fuzzy
+msgid "Delegate object for painting the actor's content"
+msgstr "ClutterPath பொருள் அசைவூட்ட பாதையுடன் பிரதிநிதித்துவமாக்குகிறது"
+
+#: clutter/clutter-actor.c:6463
+#, fuzzy
+msgid "Content Gravity"
+msgstr "சுழற்சி மையம் Z புவிஈர்ப்பு"
+
+#: clutter/clutter-actor.c:6464
+#, fuzzy
+msgid "Alignment of the actor's content"
+msgstr "அறைக்குள் நடிகரின் செங்குத்து ஒழுங்குப்படுத்தல்"
+
+#: clutter/clutter-actor.c:6484
+msgid "Content Box"
+msgstr ""
+
+#: clutter/clutter-actor.c:6485
+msgid "The bounding box of the actor's content"
+msgstr ""
+
+#: clutter/clutter-actor.c:6493
+msgid "Minification Filter"
+msgstr ""
+
+#: clutter/clutter-actor.c:6494
+#, fuzzy
+msgid "The filter used when reducing the size of the content"
+msgstr "நடிகரின் பின்னால் வரையும் போது பொருள் பயன்படுத்தப்பட்டது"
+
+#: clutter/clutter-actor.c:6501
+msgid "Magnification Filter"
+msgstr ""
+
+#: clutter/clutter-actor.c:6502
+#, fuzzy
+msgid "The filter used when increasing the size of the content"
+msgstr "நடிகரின் பின்னால் வரையும் போது பொருள் பயன்படுத்தப்பட்டது"
 
 #: clutter/clutter-actor-meta.c:193 clutter/clutter-child-meta.c:142
 msgid "Actor"
@@ -417,7 +572,7 @@ msgid "The name of the meta"
 msgstr "மெட்டாவின் பெயர்"
 
 #: clutter/clutter-actor-meta.c:221 clutter/clutter-input-device.c:315
-#: clutter/clutter-shader.c:307
+#: clutter/deprecated/clutter-shader.c:313
 msgid "Enabled"
 msgstr "செயல்படுத்தப்பட்டது"
 
@@ -425,97 +580,97 @@ msgstr "செயல்படுத்தப்பட்டது"
 msgid "Whether the meta is enabled"
 msgstr "இந்த மெட்டா செயல்படுத்தப்பட்டதா"
 
-#: clutter/clutter-align-constraint.c:270
-#: clutter/clutter-bind-constraint.c:349 clutter/clutter-clone.c:340
+#: clutter/clutter-align-constraint.c:281
+#: clutter/clutter-bind-constraint.c:356 clutter/clutter-clone.c:345
 #: clutter/clutter-snap-constraint.c:321
 msgid "Source"
 msgstr "மூலம்"
 
-#: clutter/clutter-align-constraint.c:271
+#: clutter/clutter-align-constraint.c:282
 msgid "The source of the alignment"
 msgstr "ஒழுங்குபடுத்துதலின் மூலம்"
 
-#: clutter/clutter-align-constraint.c:284
+#: clutter/clutter-align-constraint.c:295
 msgid "Align Axis"
 msgstr "அச்சினை ஒழுங்குப்படுத்தவும்"
 
-#: clutter/clutter-align-constraint.c:285
+#: clutter/clutter-align-constraint.c:296
 msgid "The axis to align the position to"
 msgstr "இடத்திற்கு அச்சினை ஒதுக்குகிறது"
 
-#: clutter/clutter-align-constraint.c:304
-#: clutter/clutter-desaturate-effect.c:304
+#: clutter/clutter-align-constraint.c:315
+#: clutter/clutter-desaturate-effect.c:270
 msgid "Factor"
 msgstr "காரணி"
 
-#: clutter/clutter-align-constraint.c:305
+#: clutter/clutter-align-constraint.c:316
 msgid "The alignment factor, between 0.0 and 1.0"
 msgstr "ஒழுங்கமை காரணி, 0.0 மற்றும்1.0 க்கு இடையே"
 
-#: clutter/clutter-alpha.c:345 clutter/clutter-animation.c:538
+#: clutter/clutter-alpha.c:352 clutter/clutter-animation.c:566
 #: clutter/clutter-animator.c:1802
 msgid "Timeline"
 msgstr "காலக்கெடு"
 
-#: clutter/clutter-alpha.c:346
+#: clutter/clutter-alpha.c:353
 msgid "Timeline used by the alpha"
 msgstr "காலக்கெடு ஆல்ஃபாவால் பயன்படுத்தப்பட்டது"
 
-#: clutter/clutter-alpha.c:361
+#: clutter/clutter-alpha.c:368
 msgid "Alpha value"
 msgstr "ஆலஃபா மதிப்பு"
 
-#: clutter/clutter-alpha.c:362
+#: clutter/clutter-alpha.c:369
 msgid "Alpha value as computed by the alpha"
 msgstr "ஆல்ஃபா மதிப்பு ஆல்ஃபாவால் கணிக்கப்பட்டது"
 
-#: clutter/clutter-alpha.c:382 clutter/clutter-animation.c:494
+#: clutter/clutter-alpha.c:389 clutter/clutter-animation.c:522
 msgid "Mode"
 msgstr "முறைமை"
 
-#: clutter/clutter-alpha.c:383
+#: clutter/clutter-alpha.c:390
 msgid "Progress mode"
 msgstr "முன்னேற்ற முறைமை"
 
-#: clutter/clutter-animation.c:478
+#: clutter/clutter-animation.c:506
 msgid "Object"
 msgstr "பொருள்"
 
-#: clutter/clutter-animation.c:479
+#: clutter/clutter-animation.c:507
 msgid "Object to which the animation applies"
 msgstr "பொருள் எந்த அசைவூட்டத்திற்கு செயல்படுத்துகிறது"
 
-#: clutter/clutter-animation.c:495
+#: clutter/clutter-animation.c:523
 msgid "The mode of the animation"
 msgstr "அசைவூட்ட முறைமை"
 
-#: clutter/clutter-animation.c:509 clutter/clutter-animator.c:1786
-#: clutter/clutter-media.c:194 clutter/clutter-state.c:1486
-#: clutter/clutter-timeline.c:294
+#: clutter/clutter-animation.c:537 clutter/clutter-animator.c:1786
+#: clutter/clutter-media.c:194 clutter/clutter-state.c:1488
+#: clutter/clutter-timeline.c:581
 msgid "Duration"
 msgstr "கால அளவு"
 
-#: clutter/clutter-animation.c:510
+#: clutter/clutter-animation.c:538
 msgid "Duration of the animation, in milliseconds"
 msgstr "மில்லி விநாடிகளில், அசைவூட்டத்தின் கால அளவு"
 
-#: clutter/clutter-animation.c:524 clutter/clutter-timeline.c:263
+#: clutter/clutter-animation.c:552 clutter/clutter-timeline.c:550
 msgid "Loop"
 msgstr "சுழற்சி"
 
-#: clutter/clutter-animation.c:525
+#: clutter/clutter-animation.c:553
 msgid "Whether the animation should loop"
 msgstr "அசைவூட்டத்திற்கு லூப் உள்ளதா"
 
-#: clutter/clutter-animation.c:539
+#: clutter/clutter-animation.c:567
 msgid "The timeline used by the animation"
 msgstr "காலக்கெடு அசைவூட்டத்தால் பயன்படுத்தப்பட்டது"
 
-#: clutter/clutter-animation.c:552 clutter/clutter-behaviour.c:304
+#: clutter/clutter-animation.c:583 clutter/deprecated/clutter-behaviour.c:240
 msgid "Alpha"
 msgstr "ஆல்பா"
 
-#: clutter/clutter-animation.c:553
+#: clutter/clutter-animation.c:584
 msgid "The alpha used by the animation"
 msgstr "அசைவூட்டத்தின்லா ஆல்ஃபா பயன்படுத்தப்பட்டது"
 
@@ -527,208 +682,34 @@ msgstr "அசைவூட்டத்தின் கால அளவு"
 msgid "The timeline of the animation"
 msgstr "அசைவூட்டத்தின் காலக்கெடு"
 
-#: clutter/clutter-behaviour.c:305
-msgid "Alpha Object to drive the behaviour"
-msgstr "இயக்கி மனநிலைக்கான ஆல்ஃபா பொருள்"
+#: clutter/clutter-backend.c:376
+#, fuzzy
+msgid "Unable to initialize the Clutter backend"
+msgstr "Clutter பின்முனை"
 
-#: clutter/clutter-behaviour-depth.c:178
-msgid "Start Depth"
-msgstr "ஆழத்தை துவக்கு"
+#: clutter/clutter-backend.c:450
+#, c-format
+msgid "The backend of type '%s' does not support creating multiple stages"
+msgstr ""
 
-#: clutter/clutter-behaviour-depth.c:179
-msgid "Initial depth to apply"
-msgstr "செயல்படுத்துவதற்கான துவக்க ஆழம்"
-
-#: clutter/clutter-behaviour-depth.c:194
-msgid "End Depth"
-msgstr "ஆழத்தை முடிவு"
-
-#: clutter/clutter-behaviour-depth.c:195
-msgid "Final depth to apply"
-msgstr "செயல்படுத்துவதற்கான கடைசி ஆழம்"
-
-#: clutter/clutter-behaviour-ellipse.c:397
-msgid "Start Angle"
-msgstr "கோணத்தை துவக்கு"
-
-#: clutter/clutter-behaviour-ellipse.c:398
-#: clutter/clutter-behaviour-rotate.c:280
-msgid "Initial angle"
-msgstr "துவக்க கோணம்"
-
-#: clutter/clutter-behaviour-ellipse.c:413
-msgid "End Angle"
-msgstr "முடிவு கோணம்"
-
-#: clutter/clutter-behaviour-ellipse.c:414
-#: clutter/clutter-behaviour-rotate.c:298
-msgid "Final angle"
-msgstr "கடைசி கோணம்"
-
-#: clutter/clutter-behaviour-ellipse.c:429
-msgid "Angle x tilt"
-msgstr "x தலைப்பு கோணம்"
-
-#: clutter/clutter-behaviour-ellipse.c:430
-msgid "Tilt of the ellipse around x axis"
-msgstr "x அச்சு சுற்றியுள்ள நீள்வட்டத்தின் தலைப்பு"
-
-#: clutter/clutter-behaviour-ellipse.c:445
-msgid "Angle y tilt"
-msgstr "Angle y தலைப்பின் கோணம்"
-
-#: clutter/clutter-behaviour-ellipse.c:446
-msgid "Tilt of the ellipse around y axis"
-msgstr "y அச்சு சுற்றியுள்ள நீள்வட்டத்தின் தலைப்பு"
-
-#: clutter/clutter-behaviour-ellipse.c:461
-msgid "Angle z tilt"
-msgstr "z தலைப்பு கோணம்"
-
-#: clutter/clutter-behaviour-ellipse.c:462
-msgid "Tilt of the ellipse around z axis"
-msgstr "z அச்சு சுற்றியுள்ள நீள்வட்டத்தின் தலைப்பு"
-
-#: clutter/clutter-behaviour-ellipse.c:478
-msgid "Width of the ellipse"
-msgstr "நீள்வட்டத்திற்கான அகலம்"
-
-#: clutter/clutter-behaviour-ellipse.c:494
-msgid "Height of ellipse"
-msgstr "நீள்வட்டத்தின் உயரம்"
-
-#: clutter/clutter-behaviour-ellipse.c:509
-msgid "Center"
-msgstr "மையம்"
-
-#: clutter/clutter-behaviour-ellipse.c:510
-msgid "Center of ellipse"
-msgstr "நீள்வட்டத்தின் மையம்"
-
-#: clutter/clutter-behaviour-ellipse.c:524
-#: clutter/clutter-behaviour-rotate.c:333 clutter/clutter-timeline.c:310
-msgid "Direction"
-msgstr "திசை"
-
-#: clutter/clutter-behaviour-ellipse.c:525
-#: clutter/clutter-behaviour-rotate.c:334
-msgid "Direction of rotation"
-msgstr "சுழற்சிக்கான திசை"
-
-#: clutter/clutter-behaviour-opacity.c:181
-msgid "Opacity Start"
-msgstr "ஒளிபுகா நிலையை துவக்கவும்"
-
-#: clutter/clutter-behaviour-opacity.c:182
-msgid "Initial opacity level"
-msgstr "துவக்க ஒளிபுகா நிலை"
-
-#: clutter/clutter-behaviour-opacity.c:199
-msgid "Opacity End"
-msgstr "முடிவு ஒளிபுகா நிலை"
-
-#: clutter/clutter-behaviour-opacity.c:200
-msgid "Final opacity level"
-msgstr "கடைசி  ஒளிபுகா நிலை"
-
-#: clutter/clutter-behaviour-path.c:222 clutter/clutter-path-constraint.c:212
-msgid "Path"
-msgstr "பாதை"
-
-#: clutter/clutter-behaviour-path.c:223
-msgid "The ClutterPath object representing the path to animate along"
-msgstr "ClutterPath பொருள் அசைவூட்ட பாதையுடன் பிரதிநிதித்துவமாக்குகிறது"
-
-#: clutter/clutter-behaviour-rotate.c:279
-msgid "Angle Begin"
-msgstr "கோணத்தை துவக்கம்"
-
-#: clutter/clutter-behaviour-rotate.c:297
-msgid "Angle End"
-msgstr "கோண முடிவு"
-
-#: clutter/clutter-behaviour-rotate.c:315
-msgid "Axis"
-msgstr "அச்சு"
-
-#: clutter/clutter-behaviour-rotate.c:316
-msgid "Axis of rotation"
-msgstr "சுழற்சியின் கோணம்"
-
-#: clutter/clutter-behaviour-rotate.c:351
-msgid "Center X"
-msgstr "மையம் X"
-
-#: clutter/clutter-behaviour-rotate.c:352
-msgid "X coordinate of the center of rotation"
-msgstr "சுழற்சியின் மையத்திற்கான X ஒருங்கமைப்பு"
-
-#: clutter/clutter-behaviour-rotate.c:369
-msgid "Center Y"
-msgstr "மையம் Y"
-
-#: clutter/clutter-behaviour-rotate.c:370
-msgid "Y coordinate of the center of rotation"
-msgstr "சுழற்சியின் மையத்திற்கான Y ஒருங்கமைப்பு"
-
-#: clutter/clutter-behaviour-rotate.c:387
-msgid "Center Z"
-msgstr "மையம் Z"
-
-#: clutter/clutter-behaviour-rotate.c:388
-msgid "Z coordinate of the center of rotation"
-msgstr "சுழற்சியின் மையத்திற்கான Z ஒருங்கமைப்பு"
-
-#: clutter/clutter-behaviour-scale.c:222
-msgid "X Start Scale"
-msgstr "X துவக்க அளவு"
-
-#: clutter/clutter-behaviour-scale.c:223
-msgid "Initial scale on the X axis"
-msgstr "X அச்சின் துவக்க அளவு"
-
-#: clutter/clutter-behaviour-scale.c:241
-msgid "X End Scale"
-msgstr "X முடிவு அளவு"
-
-#: clutter/clutter-behaviour-scale.c:242
-msgid "Final scale on the X axis"
-msgstr "X அச்சில் கடைசி அளவு"
-
-#: clutter/clutter-behaviour-scale.c:260
-msgid "Y Start Scale"
-msgstr "Y துவக்க அளவு"
-
-#: clutter/clutter-behaviour-scale.c:261
-msgid "Initial scale on the Y axis"
-msgstr "Y அச்சின் துவக்க அளவு"
-
-#: clutter/clutter-behaviour-scale.c:279
-msgid "Y End Scale"
-msgstr "Y முடிவு அளவு"
-
-#: clutter/clutter-behaviour-scale.c:280
-msgid "Final scale on the Y axis"
-msgstr "Y அச்சில் கடைசி அளவு"
-
-#: clutter/clutter-bind-constraint.c:350
+#: clutter/clutter-bind-constraint.c:357
 msgid "The source of the binding"
 msgstr "பிணைப்பதற்கான மூலம்"
 
-#: clutter/clutter-bind-constraint.c:363
+#: clutter/clutter-bind-constraint.c:370
 msgid "Coordinate"
 msgstr "Y ஒருங்கமைப்பு"
 
-#: clutter/clutter-bind-constraint.c:364
+#: clutter/clutter-bind-constraint.c:371
 msgid "The coordinate to bind"
 msgstr "பிணைப்பதற்கான ஒருங்கமைப்பு"
 
-#: clutter/clutter-bind-constraint.c:378 clutter/clutter-path-constraint.c:226
+#: clutter/clutter-bind-constraint.c:385 clutter/clutter-path-constraint.c:226
 #: clutter/clutter-snap-constraint.c:366
 msgid "Offset"
 msgstr "ஆஃப்செட்"
 
-#: clutter/clutter-bind-constraint.c:379
+#: clutter/clutter-bind-constraint.c:386
 msgid "The offset in pixels to apply to the binding"
 msgstr "பிணைப்பதற்கு செயல்படுதவற்கான பிக்செல்களின் ஆஃப்செட்"
 
@@ -736,177 +717,180 @@ msgstr "பிணைப்பதற்கு செயல்படுதவற�
 msgid "The unique name of the binding pool"
 msgstr "பிணைக்கும் பூலுக்கான தனிப்பட்ட பெயர்"
 
-#: clutter/clutter-bin-layout.c:261 clutter/clutter-bin-layout.c:585
-#: clutter/clutter-box-layout.c:395 clutter/clutter-table-layout.c:652
+#: clutter/clutter-bin-layout.c:266 clutter/clutter-bin-layout.c:588
+#: clutter/clutter-box-layout.c:408 clutter/clutter-table-layout.c:662
 msgid "Horizontal Alignment"
 msgstr "கிடைமட்ட ஒழுங்குப்படுத்துதல்"
 
-#: clutter/clutter-bin-layout.c:262
+#: clutter/clutter-bin-layout.c:267
 msgid "Horizontal alignment for the actor inside the layout manager"
 msgstr "தளவமைப்பு நிர்வாகியில் நடிகர் உள்ளிருக்கும் போதான கிடைமட்ட ஒழுங்குப்படுத்தல்"
 
-#: clutter/clutter-bin-layout.c:270 clutter/clutter-bin-layout.c:602
-#: clutter/clutter-box-layout.c:404 clutter/clutter-table-layout.c:667
+#: clutter/clutter-bin-layout.c:275 clutter/clutter-bin-layout.c:605
+#: clutter/clutter-box-layout.c:417 clutter/clutter-table-layout.c:677
 msgid "Vertical Alignment"
 msgstr "செங்குத்து ஒழுங்குப்படுத்துல்"
 
-#: clutter/clutter-bin-layout.c:271
+#: clutter/clutter-bin-layout.c:276
 msgid "Vertical alignment for the actor inside the layout manager"
 msgstr "தளவமைப்பு நிர்வாகியில் நடிகர் உள்ளிருக்கும் போதான செங்குத்து ஒழுங்குப்படுத்தல்"
 
-#: clutter/clutter-bin-layout.c:586
+#: clutter/clutter-bin-layout.c:589
 msgid "Default horizontal alignment for the actors inside the layout manager"
 msgstr ""
 "தளவமைப்பு நிர்வாகியில் நடிகர் உள்ளிருக்கும் போதான முன்னிருப்பு கிடைமட்ட ஒழுங்குப்படுத்தல்"
 
-#: clutter/clutter-bin-layout.c:603
+#: clutter/clutter-bin-layout.c:606
 msgid "Default vertical alignment for the actors inside the layout manager"
 msgstr ""
 "தளவமைப்பு நிர்வாகியில் நடிகர் உள்ளிருக்கும் போதான முன்னிருப்பு செங்குத்து ஒழுங்குப்படுத்தல்"
 
-#: clutter/clutter-box.c:544
-msgid "Layout Manager"
-msgstr "தளவமைப்பு நிர்வாகி"
-
-#: clutter/clutter-box.c:545
-msgid "The layout manager used by the box"
-msgstr "தளவமைப்பு நிர்வாகி பெட்டியால் பயன்படுத்தப்படுவர்"
-
-#: clutter/clutter-box.c:564 clutter/clutter-rectangle.c:267
-#: clutter/clutter-stage.c:1778
-msgid "Color"
-msgstr "வண்ணம்"
-
-#: clutter/clutter-box.c:565
-msgid "The background color of the box"
-msgstr "பெட்டியின் பின்னணி வண்ணம்"
-
-#: clutter/clutter-box.c:579
-msgid "Color Set"
-msgstr "வண்ண அமைப்பு"
-
-#: clutter/clutter-box.c:580
-msgid "Whether the background color is set"
-msgstr "பின்னணி வண்ணம் அமைக்கப்பட்டால்"
-
-#: clutter/clutter-box-layout.c:370
+#: clutter/clutter-box-layout.c:383
 msgid "Expand"
 msgstr "விரிக்கவும்"
 
-#: clutter/clutter-box-layout.c:371
+#: clutter/clutter-box-layout.c:384
 msgid "Allocate extra space for the child"
 msgstr "சேய்க்கான கூடுதல் இடத்திற்காக ஒதுக்கவும்"
 
-#: clutter/clutter-box-layout.c:377 clutter/clutter-table-layout.c:631
+#: clutter/clutter-box-layout.c:390 clutter/clutter-table-layout.c:641
 msgid "Horizontal Fill"
 msgstr "கிடைமட்ட நிரப்பல்"
 
-#: clutter/clutter-box-layout.c:378 clutter/clutter-table-layout.c:632
+#: clutter/clutter-box-layout.c:391 clutter/clutter-table-layout.c:642
 msgid ""
 "Whether the child should receive priority when the container is allocating "
 "spare space on the horizontal axis"
 msgstr ""
 "கிடைம அச்சில் மேலும் இடத்தை கொள்கலனில் ஒதுக்கும் போது சேய் முன்னுரிமையை பெறுவார்களா"
 
-#: clutter/clutter-box-layout.c:386 clutter/clutter-table-layout.c:638
+#: clutter/clutter-box-layout.c:399 clutter/clutter-table-layout.c:648
 msgid "Vertical Fill"
 msgstr "செங்குத்து நிரப்பல்"
 
-#: clutter/clutter-box-layout.c:387 clutter/clutter-table-layout.c:639
+#: clutter/clutter-box-layout.c:400 clutter/clutter-table-layout.c:649
 msgid ""
 "Whether the child should receive priority when the container is allocating "
 "spare space on the vertical axis"
 msgstr ""
 "செங்குத்து அச்சில் மேலும் இடத்தை கொள்கலனில் ஒதுக்கும் போது சேய் முன்னுரிமையை பெறுவார்களா"
 
-#: clutter/clutter-box-layout.c:396 clutter/clutter-table-layout.c:653
+#: clutter/clutter-box-layout.c:409 clutter/clutter-table-layout.c:663
 msgid "Horizontal alignment of the actor within the cell"
 msgstr "அறைக்குள் நடிகரின் கிடைமட்ட ஒழுங்குப்படுத்தல்"
 
-#: clutter/clutter-box-layout.c:405 clutter/clutter-table-layout.c:668
+#: clutter/clutter-box-layout.c:418 clutter/clutter-table-layout.c:678
 msgid "Vertical alignment of the actor within the cell"
 msgstr "அறைக்குள் நடிகரின் செங்குத்து ஒழுங்குப்படுத்தல்"
 
-#: clutter/clutter-box-layout.c:1303
+#: clutter/clutter-box-layout.c:1311
 msgid "Vertical"
 msgstr "செங்குத்த"
 
-#: clutter/clutter-box-layout.c:1304
+#: clutter/clutter-box-layout.c:1312
 msgid "Whether the layout should be vertical, rather than horizontal"
 msgstr "அமைப்பானது செங்குத்தாக, பதிலாக கிடைமட்டமாக இருந்தால்"
 
-#: clutter/clutter-box-layout.c:1319 clutter/clutter-flow-layout.c:901
+#: clutter/clutter-box-layout.c:1327 clutter/clutter-flow-layout.c:898
 msgid "Homogeneous"
 msgstr "ஓரினமில்லாத"
 
-#: clutter/clutter-box-layout.c:1320
+#: clutter/clutter-box-layout.c:1328
 msgid ""
 "Whether the layout should be homogeneous, i.e. all childs get the same size"
 msgstr "தளவமைப்பு ஹொமோஜெனஸ் ஆக இருந்தால், எ.கா. அனைத்து சேய்களும் அதே அளவை பெறுவர்"
 
-#: clutter/clutter-box-layout.c:1335
+#: clutter/clutter-box-layout.c:1343
 msgid "Pack Start"
 msgstr "தொகுப்பை துவக்கவும்"
 
-#: clutter/clutter-box-layout.c:1336
+#: clutter/clutter-box-layout.c:1344
 msgid "Whether to pack items at the start of the box"
 msgstr "பெட்டியின் துவக்கத்தில் உருப்படிகளை தொகுக்குமா"
 
-#: clutter/clutter-box-layout.c:1349
+#: clutter/clutter-box-layout.c:1357
 msgid "Spacing"
 msgstr "இடைவெளி"
 
-#: clutter/clutter-box-layout.c:1350
+#: clutter/clutter-box-layout.c:1358
 msgid "Spacing between children"
 msgstr "குழந்தைகளுக்கிடையேயான இடைவெளி"
 
-#: clutter/clutter-box-layout.c:1364 clutter/clutter-table-layout.c:1742
+#: clutter/clutter-box-layout.c:1372 clutter/clutter-table-layout.c:1775
 msgid "Use Animations"
 msgstr "அசைவூட்டங்களை பயன்படுத்தவும்"
 
-#: clutter/clutter-box-layout.c:1365 clutter/clutter-table-layout.c:1743
+#: clutter/clutter-box-layout.c:1373 clutter/clutter-table-layout.c:1776
 msgid "Whether layout changes should be animated"
 msgstr "தளவமைப்பு மாற்றங்கள் அசைவூட்டமாக்கப்படுமா"
 
-#: clutter/clutter-box-layout.c:1386 clutter/clutter-table-layout.c:1764
+#: clutter/clutter-box-layout.c:1394 clutter/clutter-table-layout.c:1797
 msgid "Easing Mode"
 msgstr "எளிதாக்கும் முறைமை"
 
-#: clutter/clutter-box-layout.c:1387 clutter/clutter-table-layout.c:1765
+#: clutter/clutter-box-layout.c:1395 clutter/clutter-table-layout.c:1798
 msgid "The easing mode of the animations"
 msgstr "அசைவூட்டத்திற்கான எளிய முறைமை"
 
-#: clutter/clutter-box-layout.c:1404 clutter/clutter-table-layout.c:1782
+#: clutter/clutter-box-layout.c:1412 clutter/clutter-table-layout.c:1815
 msgid "Easing Duration"
 msgstr "எளிதாக்கும் கால அளவு"
 
-#: clutter/clutter-box-layout.c:1405 clutter/clutter-table-layout.c:1783
+#: clutter/clutter-box-layout.c:1413 clutter/clutter-table-layout.c:1816
 msgid "The duration of the animations"
 msgstr "அசைவூட்டத்தின் கால அளவு"
 
-#: clutter/clutter-cairo-texture.c:582
+#: clutter/clutter-brightness-contrast-effect.c:307
+msgid "Brightness"
+msgstr ""
+
+#: clutter/clutter-brightness-contrast-effect.c:308
+#, fuzzy
+msgid "The brightness change to apply"
+msgstr "செயல்படுத்துவதற்கான இளநிறம்"
+
+#: clutter/clutter-brightness-contrast-effect.c:327
+msgid "Contrast"
+msgstr ""
+
+#: clutter/clutter-brightness-contrast-effect.c:328
+#, fuzzy
+msgid "The contrast change to apply"
+msgstr "செயல்படுத்துவதற்கான இளநிறம்"
+
+#: clutter/clutter-cairo-texture.c:591
 msgid "Surface Width"
 msgstr "மேற்பரப்பு அகலம்"
 
-#: clutter/clutter-cairo-texture.c:583
+#: clutter/clutter-cairo-texture.c:592
 msgid "The width of the Cairo surface"
 msgstr "Cairo தளத்தின் அகலம்"
 
-#: clutter/clutter-cairo-texture.c:597
+#: clutter/clutter-cairo-texture.c:606
 msgid "Surface Height"
 msgstr "மேற்பரப்பு உயரம்"
 
-#: clutter/clutter-cairo-texture.c:598
+#: clutter/clutter-cairo-texture.c:607
 msgid "The height of the Cairo surface"
 msgstr "Cairo தளத்தின் உயரம்"
 
-#: clutter/clutter-cairo-texture.c:615
+#: clutter/clutter-cairo-texture.c:624
 msgid "Auto Resize"
 msgstr "தானியக்க மறுஅளவிடவும்"
 
-#: clutter/clutter-cairo-texture.c:616
+#: clutter/clutter-cairo-texture.c:625
 msgid "Whether the surface should match the allocation"
 msgstr "தளம் ஒதுக்கீட்டிற்கு பொருந்தினால்"
+
+#: clutter/clutter-canvas.c:215
+#, fuzzy
+msgid "The width of the canvas"
+msgstr "Cairo தளத்தின் அகலம்"
+
+#: clutter/clutter-canvas.c:231
+#, fuzzy
+msgid "The height of the canvas"
+msgstr "Cairo தளத்தின் உயரம்"
 
 #: clutter/clutter-child-meta.c:127
 msgid "Container"
@@ -936,7 +920,7 @@ msgstr "வைத்திருந்தல்"
 msgid "Whether the clickable has a grab"
 msgstr "கிளிக் செய்யக்கூடிய ஒரு பிடியை கொண்டிருந்தால்"
 
-#: clutter/clutter-click-action.c:578 clutter/clutter-settings.c:573
+#: clutter/clutter-click-action.c:578 clutter/clutter-settings.c:599
 msgid "Long Press Duration"
 msgstr "நீண்ட அழுத்த கால அளவு"
 
@@ -952,43 +936,43 @@ msgstr "நீண்ட அழுத்த நுழைவாயில்"
 msgid "The maximum threshold before a long press is cancelled"
 msgstr "ஒரு நீண்ட அழுத்தம் ரத்துசெய்யப்படுவதற்கு முன்னுள்ள அதிகபட்ச நுழைவாயில்"
 
-#: clutter/clutter-clone.c:341
+#: clutter/clutter-clone.c:346
 msgid "Specifies the actor to be cloned"
 msgstr "நடிகர் க்ளோன் செய்யப்பட வேண்டுமென குறிப்பிடுகிறது"
 
-#: clutter/clutter-colorize-effect.c:307
+#: clutter/clutter-colorize-effect.c:251
 msgid "Tint"
 msgstr "இளநிறம்"
 
-#: clutter/clutter-colorize-effect.c:308
+#: clutter/clutter-colorize-effect.c:252
 msgid "The tint to apply"
 msgstr "செயல்படுத்துவதற்கான இளநிறம்"
 
-#: clutter/clutter-deform-effect.c:529
+#: clutter/clutter-deform-effect.c:588
 msgid "Horizontal Tiles"
 msgstr "கிடைமட்ட ஓடுகள்"
 
-#: clutter/clutter-deform-effect.c:530
+#: clutter/clutter-deform-effect.c:589
 msgid "The number of horizontal tiles"
 msgstr "கிடைமட்ட ஓடுகளின் எண்ணிக்கை"
 
-#: clutter/clutter-deform-effect.c:545
+#: clutter/clutter-deform-effect.c:604
 msgid "Vertical Tiles"
 msgstr "செங்குத்து ஓடுகள்"
 
-#: clutter/clutter-deform-effect.c:546
+#: clutter/clutter-deform-effect.c:605
 msgid "The number of vertical tiles"
 msgstr "செங்குத்து ஓடுகளின் எண்ணிக்கை"
 
-#: clutter/clutter-deform-effect.c:563
+#: clutter/clutter-deform-effect.c:622
 msgid "Back Material"
 msgstr "மீண்டும் பொருள்"
 
-#: clutter/clutter-deform-effect.c:564
+#: clutter/clutter-deform-effect.c:623
 msgid "The material to be used when painting the back of the actor"
 msgstr "நடிகரின் பின்னால் வரையும் போது பொருள் பயன்படுத்தப்பட்டது"
 
-#: clutter/clutter-desaturate-effect.c:305
+#: clutter/clutter-desaturate-effect.c:271
 msgid "The desaturation factor"
 msgstr "நிறைவுறாத காரணி"
 
@@ -1001,97 +985,102 @@ msgstr "பின்முனை "
 msgid "The ClutterBackend of the device manager"
 msgstr "சாதன மேலாளரின் ClutterBackend "
 
-#: clutter/clutter-drag-action.c:596
+#: clutter/clutter-drag-action.c:602
 msgid "Horizontal Drag Threshold"
 msgstr "கிடைமட்ட நுழைவாயிலை இழு"
 
-#: clutter/clutter-drag-action.c:597
+#: clutter/clutter-drag-action.c:603
 msgid "The horizontal amount of pixels required to start dragging"
 msgstr "பிக்செல்களின் கிடைமட்ட தொகை இழுக்க துவங்க கோருகிறது "
 
-#: clutter/clutter-drag-action.c:624
+#: clutter/clutter-drag-action.c:630
 msgid "Vertical Drag Threshold"
 msgstr "செங்குத்து நுழைவாயிலை இழு"
 
-#: clutter/clutter-drag-action.c:625
+#: clutter/clutter-drag-action.c:631
 msgid "The vertical amount of pixels required to start dragging"
 msgstr "பிக்செல்களின் செங்குத்து தொகை இழுக்க துவங்க கோருகிறது "
 
-#: clutter/clutter-drag-action.c:646
+#: clutter/clutter-drag-action.c:652
 msgid "Drag Handle"
 msgstr "கைப்பிடியை இழுக்கவும்"
 
-#: clutter/clutter-drag-action.c:647
+#: clutter/clutter-drag-action.c:653
 msgid "The actor that is being dragged"
 msgstr "நடிகர் இழுக்கபடுவர்"
 
-#: clutter/clutter-drag-action.c:660
+#: clutter/clutter-drag-action.c:666
 msgid "Drag Axis"
 msgstr "அச்சை இழுக்கவும்"
 
-#: clutter/clutter-drag-action.c:661
+#: clutter/clutter-drag-action.c:667
 msgid "Constraints the dragging to an axis"
 msgstr "ஒரு அச்சிற்கான கட்டுப்பாட்டை இழுக்கிறது"
 
-#: clutter/clutter-flow-layout.c:885
+#: clutter/clutter-flow-layout.c:882
 msgid "Orientation"
 msgstr "திசையமைப்பு"
 
-#: clutter/clutter-flow-layout.c:886
+#: clutter/clutter-flow-layout.c:883
 msgid "The orientation of the layout"
 msgstr "தளவமைப்பின் திசையமைப்பு"
 
-#: clutter/clutter-flow-layout.c:902
+#: clutter/clutter-flow-layout.c:899
 msgid "Whether each item should receive the same allocation"
 msgstr "ஒவ்வொரு உருப்படியும் அதே ஒதுக்கீட்டை பெறும் போது"
 
-#: clutter/clutter-flow-layout.c:917 clutter/clutter-table-layout.c:1713
+#: clutter/clutter-flow-layout.c:914 clutter/clutter-table-layout.c:1746
 msgid "Column Spacing"
 msgstr "நிரல் இடைவெளி"
 
-#: clutter/clutter-flow-layout.c:918
+#: clutter/clutter-flow-layout.c:915
 msgid "The spacing between columns"
 msgstr "நிரல்களுக்கு இடையேயுள்ள இடைவெளி"
 
-#: clutter/clutter-flow-layout.c:934 clutter/clutter-table-layout.c:1727
+#: clutter/clutter-flow-layout.c:931 clutter/clutter-table-layout.c:1760
 msgid "Row Spacing"
 msgstr "வரிசை இடைவெளி"
 
-#: clutter/clutter-flow-layout.c:935
+#: clutter/clutter-flow-layout.c:932
 msgid "The spacing between rows"
 msgstr "வரிசைகளுக்கு இடையேயுள்ள இடைவெளி"
 
-#: clutter/clutter-flow-layout.c:949
+#: clutter/clutter-flow-layout.c:946
 msgid "Minimum Column Width"
 msgstr "குறைந்தபட்ச நிரல் அகலம்"
 
-#: clutter/clutter-flow-layout.c:950
+#: clutter/clutter-flow-layout.c:947
 msgid "Minimum width for each column"
 msgstr "ஒவ்வொரு நிரலின் குறைந்தபட்ச அகலம்"
 
-#: clutter/clutter-flow-layout.c:965
+#: clutter/clutter-flow-layout.c:962
 msgid "Maximum Column Width"
 msgstr "அதிகபட்ச நிரல் அகலம்"
 
-#: clutter/clutter-flow-layout.c:966
+#: clutter/clutter-flow-layout.c:963
 msgid "Maximum width for each column"
 msgstr "ஒவ்வொரு நிரலுக்கான அதிகபட்ச அகலம்"
 
-#: clutter/clutter-flow-layout.c:980
+#: clutter/clutter-flow-layout.c:977
 msgid "Minimum Row Height"
 msgstr "குறைந்தபட்ச வரிசை உயரம்"
 
-#: clutter/clutter-flow-layout.c:981
+#: clutter/clutter-flow-layout.c:978
 msgid "Minimum height for each row"
 msgstr "ஒவ்வொரு வரிசைக்கான குறைந்தபட்ச உயரம்"
 
-#: clutter/clutter-flow-layout.c:996
+#: clutter/clutter-flow-layout.c:993
 msgid "Maximum Row Height"
 msgstr "அதிகபட்ச வரிசை உயரம்"
 
-#: clutter/clutter-flow-layout.c:997
+#: clutter/clutter-flow-layout.c:994
 msgid "Maximum height for each row"
 msgstr "ஒவ்வொரு வரிசைக்கான அதிகபட்ச உயரம்"
+
+#: clutter/clutter-image.c:229 clutter/clutter-image.c:317
+#, fuzzy
+msgid "Unable to load image data"
+msgstr "படத் தரவை ஏற்ற முடியவில்லை"
 
 #: clutter/clutter-input-device.c:220
 msgid "Id"
@@ -1153,11 +1142,11 @@ msgstr "சாதனத்திலுள்ள அச்சுகளின் �
 msgid "The backend instance"
 msgstr "பின்முனை எடுத்துகாட்டு"
 
-#: clutter/clutter-interval.c:397
+#: clutter/clutter-interval.c:381
 msgid "Value Type"
 msgstr "மதிப்பு வகை"
 
-#: clutter/clutter-interval.c:398
+#: clutter/clutter-interval.c:382
 msgid "The type of the values in the interval"
 msgstr "இடைவெளியில் மதிப்புகளின் வகை"
 
@@ -1169,59 +1158,59 @@ msgstr "நிர்வாகி"
 msgid "The manager that created this data"
 msgstr "இந்த தரவை உருவாக்கிய நிர்வாகி"
 
-#: clutter/clutter-main.c:492
+#: clutter/clutter-main.c:763
 msgid "default:LTR"
 msgstr "default:LTR"
 
-#: clutter/clutter-main.c:1323
+#: clutter/clutter-main.c:1610
 msgid "Show frames per second"
 msgstr "விநாடிக்கு ப்ரேம்களை காட்டவும்"
 
-#: clutter/clutter-main.c:1325
+#: clutter/clutter-main.c:1612
 msgid "Default frame rate"
 msgstr "முன்னிருப்பு சட்ட விகிதம்"
 
-#: clutter/clutter-main.c:1327
+#: clutter/clutter-main.c:1614
 msgid "Make all warnings fatal"
 msgstr "அனைத்து எச்சரிக்கைகளையும் மரணமாக்க செய்கிறது"
 
-#: clutter/clutter-main.c:1330
+#: clutter/clutter-main.c:1617
 msgid "Direction for the text"
 msgstr "உரைக்கான திசை"
 
-#: clutter/clutter-main.c:1333
+#: clutter/clutter-main.c:1620
 msgid "Disable mipmapping on text"
 msgstr "உரையில் mipmapping ஐ செயல்நீக்குகிறது"
 
-#: clutter/clutter-main.c:1336
+#: clutter/clutter-main.c:1623
 msgid "Use 'fuzzy' picking"
 msgstr "'தெளிவற்ற' தேர்வை பயன்படுத்தவும்"
 
-#: clutter/clutter-main.c:1339
+#: clutter/clutter-main.c:1626
 msgid "Clutter debugging flags to set"
 msgstr "Clutter பிழைத்திருத்தும் கொடிகளை அமைக்கிறது"
 
-#: clutter/clutter-main.c:1341
+#: clutter/clutter-main.c:1628
 msgid "Clutter debugging flags to unset"
 msgstr "Clutter பிழைத்திருத்தும் கொடிகளை அமைக்கிறது"
 
-#: clutter/clutter-main.c:1345
+#: clutter/clutter-main.c:1632
 msgid "Clutter profiling flags to set"
 msgstr "Clutter விவரக்குறிப்பு கொடிகளை அமைக்கிறது"
 
-#: clutter/clutter-main.c:1347
+#: clutter/clutter-main.c:1634
 msgid "Clutter profiling flags to unset"
 msgstr "Clutter விவரக்குறிப்பு கொடிகளை அமைப்புநீக்குகிறது"
 
-#: clutter/clutter-main.c:1350
+#: clutter/clutter-main.c:1637
 msgid "Enable accessibility"
 msgstr "அணகல் தன்மையை செயல்படுத்தவும்"
 
-#: clutter/clutter-main.c:1532
+#: clutter/clutter-main.c:1829
 msgid "Clutter Options"
 msgstr "Clutter விருப்பங்கள்"
 
-#: clutter/clutter-main.c:1533
+#: clutter/clutter-main.c:1830
 msgid "Show Clutter Options"
 msgstr "Clutterவிருப்பங்களை காட்டவும்"
 
@@ -1293,6 +1282,11 @@ msgstr "பஃபர் நிலையை நிரப்பு"
 msgid "The duration of the stream, in seconds"
 msgstr "ஸ்ட்ரெம்மின் கால அளவு, விநாடிகளில்"
 
+#: clutter/clutter-path-constraint.c:212
+#: clutter/deprecated/clutter-behaviour-path.c:224
+msgid "Path"
+msgstr "பாதை"
+
 #: clutter/clutter-path-constraint.c:213
 msgid "The path used to constrain an actor"
 msgstr "பாதை ஒரு நடிகரை கட்டுபடுத்த பயன்படுத்தப்பட்டது"
@@ -1301,88 +1295,78 @@ msgstr "பாதை ஒரு நடிகரை கட்டுபடுத்
 msgid "The offset along the path, between -1.0 and 2.0"
 msgstr "பாதையுடனான ஆஃப்செட், -1.0 மற்றும் 2.0 க்கு இடையே"
 
-#: clutter/clutter-rectangle.c:268
-msgid "The color of the rectangle"
-msgstr "நீள்சதுரத்தின் வண்ணம்"
+#: clutter/clutter-property-transition.c:196
+#, fuzzy
+msgid "Property Name"
+msgstr "எழுத்துரு பெயர்"
 
-#: clutter/clutter-rectangle.c:281
-msgid "Border Color"
-msgstr "எல்லை வண்ணம்"
+#: clutter/clutter-property-transition.c:197
+#, fuzzy
+msgid "The name of the property to animate"
+msgstr "மெட்டாவின் பெயர்"
 
-#: clutter/clutter-rectangle.c:282
-msgid "The color of the border of the rectangle"
-msgstr "நீள்சதுர எல்லையின் வண்ணம்"
-
-#: clutter/clutter-rectangle.c:297
-msgid "Border Width"
-msgstr "எல்லை அகலம்"
-
-#: clutter/clutter-rectangle.c:298
-msgid "The width of the border of the rectangle"
-msgstr "நீள்சதுர எல்லையின் அகலம்"
-
-#: clutter/clutter-rectangle.c:312
-msgid "Has Border"
-msgstr "எல்லையை கொண்டுள்ளது"
-
-#: clutter/clutter-rectangle.c:313
-msgid "Whether the rectangle should have a border"
-msgstr "நீள்சணதுரம் ஒரு எல்லையை கொண்டுள்ளதா"
-
-#: clutter/clutter-script.c:434
+#: clutter/clutter-script.c:464
 msgid "Filename Set"
 msgstr "கோப்புபெயரை அமை"
 
-#: clutter/clutter-script.c:435
+#: clutter/clutter-script.c:465
 msgid "Whether the :filename property is set"
 msgstr "என்பதை: கோப்புபெயர் பண்பை அமைக்கும்"
 
-#: clutter/clutter-script.c:449 clutter/clutter-texture.c:1081
+#: clutter/clutter-script.c:479 clutter/clutter-texture.c:1078
 msgid "Filename"
 msgstr "கோப்புபெயர்"
 
-#: clutter/clutter-script.c:450
+#: clutter/clutter-script.c:480
 msgid "The path of the currently parsed file"
 msgstr "தற்போது பகுக்கப்பட்ட கோப்பின் பாதை"
 
-#: clutter/clutter-settings.c:414
+#: clutter/clutter-script.c:497
+msgid "Translation Domain"
+msgstr ""
+
+#: clutter/clutter-script.c:498
+msgid "The translation domain used to localize string"
+msgstr ""
+
+#: clutter/clutter-settings.c:440
 msgid "Double Click Time"
 msgstr "இரட்டை கிளிக் நேரம்"
 
-#: clutter/clutter-settings.c:415
+#: clutter/clutter-settings.c:441
 msgid "The time between clicks necessary to detect a multiple click"
 msgstr "ஒரு பல கிளிக் கண்டறிதலில் தேவையான கிளிக்குகளுக்கு இடையே உள்ள நேரம்"
 
-#: clutter/clutter-settings.c:430
+#: clutter/clutter-settings.c:456
 msgid "Double Click Distance"
 msgstr "இரட்டை கிளிக் தூரம்"
 
-#: clutter/clutter-settings.c:431
+#: clutter/clutter-settings.c:457
 msgid "The distance between clicks necessary to detect a multiple click"
 msgstr "ஒரு பல கிளிக் கண்டறிதலில் தேவையான கிளிக்குகளுக்கு இடையே உள்ள இடைவெளி"
 
-#: clutter/clutter-settings.c:446
+#: clutter/clutter-settings.c:472
 msgid "Drag Threshold"
 msgstr "நுழைவாயிலை இழுக்கவும்"
 
-#: clutter/clutter-settings.c:447
+#: clutter/clutter-settings.c:473
 msgid "The distance the cursor should travel before starting to drag"
 msgstr "இழுக்க துவங்குவதற்கு முன் கர்சன் செல்லும் தூரம்"
 
-#: clutter/clutter-settings.c:462 clutter/clutter-text.c:2936
+#: clutter/clutter-settings.c:488 clutter/clutter-text.c:2987
 msgid "Font Name"
 msgstr "எழுத்துரு பெயர்"
 
-#: clutter/clutter-settings.c:463
+#: clutter/clutter-settings.c:489
 msgid ""
 "The description of the default font, as one that could be parsed by Pango"
 msgstr "முன்னிருப்பு எழுத்துருவின் விளக்கம், பாங்கோவால் ஒன்று  அலசப்படும்"
 
-#: clutter/clutter-settings.c:478
+#: clutter/clutter-settings.c:504
 msgid "Font Antialias"
 msgstr "எழுத்துரு ஆண்டியலையாஸ்"
 
-#: clutter/clutter-settings.c:479
+#: clutter/clutter-settings.c:505
 msgid ""
 "Whether to use antialiasing (1 to enable, 0 to disable, and -1 to use the "
 "default)"
@@ -1390,100 +1374,68 @@ msgstr ""
 "ஆன்டிஅலைசிங்கை பயன்படுத்துகிறதா ( லிருந்து செயல்படுத்த, 0 லிருந்து செயல்நீக்க மற்றும் -1 "
 "முன்னிருப்பை பயன்படுத்த)"
 
-#: clutter/clutter-settings.c:495
+#: clutter/clutter-settings.c:521
 msgid "Font DPI"
 msgstr "DPI எழுத்துரு"
 
-#: clutter/clutter-settings.c:496
+#: clutter/clutter-settings.c:522
 msgid ""
 "The resolution of the font, in 1024 * dots/inch, or -1 to use the default"
 msgstr "எழுத்துருவின் தீர்மானம், 1024  இல்* dots/inch, அல்லது -1 முன்னிப்பை பயன்படுத்தவும்"
 
-#: clutter/clutter-settings.c:512
+#: clutter/clutter-settings.c:538
 msgid "Font Hinting"
 msgstr "எழுத்துரு புலப்படுதல்"
 
-#: clutter/clutter-settings.c:513
+#: clutter/clutter-settings.c:539
 msgid ""
 "Whether to use hinting (1 to enable, 0 to disable and -1 to use the default)"
 msgstr ""
 "குறிப்பை பயன்படுத்துகிறதா (1 லிருந்து செயல்படுத்த, 0 லிருந்து செயல்நீக்க மற்றும் -1 "
 "முன்னிருப்பை பயன்படுத்த)"
 
-#: clutter/clutter-settings.c:534
+#: clutter/clutter-settings.c:560
 msgid "Font Hint Style"
 msgstr "எழுத்துரு குறிப்பு பாணி"
 
-#: clutter/clutter-settings.c:535
+#: clutter/clutter-settings.c:561
 msgid "The style of hinting (hintnone, hintslight, hintmedium, hintfull)"
 msgstr "குறிப்பிற்கான பாணி (hintnone, hintslight, hintmedium, hintfull)"
 
-#: clutter/clutter-settings.c:556
+#: clutter/clutter-settings.c:582
 msgid "Font Subpixel Order"
 msgstr "எழுத்துரு துணைபிக்செல் ஆர்டர்"
 
-#: clutter/clutter-settings.c:557
+#: clutter/clutter-settings.c:583
 msgid "The type of subpixel antialiasing (none, rgb, bgr, vrgb, vbgr)"
 msgstr "துணைபிக்செல் ஆன்டிஅலைசிங் வகை (none, rgb, bgr, vrgb, vbgr)"
 
-#: clutter/clutter-settings.c:574
+#: clutter/clutter-settings.c:600
 msgid "The minimum duration for a long press gesture to be recognized"
 msgstr "ஒரு நீண்ட அழுத்த சைகையை கண்டறிவதற்கான குறைந்தபட்ச இடைவெளி"
 
-#: clutter/clutter-settings.c:581
+#: clutter/clutter-settings.c:607
 msgid "Fontconfig configuration timestamp"
 msgstr "Fontconfig கட்டமைப்பு timestamp"
 
-#: clutter/clutter-settings.c:582
+#: clutter/clutter-settings.c:608
 msgid "Timestamp of the current fontconfig configuration"
 msgstr "Timestamp இன் தற்போதைய fontconfig கட்டமைப்பு"
 
-#: clutter/clutter-shader.c:255
-msgid "Vertex Source"
-msgstr "உச்சி மூலம்"
+#: clutter/clutter-settings.c:625
+#, fuzzy
+msgid "Password Hint Time"
+msgstr "கடவுச்சொல் எண்"
 
-#: clutter/clutter-shader.c:256
-msgid "Source of vertex shader"
-msgstr "உச்சி நிழலின் மூலம்"
+#: clutter/clutter-settings.c:626
+msgid "How long to show the last input character in hidden entries"
+msgstr ""
 
-#: clutter/clutter-shader.c:272
-msgid "Fragment Source"
-msgstr "பகுதி மூலம்"
-
-#: clutter/clutter-shader.c:273
-msgid "Source of fragment shader"
-msgstr "பகுதி நிழலின் மூலம்"
-
-#: clutter/clutter-shader.c:290
-msgid "Compiled"
-msgstr "தொகுக்கப்பட்டது"
-
-#: clutter/clutter-shader.c:291
-msgid "Whether the shader is compiled and linked"
-msgstr "நிழல் தொகுக்கப்பட்டு இணைக்கப்பட்டதா"
-
-#: clutter/clutter-shader.c:308
-msgid "Whether the shader is enabled"
-msgstr "நிழல் செயல்படுத்தப்பட்டதா"
-
-#: clutter/clutter-shader.c:519
-#, c-format
-msgid "%s compilation failed: %s"
-msgstr "%s தொகுப்பு தோல்விநடைந்தது: %s"
-
-#: clutter/clutter-shader.c:520
-msgid "Vertex shader"
-msgstr "உச்சி நிழல்"
-
-#: clutter/clutter-shader.c:521
-msgid "Fragment shader"
-msgstr "பகுதி நிழல்"
-
-#: clutter/clutter-shader-effect.c:415
+#: clutter/clutter-shader-effect.c:486
 msgid "Shader Type"
 msgstr "நிழல் வகை"
 
-#: clutter/clutter-shader-effect.c:416
+#: clutter/clutter-shader-effect.c:487
 msgid "The type of shader used"
 msgstr "பயன்படுத்தப்பட்ட நிழல் வகை"
 
@@ -1511,383 +1463,422 @@ msgstr "நடுவில் இருக்கும் மூலத்தி�
 msgid "The offset in pixels to apply to the constraint"
 msgstr "கட்டுபாட்டை செயல்படுத்தும் ஆஃப்செட்டிலுள்ள பிக்செல்கள்"
 
-#: clutter/clutter-stage.c:1720
+#: clutter/clutter-stage.c:1896
 msgid "Fullscreen Set"
 msgstr "முழுத்திரையை அமை"
 
-#: clutter/clutter-stage.c:1721
+#: clutter/clutter-stage.c:1897
 msgid "Whether the main stage is fullscreen"
 msgstr "முக்கிய நிலை முழுத்திரையாக இருந்தால்"
 
-#: clutter/clutter-stage.c:1737
+#: clutter/clutter-stage.c:1911
 msgid "Offscreen"
 msgstr "Offscreen"
 
-#: clutter/clutter-stage.c:1738
+#: clutter/clutter-stage.c:1912
 msgid "Whether the main stage should be rendered offscreen"
 msgstr "முக்கிய நிலை ஆஃப்ஸ்கிரீனை வழங்குமா"
 
-#: clutter/clutter-stage.c:1750 clutter/clutter-text.c:3049
+#: clutter/clutter-stage.c:1924 clutter/clutter-text.c:3100
 msgid "Cursor Visible"
 msgstr "கர்சர் காணக்கூடியது"
 
-#: clutter/clutter-stage.c:1751
+#: clutter/clutter-stage.c:1925
 msgid "Whether the mouse pointer is visible on the main stage"
 msgstr "முக்கிய நிலையில் சுட்டி பாயிண்டரை காண முடியுமா"
 
-#: clutter/clutter-stage.c:1765
+#: clutter/clutter-stage.c:1939
 msgid "User Resizable"
 msgstr "பயனர் மறுஅளவிடத்தக்கது"
 
-#: clutter/clutter-stage.c:1766
+#: clutter/clutter-stage.c:1940
 msgid "Whether the stage is able to be resized via user interaction"
 msgstr "பயனர் இடைச்செயல் வழியாக மேடையை மறுஅளவிட முடியுமா"
 
-#: clutter/clutter-stage.c:1779
+#: clutter/clutter-stage.c:1955 clutter/deprecated/clutter-box.c:260
+#: clutter/deprecated/clutter-rectangle.c:272
+msgid "Color"
+msgstr "வண்ணம்"
+
+#: clutter/clutter-stage.c:1956
 msgid "The color of the stage"
 msgstr "நிலையின் வண்ணம்"
 
-#: clutter/clutter-stage.c:1793
+#: clutter/clutter-stage.c:1971
 msgid "Perspective"
 msgstr "முன்னோக்கு"
 
-#: clutter/clutter-stage.c:1794
+#: clutter/clutter-stage.c:1972
 msgid "Perspective projection parameters"
 msgstr "முன்னோகு கணிப்பு அளவுருக்கள்"
 
-#: clutter/clutter-stage.c:1809
+#: clutter/clutter-stage.c:1987
 msgid "Title"
 msgstr "தலைப்பு"
 
-#: clutter/clutter-stage.c:1810
+#: clutter/clutter-stage.c:1988
 msgid "Stage Title"
 msgstr "நிலைத் தலைப்பு"
 
-#: clutter/clutter-stage.c:1825
+#: clutter/clutter-stage.c:2005
 msgid "Use Fog"
 msgstr "மூடுபனியை பயன்படுத்து"
 
-#: clutter/clutter-stage.c:1826
+#: clutter/clutter-stage.c:2006
 msgid "Whether to enable depth cueing"
 msgstr "நினைவுபடுத்தும் ஆழத்தை செயல்படுத்தவா"
 
-#: clutter/clutter-stage.c:1840
+#: clutter/clutter-stage.c:2022
 msgid "Fog"
 msgstr "மூடுபனி"
 
-#: clutter/clutter-stage.c:1841
+#: clutter/clutter-stage.c:2023
 msgid "Settings for the depth cueing"
 msgstr "நினைவுபடுத்தும் ஆழத்திற்கான அமைவுகள்"
 
-#: clutter/clutter-stage.c:1857
+#: clutter/clutter-stage.c:2039
 msgid "Use Alpha"
 msgstr "ஆல்ஃபாவை பயன்படுத்து"
 
-#: clutter/clutter-stage.c:1858
+#: clutter/clutter-stage.c:2040
 msgid "Whether to honour the alpha component of the stage color"
 msgstr "நிலை வண்ணத்தின் ஆஃல்பா கூற்றில் நன்மதிப்புள்ளதா"
 
-#: clutter/clutter-stage.c:1874
+#: clutter/clutter-stage.c:2056
 msgid "Key Focus"
 msgstr "விசையை குவிக்கவும்"
 
-#: clutter/clutter-stage.c:1875
+#: clutter/clutter-stage.c:2057
 msgid "The currently key focused actor"
 msgstr "தற்போதைய விசை நடிகரில் கவனம் செலுத்தியது"
 
-#: clutter/clutter-stage.c:1891
+#: clutter/clutter-stage.c:2073
 msgid "No Clear Hint"
 msgstr "தெளிவான குறிப்பு இல்லை"
 
-#: clutter/clutter-stage.c:1892
+#: clutter/clutter-stage.c:2074
 msgid "Whether the stage should clear its contents"
 msgstr "மேடை அதனுடைய உள்ளடக்கங்களை தெளிவாக்கிறதா"
 
-#: clutter/clutter-stage.c:1905
+#: clutter/clutter-stage.c:2087
 msgid "Accept Focus"
 msgstr "குவித்தலை ஏற்கவும்"
 
-#: clutter/clutter-stage.c:1906
+#: clutter/clutter-stage.c:2088
 msgid "Whether the stage should accept focus on show"
 msgstr "காட்சியில்  கவனத்தை மேடையானது ஏற்றுக் கொள்கிறதா"
 
-#: clutter/clutter-state.c:1472
+#: clutter/clutter-state.c:1474
 msgid "State"
 msgstr "நிலை"
 
-#: clutter/clutter-state.c:1473
+#: clutter/clutter-state.c:1475
 msgid "Currently set state, (transition to this state might not be complete)"
 msgstr "தற்போது நிலையை அமைக்கவும், ( இந்த நிலைக்கான மாற்றம் முடிக்கப்படமால் இருக்கலாம்)"
 
-#: clutter/clutter-state.c:1487
+#: clutter/clutter-state.c:1489
 msgid "Default transition duration"
 msgstr "முன்னிருப்பு மாற்ற இடைவெளி"
 
-#: clutter/clutter-table-layout.c:585
+#: clutter/clutter-table-layout.c:595
 msgid "Column Number"
 msgstr "நிரல் எண்"
 
-#: clutter/clutter-table-layout.c:586
+#: clutter/clutter-table-layout.c:596
 msgid "The column the widget resides in"
 msgstr "விட்ஜெட்டின் நிரல் உள்ளே உள்ளது"
 
-#: clutter/clutter-table-layout.c:593
+#: clutter/clutter-table-layout.c:603
 msgid "Row Number"
 msgstr "வரிசை எண்"
 
-#: clutter/clutter-table-layout.c:594
+#: clutter/clutter-table-layout.c:604
 msgid "The row the widget resides in"
 msgstr "விட்ஜெட்டின் வரிசை உள்ளே உள்ளது"
 
-#: clutter/clutter-table-layout.c:601
+#: clutter/clutter-table-layout.c:611
 msgid "Column Span"
 msgstr "நிரல் ஸ்பேன்"
 
-#: clutter/clutter-table-layout.c:602
+#: clutter/clutter-table-layout.c:612
 msgid "The number of columns the widget should span"
 msgstr "விட்ஜெட் ஸ்பேன் செய்ய வேண்டிய நிரல்களின் எண்ணிக்கை"
 
-#: clutter/clutter-table-layout.c:609
+#: clutter/clutter-table-layout.c:619
 msgid "Row Span"
 msgstr "வரிசை ஸ்பேன்"
 
-#: clutter/clutter-table-layout.c:610
+#: clutter/clutter-table-layout.c:620
 msgid "The number of rows the widget should span"
 msgstr "விட்ஜெட் ஸ்பேன் செய்ய வேண்டிய வரிசைகளின் எண்ணிக்கை"
 
-#: clutter/clutter-table-layout.c:617
+#: clutter/clutter-table-layout.c:627
 msgid "Horizontal Expand"
 msgstr "கிடைமட்ட விரிவாக்கம்"
 
-#: clutter/clutter-table-layout.c:618
+#: clutter/clutter-table-layout.c:628
 msgid "Allocate extra space for the child in horizontal axis"
 msgstr "கிடைமட்ட அச்சில் சேய்கான கூடுதல் இடத்தை ஒதுக்கவும்"
 
-#: clutter/clutter-table-layout.c:624
+#: clutter/clutter-table-layout.c:634
 msgid "Vertical Expand"
 msgstr "செங்குத்து விரிவாக்கம்"
 
-#: clutter/clutter-table-layout.c:625
+#: clutter/clutter-table-layout.c:635
 msgid "Allocate extra space for the child in vertical axis"
 msgstr "செங்குத்து அச்சில் சேய்கான கூடுதல் இடத்தை ஒதுக்கவும்"
 
-#: clutter/clutter-table-layout.c:1714
+#: clutter/clutter-table-layout.c:1747
 msgid "Spacing between columns"
 msgstr "நிரல்களுக்கு இடையேயுள்ள இடைவெளி"
 
-#: clutter/clutter-table-layout.c:1728
+#: clutter/clutter-table-layout.c:1761
 msgid "Spacing between rows"
 msgstr "வரிசைகளுக்கு இடையேயுள்ள இடைவெளி"
 
-#: clutter/clutter-text.c:2937
-msgid "The font to be used by the text"
-msgstr "உரையால் பயன்படுத்தப்பட்ட எழுத்துரு"
-
-#: clutter/clutter-text.c:2954
-msgid "Font Description"
-msgstr "எழுத்துரு விளக்கம்"
-
-#: clutter/clutter-text.c:2955
-msgid "The font description to be used"
-msgstr "பயன்படுத்தப்படும் எழுத்துரு விளக்கம்"
-
-#: clutter/clutter-text.c:2971
+#: clutter/clutter-text-buffer.c:351 clutter/clutter-text.c:3022
 msgid "Text"
 msgstr "உரை"
 
-#: clutter/clutter-text.c:2972
+#: clutter/clutter-text-buffer.c:352
+#, fuzzy
+msgid "The contents of the buffer"
+msgstr "பஃபர் நிலையை நிரப்பு"
+
+#: clutter/clutter-text-buffer.c:365
+#, fuzzy
+msgid "Text length"
+msgstr "அதிகபட்ச நீளம்"
+
+#: clutter/clutter-text-buffer.c:366
+#, fuzzy
+msgid "Length of the text currently in the buffer"
+msgstr "தற்போது பகுக்கப்பட்ட கோப்பின் பாதை"
+
+#: clutter/clutter-text-buffer.c:379
+#, fuzzy
+msgid "Maximum length"
+msgstr "அதிகபட்ச நீளம்"
+
+#: clutter/clutter-text-buffer.c:380
+msgid "Maximum number of characters for this entry. Zero if no maximum"
+msgstr ""
+
+#: clutter/clutter-text.c:2969
+#, fuzzy
+msgid "Buffer"
+msgstr "பஃபரை நிரப்பு"
+
+#: clutter/clutter-text.c:2970
+#, fuzzy
+msgid "The buffer for the text"
+msgstr "மெட்டாவின் பெயர்"
+
+#: clutter/clutter-text.c:2988
+msgid "The font to be used by the text"
+msgstr "உரையால் பயன்படுத்தப்பட்ட எழுத்துரு"
+
+#: clutter/clutter-text.c:3005
+msgid "Font Description"
+msgstr "எழுத்துரு விளக்கம்"
+
+#: clutter/clutter-text.c:3006
+msgid "The font description to be used"
+msgstr "பயன்படுத்தப்படும் எழுத்துரு விளக்கம்"
+
+#: clutter/clutter-text.c:3023
 msgid "The text to render"
 msgstr "கொடுப்பதற்கான உரை"
 
-#: clutter/clutter-text.c:2986
+#: clutter/clutter-text.c:3037
 msgid "Font Color"
 msgstr "எழுத்தரு வண்ணம்"
 
-#: clutter/clutter-text.c:2987
+#: clutter/clutter-text.c:3038
 msgid "Color of the font used by the text"
 msgstr "உரையால் பயன்படுத்தப்பட்ட எழுத்துருவின் வண்ணம்"
 
-#: clutter/clutter-text.c:3001
+#: clutter/clutter-text.c:3052
 msgid "Editable"
 msgstr "திருத்தக்கூடியது"
 
-#: clutter/clutter-text.c:3002
+#: clutter/clutter-text.c:3053
 msgid "Whether the text is editable"
 msgstr "உரை திருத்தக்கூடியதா"
 
-#: clutter/clutter-text.c:3017
+#: clutter/clutter-text.c:3068
 msgid "Selectable"
 msgstr "தேர்ந்தெடுக்ககூடியது"
 
-#: clutter/clutter-text.c:3018
+#: clutter/clutter-text.c:3069
 msgid "Whether the text is selectable"
 msgstr "உரை தேர்ந்தெடுக்க்ககூடியதா"
 
-#: clutter/clutter-text.c:3032
+#: clutter/clutter-text.c:3083
 msgid "Activatable"
 msgstr "செயல்படுத்தக் கூடியதா"
 
-#: clutter/clutter-text.c:3033
+#: clutter/clutter-text.c:3084
 msgid "Whether pressing return causes the activate signal to be emitted"
 msgstr "திரும்பவும் அழுத்துவதால் ஒதுக்கப்பட்ட சிக்னல் மீண்டும் செயல்படுத்துகிறது"
 
-#: clutter/clutter-text.c:3050
+#: clutter/clutter-text.c:3101
 msgid "Whether the input cursor is visible"
 msgstr "உள்ளீடு கர்சர் காணக்கூடியதா"
 
-#: clutter/clutter-text.c:3064 clutter/clutter-text.c:3065
+#: clutter/clutter-text.c:3115 clutter/clutter-text.c:3116
 msgid "Cursor Color"
 msgstr "கர்சர் வண்ணம்"
 
-#: clutter/clutter-text.c:3079
+#: clutter/clutter-text.c:3130
 msgid "Cursor Color Set"
 msgstr "கர்சர் வண்ணத்தை அமை"
 
-#: clutter/clutter-text.c:3080
+#: clutter/clutter-text.c:3131
 msgid "Whether the cursor color has been set"
 msgstr "கர்சர் வண்ணம் அமைக்கப்பட்டால்"
 
-#: clutter/clutter-text.c:3095
+#: clutter/clutter-text.c:3146
 msgid "Cursor Size"
 msgstr "கர்சர் அளவு"
 
-#: clutter/clutter-text.c:3096
+#: clutter/clutter-text.c:3147
 msgid "The width of the cursor, in pixels"
 msgstr "பிக்செல்களில், கர்சரின் அகலம்"
 
-#: clutter/clutter-text.c:3110
+#: clutter/clutter-text.c:3161
 msgid "Cursor Position"
 msgstr "கர்சரின் நிலை"
 
-#: clutter/clutter-text.c:3111
+#: clutter/clutter-text.c:3162
 msgid "The cursor position"
 msgstr "இந்த கர்சரின் நிலை"
 
-#: clutter/clutter-text.c:3126
+#: clutter/clutter-text.c:3177
 msgid "Selection-bound"
 msgstr "தேர்ந்தெடுப்பு-பிணைப்பு"
 
-#: clutter/clutter-text.c:3127
+#: clutter/clutter-text.c:3178
 msgid "The cursor position of the other end of the selection"
 msgstr "தேர்ந்தெடுப்பின் மற்ற முடிவிலுள்ள கர்சரின் நிலை"
 
-#: clutter/clutter-text.c:3142 clutter/clutter-text.c:3143
+#: clutter/clutter-text.c:3193 clutter/clutter-text.c:3194
 msgid "Selection Color"
 msgstr "தேர்ந்தெடுப்பு வண்ணம்"
 
-#: clutter/clutter-text.c:3157
+#: clutter/clutter-text.c:3208
 msgid "Selection Color Set"
 msgstr "தேர்ந்தெடுப்பு வண்ணத்தை தேர்ந்தெடுப்பு"
 
-#: clutter/clutter-text.c:3158
+#: clutter/clutter-text.c:3209
 msgid "Whether the selection color has been set"
 msgstr "தேர்ந்தெடுப்பு வண்ணம் அமைக்கப்பட்டால்"
 
-#: clutter/clutter-text.c:3173
+#: clutter/clutter-text.c:3224
 msgid "Attributes"
 msgstr "பண்புகள்"
 
-#: clutter/clutter-text.c:3174
+#: clutter/clutter-text.c:3225
 msgid "A list of style attributes to apply to the contents of the actor"
 msgstr "நடிகரின் உள்ளடக்கங்களில் செயல்படுத்துவதற்கான பாணி பண்புகளின் ஒரு பட்டியல்"
 
-#: clutter/clutter-text.c:3196
+#: clutter/clutter-text.c:3247
 msgid "Use markup"
 msgstr "குறியீட்டை பயன்படுத்து"
 
-#: clutter/clutter-text.c:3197
+#: clutter/clutter-text.c:3248
 msgid "Whether or not the text includes Pango markup"
 msgstr "உரை பாங்கோ குறியீட்டுடன் சேர்த்து உள்ளதா அல்லது இல்லையா"
 
-#: clutter/clutter-text.c:3213
+#: clutter/clutter-text.c:3264
 msgid "Line wrap"
 msgstr "வரி மடிப்பு"
 
-#: clutter/clutter-text.c:3214
+#: clutter/clutter-text.c:3265
 msgid "If set, wrap the lines if the text becomes too wide"
 msgstr "அமைப்பட்டால்,  உரை மிகப் பரந்திருந்தால் வரிகளை மடிக்கவும்"
 
-#: clutter/clutter-text.c:3229
+#: clutter/clutter-text.c:3280
 msgid "Line wrap mode"
 msgstr "வரி மடிப்பு முறைமை"
 
-#: clutter/clutter-text.c:3230
+#: clutter/clutter-text.c:3281
 msgid "Control how line-wrapping is done"
 msgstr "வரிசை எவ்வாறு கட்டுப்படுத்துவது- மடித்தல் நடந்தது"
 
-#: clutter/clutter-text.c:3245
+#: clutter/clutter-text.c:3296
 msgid "Ellipsize"
 msgstr "நீள்வட்டம்"
 
-#: clutter/clutter-text.c:3246
+#: clutter/clutter-text.c:3297
 msgid "The preferred place to ellipsize the string"
 msgstr "விருப்பமான இடத்தில் சர எலிப்சைஸ் வேண்டும்"
 
-#: clutter/clutter-text.c:3262
+#: clutter/clutter-text.c:3313
 msgid "Line Alignment"
 msgstr "வரி ஒழுங்குப்படுத்துல் "
 
-#: clutter/clutter-text.c:3263
+#: clutter/clutter-text.c:3314
 msgid "The preferred alignment for the string, for multi-line text"
 msgstr "பல வரி உரைக்கான, சரத்தின் விருப்பமா ஒழுங்மைத்தல் "
 
-#: clutter/clutter-text.c:3279
+#: clutter/clutter-text.c:3330
 msgid "Justify"
 msgstr "நியாப்படுத்து"
 
-#: clutter/clutter-text.c:3280
+#: clutter/clutter-text.c:3331
 msgid "Whether the text should be justified"
 msgstr "உரை நியாயப்படுத்தப்பட்டதா"
 
-#: clutter/clutter-text.c:3295
+#: clutter/clutter-text.c:3346
 msgid "Password Character"
 msgstr "கடவுச்சொல் எண்"
 
-#: clutter/clutter-text.c:3296
+#: clutter/clutter-text.c:3347
 msgid "If non-zero, use this character to display the actor's contents"
 msgstr "பூஜ்ஜியமில்லாத, நடிகரின் உள்ளடக்கங்களை காட்ட இந்த எழுத்தை பயன்படுத்தவும்"
 
-#: clutter/clutter-text.c:3310
+#: clutter/clutter-text.c:3361
 msgid "Max Length"
 msgstr "அதிகபட்ச நீளம்"
 
-#: clutter/clutter-text.c:3311
+#: clutter/clutter-text.c:3362
 msgid "Maximum length of the text inside the actor"
 msgstr "நடிகருக்கு உள்ளே உள்ள உரையின் அதிகபட்ச நீளம்"
 
-#: clutter/clutter-text.c:3334
+#: clutter/clutter-text.c:3385
 msgid "Single Line Mode"
 msgstr "வற்றை வரி முறைமை"
 
-#: clutter/clutter-text.c:3335
+#: clutter/clutter-text.c:3386
 msgid "Whether the text should be a single line"
 msgstr "உரை ஒரு  ஒற்றை ஒரி யை கொண்டிருந்தால்"
 
-#: clutter/clutter-text.c:3349 clutter/clutter-text.c:3350
+#: clutter/clutter-text.c:3400 clutter/clutter-text.c:3401
 msgid "Selected Text Color"
 msgstr "தேர்ந்தெடுக்கப்பட்ட உரை வண்ணம்"
 
-#: clutter/clutter-text.c:3364
+#: clutter/clutter-text.c:3415
 msgid "Selected Text Color Set"
 msgstr "தேர்ந்தெடுக்கப்பட்ட உரை வண்ணத்தை அமை"
 
-#: clutter/clutter-text.c:3365
+#: clutter/clutter-text.c:3416
 msgid "Whether the selected text color has been set"
 msgstr "தேர்ந்தெடுக்கப்பட்ட உரை வண்ணத்தை அமைத்துள்ளதா"
 
-#: clutter/clutter-texture.c:995
+#: clutter/clutter-texture.c:992
 msgid "Sync size of actor"
 msgstr "நடிகரின் அளவை ஒத்திசை"
 
-#: clutter/clutter-texture.c:996
+#: clutter/clutter-texture.c:993
 msgid "Auto sync size of actor to underlying pixbuf dimensions"
 msgstr "pixbuf பரிமாணங்களுக்கு அடிப்படையிலான நடிகரின் தானிநக்க ஒத்திசைவு அளவு"
 
-#: clutter/clutter-texture.c:1003
+#: clutter/clutter-texture.c:1000
 msgid "Disable Slicing"
 msgstr "ஸ்லைசிங்கை செயல்நீக்கவும்"
 
-#: clutter/clutter-texture.c:1004
+#: clutter/clutter-texture.c:1001
 msgid ""
 "Forces the underlying texture to be singular and not made of smaller space "
 "saving individual textures"
@@ -1895,92 +1886,94 @@ msgstr ""
 "தனிப்பட்ட அமைப்புகளை குறைந்த இடத்தில் சேமிக்க செய்யாமல்  அடிப்படை அமைப்பை ஒற்றையாக "
 "வலியுறுத்துகிறது"
 
-#: clutter/clutter-texture.c:1013
+#: clutter/clutter-texture.c:1010
 msgid "Tile Waste"
 msgstr "ஓடு கழிவு"
 
-#: clutter/clutter-texture.c:1014
+#: clutter/clutter-texture.c:1011
 msgid "Maximum waste area of a sliced texture"
 msgstr "ஒரு வெப்பட்ட அமைப்பின் அதிகபட்ச வீணான பகுதி"
 
-#: clutter/clutter-texture.c:1022
+#: clutter/clutter-texture.c:1019
 msgid "Horizontal repeat"
 msgstr "மீண்டும் கிடைமட்டம் "
 
-#: clutter/clutter-texture.c:1023
+#: clutter/clutter-texture.c:1020
 msgid "Repeat the contents rather than scaling them horizontally"
 msgstr "கிடைமட்டமாக அளப்பதற்கு பதிலாக உள்ளடக்கங்களை மீண்டும் செய்யவும்"
 
-#: clutter/clutter-texture.c:1030
+#: clutter/clutter-texture.c:1027
 msgid "Vertical repeat"
 msgstr "மீண்டும் செங்குத்து"
 
-#: clutter/clutter-texture.c:1031
+#: clutter/clutter-texture.c:1028
 msgid "Repeat the contents rather than scaling them vertically"
 msgstr "செங்குத்தாக அளப்பதற்கு பதிலாக உள்ளடக்கங்களை மீண்டும் செய்யவும்"
 
-#: clutter/clutter-texture.c:1038
+#: clutter/clutter-texture.c:1035
 msgid "Filter Quality"
 msgstr "வடிப்பி தரம்"
 
-#: clutter/clutter-texture.c:1039
+#: clutter/clutter-texture.c:1036
 msgid "Rendering quality used when drawing the texture"
 msgstr "அமைப்பை வரையும் போது தரத்தை வழங்கும் போது பயன்படுத்தப்பட்டது"
 
-#: clutter/clutter-texture.c:1047
+#: clutter/clutter-texture.c:1044
 msgid "Pixel Format"
 msgstr "பிக்செல் வடிவம்"
 
-#: clutter/clutter-texture.c:1048
+#: clutter/clutter-texture.c:1045
 msgid "The Cogl pixel format to use"
 msgstr "பயன்படுத்துவதற்கான Cogl பிக்செல் வடிவம்"
 
-#: clutter/clutter-texture.c:1056
+#: clutter/clutter-texture.c:1053
+#: clutter/wayland/clutter-wayland-surface.c:430
 msgid "Cogl Texture"
 msgstr "Cogl அமைப்பு"
 
-#: clutter/clutter-texture.c:1057
+#: clutter/clutter-texture.c:1054
+#: clutter/wayland/clutter-wayland-surface.c:431
 msgid "The underlying Cogl texture handle used to draw this actor"
 msgstr "அடிப்படையான Cogl அமைப்பு கைப்பிடி இந்த நடிகரை வரைய பயன்படுத்தப்பட்டது"
 
-#: clutter/clutter-texture.c:1064
+#: clutter/clutter-texture.c:1061
 msgid "Cogl Material"
 msgstr "Cogl பொருள்"
 
-#: clutter/clutter-texture.c:1065
+#: clutter/clutter-texture.c:1062
 msgid "The underlying Cogl material handle used to draw this actor"
 msgstr "அடிப்படையான Cogl பொருளை கையாண்டு இந்த நடிகரை வரைய பயன்படுத்தப்பட்டது"
 
-#: clutter/clutter-texture.c:1082
+#: clutter/clutter-texture.c:1079
 msgid "The path of the file containing the image data"
 msgstr "கோப்பு பாதை படத் தரவை கொண்டிருக்கிறது"
 
-#: clutter/clutter-texture.c:1089
+#: clutter/clutter-texture.c:1086
 msgid "Keep Aspect Ratio"
 msgstr "தோற்ற விகித்தத்தை வைத்திரு"
 
-#: clutter/clutter-texture.c:1090
+#: clutter/clutter-texture.c:1087
 msgid ""
 "Keep the aspect ratio of the texture when requesting the preferred width or "
 "height"
 msgstr ""
 "விருப்பமான அகலம் அல்லது உயரத்துடன் கோரும் போது அமைப்பின் தோற்ற விகிதத்தை வைத்திருக்கவும் "
 
-#: clutter/clutter-texture.c:1116
+#: clutter/clutter-texture.c:1113
 msgid "Load asynchronously"
 msgstr "ஒத்திசைக்கப்படாததை ஏற்றவும்"
 
-#: clutter/clutter-texture.c:1117
+#: clutter/clutter-texture.c:1114
 msgid ""
 "Load files inside a thread to avoid blocking when loading images from disk"
 msgstr ""
 "வட்டிலிருந்து படங்களை ஏற்றும் போது ஒரு நூலிற்கு உள்ளே படத் தரவு கோப்புகளை தடுக்க ஏற்றவும்"
 
-#: clutter/clutter-texture.c:1133
+#: clutter/clutter-texture.c:1130
 msgid "Load data asynchronously"
 msgstr "ஒத்திசைக்கப்படாத தரவை ஏற்றவும்"
 
-#: clutter/clutter-texture.c:1134
+#: clutter/clutter-texture.c:1131
 msgid ""
 "Decode image data files inside a thread to reduce blocking when loading "
 "images from disk"
@@ -1988,84 +1981,420 @@ msgstr ""
 "வட்டிலிருந்து படங்களை ஏற்றும் போது ஒரு நூலிற்கு உள்ளே படத் தரவு கோப்புகளை தடுக்க "
 "முறைகுறிநீக்கவும்"
 
-#: clutter/clutter-texture.c:1158
+#: clutter/clutter-texture.c:1155
 msgid "Pick With Alpha"
 msgstr "ஆல்ஃபாவுடன் எடு"
 
-#: clutter/clutter-texture.c:1159
+#: clutter/clutter-texture.c:1156
 msgid "Shape actor with alpha channel when picking"
 msgstr "எடுக்கும் போது நிழல் நடிகருடன் ஆல்ஃபா தடம்"
 
-#: clutter/clutter-texture.c:1557 clutter/clutter-texture.c:1967
-#: clutter/clutter-texture.c:2062 clutter/clutter-texture.c:2343
+#: clutter/clutter-texture.c:1576 clutter/clutter-texture.c:1969
+#: clutter/clutter-texture.c:2063 clutter/clutter-texture.c:2347
 msgid "Failed to load the image data"
 msgstr "படத் தரவை ஏற்ற முடியவில்லை"
 
-#: clutter/clutter-texture.c:1703
+#: clutter/clutter-texture.c:1733
 msgid "YUV textures are not supported"
 msgstr "YUV அமைப்புகள் துணைப்புரியவில்லை"
 
-#: clutter/clutter-texture.c:1712
+#: clutter/clutter-texture.c:1742
 msgid "YUV2 textues are not supported"
 msgstr "YUV2 அமைப்பு துணைப்புரியவில்லை"
 
-#: clutter/clutter-timeline.c:264
+#: clutter/clutter-timeline.c:551
 msgid "Should the timeline automatically restart"
 msgstr "காலக்கெடு தானாக மீண்டும் துவக்கப்படும்"
 
-#: clutter/clutter-timeline.c:278
+#: clutter/clutter-timeline.c:565
 msgid "Delay"
 msgstr "தாமதம்"
 
-#: clutter/clutter-timeline.c:279
+#: clutter/clutter-timeline.c:566
 msgid "Delay before start"
 msgstr "துவக்குவதற்கு முன் தாமதம்"
 
-#: clutter/clutter-timeline.c:295
+#: clutter/clutter-timeline.c:582
 msgid "Duration of the timeline in milliseconds"
 msgstr "மில்லி விநாடிகளின் காலவரிசையின் கால அளவு"
 
-#: clutter/clutter-timeline.c:311
+#: clutter/clutter-timeline.c:597
+#: clutter/deprecated/clutter-behaviour-ellipse.c:526
+#: clutter/deprecated/clutter-behaviour-rotate.c:335
+msgid "Direction"
+msgstr "திசை"
+
+#: clutter/clutter-timeline.c:598
 msgid "Direction of the timeline"
 msgstr "காலக்கெடுவின் திசை"
 
-#: clutter/clutter-timeline.c:326
+#: clutter/clutter-timeline.c:613
 msgid "Auto Reverse"
 msgstr "தானாக திருப்புதல்"
 
-#: clutter/clutter-timeline.c:327
+#: clutter/clutter-timeline.c:614
 msgid "Whether the direction should be reversed when reaching the end"
 msgstr "முனையை அடையும் போது திசை தலைகீழாக இருந்தால் "
 
-#: clutter/evdev/clutter-input-device-evdev.c:147
+#: clutter/clutter-timeline.c:632
+msgid "Repeat Count"
+msgstr ""
+
+#: clutter/clutter-timeline.c:633
+msgid "How many times the timeline should repeat"
+msgstr ""
+
+#: clutter/clutter-timeline.c:647
+#, fuzzy
+msgid "Progress Mode"
+msgstr "முன்னேற்ற முறைமை"
+
+#: clutter/clutter-timeline.c:648
+msgid "How the timeline should compute the progress"
+msgstr ""
+
+#: clutter/clutter-transition.c:249
+msgid "Interval"
+msgstr ""
+
+#: clutter/clutter-transition.c:250
+#, fuzzy
+msgid "The interval of values to transition"
+msgstr "அசைவூட்டத்தின் காலக்கெடு"
+
+#: clutter/clutter-transition.c:264
+#, fuzzy
+msgid "Animatable"
+msgstr "செயல்படுத்தக் கூடியதா"
+
+#: clutter/clutter-transition.c:265
+msgid "The animatable object"
+msgstr ""
+
+#: clutter/clutter-transition.c:286
+msgid "Remove on Complete"
+msgstr ""
+
+#: clutter/clutter-transition.c:287
+#, fuzzy
+msgid "Detach the transition when completed"
+msgstr "பேரண்டடின் போது நடிகர் காட்டப்படுவாரா"
+
+#: clutter/deprecated/clutter-behaviour.c:241
+msgid "Alpha Object to drive the behaviour"
+msgstr "இயக்கி மனநிலைக்கான ஆல்ஃபா பொருள்"
+
+#: clutter/deprecated/clutter-behaviour-depth.c:180
+msgid "Start Depth"
+msgstr "ஆழத்தை துவக்கு"
+
+#: clutter/deprecated/clutter-behaviour-depth.c:181
+msgid "Initial depth to apply"
+msgstr "செயல்படுத்துவதற்கான துவக்க ஆழம்"
+
+#: clutter/deprecated/clutter-behaviour-depth.c:196
+msgid "End Depth"
+msgstr "ஆழத்தை முடிவு"
+
+#: clutter/deprecated/clutter-behaviour-depth.c:197
+msgid "Final depth to apply"
+msgstr "செயல்படுத்துவதற்கான கடைசி ஆழம்"
+
+#: clutter/deprecated/clutter-behaviour-ellipse.c:399
+msgid "Start Angle"
+msgstr "கோணத்தை துவக்கு"
+
+#: clutter/deprecated/clutter-behaviour-ellipse.c:400
+#: clutter/deprecated/clutter-behaviour-rotate.c:282
+msgid "Initial angle"
+msgstr "துவக்க கோணம்"
+
+#: clutter/deprecated/clutter-behaviour-ellipse.c:415
+msgid "End Angle"
+msgstr "முடிவு கோணம்"
+
+#: clutter/deprecated/clutter-behaviour-ellipse.c:416
+#: clutter/deprecated/clutter-behaviour-rotate.c:300
+msgid "Final angle"
+msgstr "கடைசி கோணம்"
+
+#: clutter/deprecated/clutter-behaviour-ellipse.c:431
+msgid "Angle x tilt"
+msgstr "x தலைப்பு கோணம்"
+
+#: clutter/deprecated/clutter-behaviour-ellipse.c:432
+msgid "Tilt of the ellipse around x axis"
+msgstr "x அச்சு சுற்றியுள்ள நீள்வட்டத்தின் தலைப்பு"
+
+#: clutter/deprecated/clutter-behaviour-ellipse.c:447
+msgid "Angle y tilt"
+msgstr "Angle y தலைப்பின் கோணம்"
+
+#: clutter/deprecated/clutter-behaviour-ellipse.c:448
+msgid "Tilt of the ellipse around y axis"
+msgstr "y அச்சு சுற்றியுள்ள நீள்வட்டத்தின் தலைப்பு"
+
+#: clutter/deprecated/clutter-behaviour-ellipse.c:463
+msgid "Angle z tilt"
+msgstr "z தலைப்பு கோணம்"
+
+#: clutter/deprecated/clutter-behaviour-ellipse.c:464
+msgid "Tilt of the ellipse around z axis"
+msgstr "z அச்சு சுற்றியுள்ள நீள்வட்டத்தின் தலைப்பு"
+
+#: clutter/deprecated/clutter-behaviour-ellipse.c:480
+msgid "Width of the ellipse"
+msgstr "நீள்வட்டத்திற்கான அகலம்"
+
+#: clutter/deprecated/clutter-behaviour-ellipse.c:496
+msgid "Height of ellipse"
+msgstr "நீள்வட்டத்தின் உயரம்"
+
+#: clutter/deprecated/clutter-behaviour-ellipse.c:511
+msgid "Center"
+msgstr "மையம்"
+
+#: clutter/deprecated/clutter-behaviour-ellipse.c:512
+msgid "Center of ellipse"
+msgstr "நீள்வட்டத்தின் மையம்"
+
+#: clutter/deprecated/clutter-behaviour-ellipse.c:527
+#: clutter/deprecated/clutter-behaviour-rotate.c:336
+msgid "Direction of rotation"
+msgstr "சுழற்சிக்கான திசை"
+
+#: clutter/deprecated/clutter-behaviour-opacity.c:183
+msgid "Opacity Start"
+msgstr "ஒளிபுகா நிலையை துவக்கவும்"
+
+#: clutter/deprecated/clutter-behaviour-opacity.c:184
+msgid "Initial opacity level"
+msgstr "துவக்க ஒளிபுகா நிலை"
+
+#: clutter/deprecated/clutter-behaviour-opacity.c:201
+msgid "Opacity End"
+msgstr "முடிவு ஒளிபுகா நிலை"
+
+#: clutter/deprecated/clutter-behaviour-opacity.c:202
+msgid "Final opacity level"
+msgstr "கடைசி  ஒளிபுகா நிலை"
+
+#: clutter/deprecated/clutter-behaviour-path.c:225
+msgid "The ClutterPath object representing the path to animate along"
+msgstr "ClutterPath பொருள் அசைவூட்ட பாதையுடன் பிரதிநிதித்துவமாக்குகிறது"
+
+#: clutter/deprecated/clutter-behaviour-rotate.c:281
+msgid "Angle Begin"
+msgstr "கோணத்தை துவக்கம்"
+
+#: clutter/deprecated/clutter-behaviour-rotate.c:299
+msgid "Angle End"
+msgstr "கோண முடிவு"
+
+#: clutter/deprecated/clutter-behaviour-rotate.c:317
+msgid "Axis"
+msgstr "அச்சு"
+
+#: clutter/deprecated/clutter-behaviour-rotate.c:318
+msgid "Axis of rotation"
+msgstr "சுழற்சியின் கோணம்"
+
+#: clutter/deprecated/clutter-behaviour-rotate.c:353
+msgid "Center X"
+msgstr "மையம் X"
+
+#: clutter/deprecated/clutter-behaviour-rotate.c:354
+msgid "X coordinate of the center of rotation"
+msgstr "சுழற்சியின் மையத்திற்கான X ஒருங்கமைப்பு"
+
+#: clutter/deprecated/clutter-behaviour-rotate.c:371
+msgid "Center Y"
+msgstr "மையம் Y"
+
+#: clutter/deprecated/clutter-behaviour-rotate.c:372
+msgid "Y coordinate of the center of rotation"
+msgstr "சுழற்சியின் மையத்திற்கான Y ஒருங்கமைப்பு"
+
+#: clutter/deprecated/clutter-behaviour-rotate.c:389
+msgid "Center Z"
+msgstr "மையம் Z"
+
+#: clutter/deprecated/clutter-behaviour-rotate.c:390
+msgid "Z coordinate of the center of rotation"
+msgstr "சுழற்சியின் மையத்திற்கான Z ஒருங்கமைப்பு"
+
+#: clutter/deprecated/clutter-behaviour-scale.c:224
+msgid "X Start Scale"
+msgstr "X துவக்க அளவு"
+
+#: clutter/deprecated/clutter-behaviour-scale.c:225
+msgid "Initial scale on the X axis"
+msgstr "X அச்சின் துவக்க அளவு"
+
+#: clutter/deprecated/clutter-behaviour-scale.c:243
+msgid "X End Scale"
+msgstr "X முடிவு அளவு"
+
+#: clutter/deprecated/clutter-behaviour-scale.c:244
+msgid "Final scale on the X axis"
+msgstr "X அச்சில் கடைசி அளவு"
+
+#: clutter/deprecated/clutter-behaviour-scale.c:262
+msgid "Y Start Scale"
+msgstr "Y துவக்க அளவு"
+
+#: clutter/deprecated/clutter-behaviour-scale.c:263
+msgid "Initial scale on the Y axis"
+msgstr "Y அச்சின் துவக்க அளவு"
+
+#: clutter/deprecated/clutter-behaviour-scale.c:281
+msgid "Y End Scale"
+msgstr "Y முடிவு அளவு"
+
+#: clutter/deprecated/clutter-behaviour-scale.c:282
+msgid "Final scale on the Y axis"
+msgstr "Y அச்சில் கடைசி அளவு"
+
+#: clutter/deprecated/clutter-box.c:261
+msgid "The background color of the box"
+msgstr "பெட்டியின் பின்னணி வண்ணம்"
+
+#: clutter/deprecated/clutter-box.c:274
+msgid "Color Set"
+msgstr "வண்ண அமைப்பு"
+
+#: clutter/deprecated/clutter-rectangle.c:273
+msgid "The color of the rectangle"
+msgstr "நீள்சதுரத்தின் வண்ணம்"
+
+#: clutter/deprecated/clutter-rectangle.c:286
+msgid "Border Color"
+msgstr "எல்லை வண்ணம்"
+
+#: clutter/deprecated/clutter-rectangle.c:287
+msgid "The color of the border of the rectangle"
+msgstr "நீள்சதுர எல்லையின் வண்ணம்"
+
+#: clutter/deprecated/clutter-rectangle.c:302
+msgid "Border Width"
+msgstr "எல்லை அகலம்"
+
+#: clutter/deprecated/clutter-rectangle.c:303
+msgid "The width of the border of the rectangle"
+msgstr "நீள்சதுர எல்லையின் அகலம்"
+
+#: clutter/deprecated/clutter-rectangle.c:317
+msgid "Has Border"
+msgstr "எல்லையை கொண்டுள்ளது"
+
+#: clutter/deprecated/clutter-rectangle.c:318
+msgid "Whether the rectangle should have a border"
+msgstr "நீள்சணதுரம் ஒரு எல்லையை கொண்டுள்ளதா"
+
+#: clutter/deprecated/clutter-shader.c:261
+msgid "Vertex Source"
+msgstr "உச்சி மூலம்"
+
+#: clutter/deprecated/clutter-shader.c:262
+msgid "Source of vertex shader"
+msgstr "உச்சி நிழலின் மூலம்"
+
+#: clutter/deprecated/clutter-shader.c:278
+msgid "Fragment Source"
+msgstr "பகுதி மூலம்"
+
+#: clutter/deprecated/clutter-shader.c:279
+msgid "Source of fragment shader"
+msgstr "பகுதி நிழலின் மூலம்"
+
+#: clutter/deprecated/clutter-shader.c:296
+msgid "Compiled"
+msgstr "தொகுக்கப்பட்டது"
+
+#: clutter/deprecated/clutter-shader.c:297
+msgid "Whether the shader is compiled and linked"
+msgstr "நிழல் தொகுக்கப்பட்டு இணைக்கப்பட்டதா"
+
+#: clutter/deprecated/clutter-shader.c:314
+msgid "Whether the shader is enabled"
+msgstr "நிழல் செயல்படுத்தப்பட்டதா"
+
+#: clutter/deprecated/clutter-shader.c:525
+#, c-format
+msgid "%s compilation failed: %s"
+msgstr "%s தொகுப்பு தோல்விநடைந்தது: %s"
+
+#: clutter/deprecated/clutter-shader.c:526
+msgid "Vertex shader"
+msgstr "உச்சி நிழல்"
+
+#: clutter/deprecated/clutter-shader.c:527
+msgid "Fragment shader"
+msgstr "பகுதி நிழல்"
+
+#: clutter/evdev/clutter-input-device-evdev.c:159
 msgid "sysfs Path"
 msgstr "sysfs பாதை"
 
-#: clutter/evdev/clutter-input-device-evdev.c:148
+#: clutter/evdev/clutter-input-device-evdev.c:160
 msgid "Path of the device in sysfs"
 msgstr "sysfs இல் உள்ள சாதனத்தின் பாதை"
 
-#: clutter/evdev/clutter-input-device-evdev.c:163
+#: clutter/evdev/clutter-input-device-evdev.c:175
 msgid "Device Path"
 msgstr "சாதன பாதை"
 
-#: clutter/evdev/clutter-input-device-evdev.c:164
+#: clutter/evdev/clutter-input-device-evdev.c:176
 msgid "Path of the device node"
 msgstr "சாதன முனையின் பாதை"
 
-#: clutter/x11/clutter-backend-x11.c:483
+#: clutter/gdk/clutter-backend-gdk.c:294
+#, c-format
+msgid "Could not find a suitable CoglWinsys for a GdkDisplay of type %s"
+msgstr ""
+
+#: clutter/wayland/clutter-wayland-surface.c:404
+#, fuzzy
+msgid "Surface"
+msgstr "மேற்பரப்பு அகலம்"
+
+#: clutter/wayland/clutter-wayland-surface.c:405
+msgid "The underlying wayland surface"
+msgstr ""
+
+#: clutter/wayland/clutter-wayland-surface.c:412
+#, fuzzy
+msgid "Surface width"
+msgstr "மேற்பரப்பு அகலம்"
+
+#: clutter/wayland/clutter-wayland-surface.c:413
+#, fuzzy
+msgid "The width of the underlying wayland surface"
+msgstr "Cairo தளத்தின் அகலம்"
+
+#: clutter/wayland/clutter-wayland-surface.c:421
+#, fuzzy
+msgid "Surface height"
+msgstr "மேற்பரப்பு உயரம்"
+
+#: clutter/wayland/clutter-wayland-surface.c:422
+#, fuzzy
+msgid "The height of the underlying wayland surface"
+msgstr "Cairo தளத்தின் உயரம்"
+
+#: clutter/x11/clutter-backend-x11.c:516
 msgid "X display to use"
 msgstr "பயன்படுத்துவதற்கான X காட்சி"
 
-#: clutter/x11/clutter-backend-x11.c:489
+#: clutter/x11/clutter-backend-x11.c:522
 msgid "X screen to use"
 msgstr "பயன்படுத்துவதற்கான X திரை"
 
-#: clutter/x11/clutter-backend-x11.c:494
+#: clutter/x11/clutter-backend-x11.c:527
 msgid "Make X calls synchronous"
 msgstr "X அழைப்புகளை ஒத்திசைக்க செய்கிறது"
 
-#: clutter/x11/clutter-backend-x11.c:501
+#: clutter/x11/clutter-backend-x11.c:534
 msgid "Enable XInput support"
 msgstr "XInput துணையை செயல்படுத்து"
 
@@ -2073,98 +2402,101 @@ msgstr "XInput துணையை செயல்படுத்து"
 msgid "The Clutter backend"
 msgstr "Clutter பின்முனை"
 
-#: clutter/x11/clutter-x11-texture-pixmap.c:545
+#: clutter/x11/clutter-x11-texture-pixmap.c:538
 msgid "Pixmap"
 msgstr "பிக்ஸ்மேப்"
 
-#: clutter/x11/clutter-x11-texture-pixmap.c:546
+#: clutter/x11/clutter-x11-texture-pixmap.c:539
 msgid "The X11 Pixmap to be bound"
 msgstr "X11 பிக்ஸ்மேப் பிணைக்கப்படும்"
 
-#: clutter/x11/clutter-x11-texture-pixmap.c:554
+#: clutter/x11/clutter-x11-texture-pixmap.c:547
 msgid "Pixmap width"
 msgstr "பிக்ஸ்மேப் அகலம்"
 
-#: clutter/x11/clutter-x11-texture-pixmap.c:555
+#: clutter/x11/clutter-x11-texture-pixmap.c:548
 msgid "The width of the pixmap bound to this texture"
 msgstr "இந்த அமைப்பிற்கு பிணைக்கப்படும் பிக்ஸ்மேப்பின் அகலம் "
 
-#: clutter/x11/clutter-x11-texture-pixmap.c:563
+#: clutter/x11/clutter-x11-texture-pixmap.c:556
 msgid "Pixmap height"
 msgstr "பிக்ஸ்மேப் உயரம்"
 
-#: clutter/x11/clutter-x11-texture-pixmap.c:564
+#: clutter/x11/clutter-x11-texture-pixmap.c:557
 msgid "The height of the pixmap bound to this texture"
 msgstr "இந்த அமைப்பிற்கு பிணைக்கப்படும் பிக்ஸ்மேப்பின் உயரம் "
 
-#: clutter/x11/clutter-x11-texture-pixmap.c:572
+#: clutter/x11/clutter-x11-texture-pixmap.c:565
 msgid "Pixmap Depth"
 msgstr "பிக்ஸ்மேப் ஆழம்"
 
-#: clutter/x11/clutter-x11-texture-pixmap.c:573
+#: clutter/x11/clutter-x11-texture-pixmap.c:566
 msgid "The depth (in number of bits) of the pixmap bound to this texture"
 msgstr "இந்த அமைப்பிற்கு பிணைக்கப்படும் பிக்ஸ்மேப்பின் ஆழம் (பிட்டுகளின் எண்ணிக்கையில்) "
 
-#: clutter/x11/clutter-x11-texture-pixmap.c:581
+#: clutter/x11/clutter-x11-texture-pixmap.c:574
 msgid "Automatic Updates"
 msgstr "தானியக்க புதுப்பித்தல்கள்"
 
-#: clutter/x11/clutter-x11-texture-pixmap.c:582
+#: clutter/x11/clutter-x11-texture-pixmap.c:575
 msgid "If the texture should be kept in sync with any pixmap changes."
 msgstr "ஏதாவது பிக்ஸ்மேப் மாற்றங்களுடன் அமைப்பை ஒத்திசைக்க வைத்திருந்தால்"
 
-#: clutter/x11/clutter-x11-texture-pixmap.c:590
+#: clutter/x11/clutter-x11-texture-pixmap.c:583
 msgid "Window"
 msgstr "சாளரம்"
 
-#: clutter/x11/clutter-x11-texture-pixmap.c:591
+#: clutter/x11/clutter-x11-texture-pixmap.c:584
 msgid "The X11 Window to be bound"
 msgstr "X11 சாளரம் பிணைக்கப்படும்"
 
-#: clutter/x11/clutter-x11-texture-pixmap.c:599
+#: clutter/x11/clutter-x11-texture-pixmap.c:592
 msgid "Window Redirect Automatic"
 msgstr "சாளரம் தானாக திருப்புதல்"
 
-#: clutter/x11/clutter-x11-texture-pixmap.c:600
+#: clutter/x11/clutter-x11-texture-pixmap.c:593
 msgid "If composite window redirects are set to Automatic (or Manual if false)"
 msgstr "கலப்பு சாளரம் தானாக மீண்டும் திருப்பிவிடப்பட்டால் (அல்லது கைமுறை தவறாக இருந்தால்)"
 
-#: clutter/x11/clutter-x11-texture-pixmap.c:610
+#: clutter/x11/clutter-x11-texture-pixmap.c:603
 msgid "Window Mapped"
 msgstr "சாளரம் வரைபடமாக்கப்பட்டது"
 
-#: clutter/x11/clutter-x11-texture-pixmap.c:611
+#: clutter/x11/clutter-x11-texture-pixmap.c:604
 msgid "If window is mapped"
 msgstr "சாளரம் வரைபடமாக்கப்பட்டால்"
 
-#: clutter/x11/clutter-x11-texture-pixmap.c:620
+#: clutter/x11/clutter-x11-texture-pixmap.c:613
 msgid "Destroyed"
 msgstr "அழிக்கப்பட்டது"
 
-#: clutter/x11/clutter-x11-texture-pixmap.c:621
+#: clutter/x11/clutter-x11-texture-pixmap.c:614
 msgid "If window has been destroyed"
 msgstr "சாளரம் அழிக்கப்பட்டால்"
 
-#: clutter/x11/clutter-x11-texture-pixmap.c:629
+#: clutter/x11/clutter-x11-texture-pixmap.c:622
 msgid "Window X"
 msgstr "சாளரம் X"
 
-#: clutter/x11/clutter-x11-texture-pixmap.c:630
+#: clutter/x11/clutter-x11-texture-pixmap.c:623
 msgid "X position of window on screen according to X11"
 msgstr "X11 சார்ந்து திரையில் சாளரத்தின் X  நிலை"
 
-#: clutter/x11/clutter-x11-texture-pixmap.c:638
+#: clutter/x11/clutter-x11-texture-pixmap.c:631
 msgid "Window Y"
 msgstr "சாளரம் Y"
 
-#: clutter/x11/clutter-x11-texture-pixmap.c:639
+#: clutter/x11/clutter-x11-texture-pixmap.c:632
 msgid "Y position of window on screen according to X11"
 msgstr "X11 சார்ந்து திரையில் சாளரத்தின் Y நிலை"
 
-#: clutter/x11/clutter-x11-texture-pixmap.c:646
+#: clutter/x11/clutter-x11-texture-pixmap.c:639
 msgid "Window Override Redirect"
 msgstr "சாளரம் புறக்கணிக்கும் திருப்புதல்"
 
-#: clutter/x11/clutter-x11-texture-pixmap.c:647
+#: clutter/x11/clutter-x11-texture-pixmap.c:640
 msgid "If this is an override-redirect window"
 msgstr "ஒரு புறக்கணிக்கும்-மீண்டும்திருப்புதல் சாளரமாக இருந்தால்"
+
+#~ msgid "The layout manager used by the box"
+#~ msgstr "தளவமைப்பு நிர்வாகி பெட்டியால் பயன்படுத்தப்படுவர்"

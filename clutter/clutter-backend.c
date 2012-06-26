@@ -42,6 +42,8 @@
 #include "config.h"
 #endif
 
+#define CLUTTER_ENABLE_EXPERIMENTAL_API
+
 #include "clutter-backend-private.h"
 #include "clutter-debug.h"
 #include "clutter-event-private.h"
@@ -50,9 +52,43 @@
 #include "clutter-profile.h"
 #include "clutter-stage-manager-private.h"
 #include "clutter-stage-private.h"
+#include "clutter-stage-window.h"
 #include "clutter-version.h"
 
+#ifdef HAVE_CLUTTER_WAYLAND_COMPOSITOR
+#include "wayland/clutter-wayland-compositor.h"
+#endif /* HAVE_CLUTTER_WAYLAND_COMPOSITOR */
+
 #include <cogl/cogl.h>
+
+#ifdef CLUTTER_INPUT_X11
+#include "x11/clutter-backend-x11.h"
+#endif
+#ifdef CLUTTER_INPUT_WIN32
+#include "win32/clutter-backend-win32.h"
+#endif
+#ifdef CLUTTER_INPUT_OSX
+#include "osx/clutter-backend-osx.h"
+#endif
+#ifdef CLUTTER_INPUT_GDK
+#include "gdk/clutter-backend-gdk.h"
+#endif
+#ifdef CLUTTER_INPUT_EVDEV
+#include "evdev/clutter-device-manager-evdev.h"
+#endif
+#ifdef CLUTTER_INPUT_TSLIB
+/* XXX - should probably warn, here */
+#include "tslib/clutter-event-tslib.h"
+#endif
+#ifdef CLUTTER_INPUT_WAYLAND
+#include "wayland/clutter-device-manager-wayland.h"
+#endif
+
+#ifdef HAVE_CLUTTER_WAYLAND_COMPOSITOR
+#include <cogl/cogl-wayland-server.h>
+#include <wayland-server.h>
+#include "wayland/clutter-wayland-compositor.h"
+#endif
 
 G_DEFINE_ABSTRACT_TYPE (ClutterBackend, clutter_backend, G_TYPE_OBJECT);
 
@@ -84,6 +120,13 @@ enum
 
 static guint backend_signals[LAST_SIGNAL] = { 0, };
 
+/* Global for being able to specify a compositor side wayland display
+ * pointer before clutter initialization */
+#ifdef HAVE_CLUTTER_WAYLAND_COMPOSITOR
+static struct wl_display *_wayland_compositor_display;
+#endif
+
+
 static void
 clutter_backend_dispose (GObject *gobject)
 {
@@ -106,6 +149,8 @@ static void
 clutter_backend_finalize (GObject *gobject)
 {
   ClutterBackend *backend = CLUTTER_BACKEND (gobject);
+
+  g_source_destroy (backend->cogl_source);
 
   g_free (backend->priv->font_name);
   clutter_backend_set_font_options (backend, NULL);
@@ -207,20 +252,303 @@ clutter_backend_real_font_changed (ClutterBackend *backend)
   CLUTTER_NOTE (BACKEND, "Units per em: %.2f", priv->units_per_em);
 }
 
-static void
-clutter_backend_real_redraw (ClutterBackend *backend,
-                             ClutterStage   *stage)
+static gboolean
+clutter_backend_real_create_context (ClutterBackend  *backend,
+                                     GError         **error)
 {
-  ClutterStageWindow *impl;
+  ClutterBackendClass *klass;
+  CoglSwapChain *swap_chain;
+  GError *internal_error;
 
-  if (CLUTTER_ACTOR_IN_DESTRUCTION (stage))
+  if (backend->cogl_context != NULL)
+    return TRUE;
+
+  klass = CLUTTER_BACKEND_GET_CLASS (backend);
+
+  swap_chain = NULL;
+  internal_error = NULL;
+
+  CLUTTER_NOTE (BACKEND, "Creating Cogl renderer");
+  if (klass->get_renderer != NULL)
+    backend->cogl_renderer = klass->get_renderer (backend, &internal_error);
+  else
+    backend->cogl_renderer = cogl_renderer_new ();
+
+  if (backend->cogl_renderer == NULL)
+    goto error;
+
+#ifdef HAVE_CLUTTER_WAYLAND_COMPOSITOR
+  /* If the application is trying to act as a Wayland compositor then
+     it needs to have an EGL-based renderer backend */
+  if (_wayland_compositor_display)
+    cogl_renderer_add_constraint (backend->cogl_renderer,
+                                  COGL_RENDERER_CONSTRAINT_USES_EGL);
+#endif
+
+  CLUTTER_NOTE (BACKEND, "Connecting the renderer");
+  if (!cogl_renderer_connect (backend->cogl_renderer, &internal_error))
+    goto error;
+
+  CLUTTER_NOTE (BACKEND, "Creating Cogl swap chain");
+  swap_chain = cogl_swap_chain_new ();
+
+  CLUTTER_NOTE (BACKEND, "Creating Cogl display");
+  if (klass->get_display != NULL)
+    {
+      backend->cogl_display = klass->get_display (backend,
+                                                  backend->cogl_renderer,
+                                                  swap_chain,
+                                                  &internal_error);
+    }
+  else
+    {
+      CoglOnscreenTemplate *tmpl;
+      gboolean res;
+
+      tmpl = cogl_onscreen_template_new (swap_chain);
+
+      /* XXX: I have some doubts that this is a good design.
+       *
+       * Conceptually should we be able to check an onscreen_template
+       * without more details about the CoglDisplay configuration?
+       */
+      res = cogl_renderer_check_onscreen_template (backend->cogl_renderer,
+                                                   tmpl,
+                                                   &internal_error);
+
+      if (!res)
+        goto error;
+
+      backend->cogl_display = cogl_display_new (backend->cogl_renderer, tmpl);
+
+      /* the display owns the template */
+      cogl_object_unref (tmpl);
+    }
+
+  if (backend->cogl_display == NULL)
+    goto error;
+
+#ifdef HAVE_CLUTTER_WAYLAND_COMPOSITOR
+  cogl_wayland_display_set_compositor_display (backend->cogl_display,
+                                               _wayland_compositor_display);
+#endif
+
+  CLUTTER_NOTE (BACKEND, "Setting up the display");
+  if (!cogl_display_setup (backend->cogl_display, &internal_error))
+    goto error;
+
+  CLUTTER_NOTE (BACKEND, "Creating the Cogl context");
+  backend->cogl_context = cogl_context_new (backend->cogl_display, &internal_error);
+  if (backend->cogl_context == NULL)
+    goto error;
+
+  backend->cogl_source = cogl_glib_source_new (backend->cogl_context,
+                                               G_PRIORITY_DEFAULT);
+  g_source_attach (backend->cogl_source, NULL);
+
+  /* the display owns the renderer and the swap chain */
+  cogl_object_unref (backend->cogl_renderer);
+  cogl_object_unref (swap_chain);
+
+  return TRUE;
+
+error:
+  if (backend->cogl_display != NULL)
+    {
+      cogl_object_unref (backend->cogl_display);
+      backend->cogl_display = NULL;
+    }
+
+  if (backend->cogl_renderer != NULL)
+    {
+      cogl_object_unref (backend->cogl_renderer);
+      backend->cogl_renderer = NULL;
+    }
+
+  if (swap_chain != NULL)
+    cogl_object_unref (swap_chain);
+
+  if (internal_error != NULL)
+    g_propagate_error (error, internal_error);
+  else
+    g_set_error_literal (error, CLUTTER_INIT_ERROR,
+                         CLUTTER_INIT_ERROR_BACKEND,
+                         _("Unable to initialize the Clutter backend"));
+
+  return FALSE;
+}
+
+static void
+clutter_backend_real_ensure_context (ClutterBackend *backend,
+                                     ClutterStage   *stage)
+{
+  ClutterStageWindow *stage_impl;
+  CoglFramebuffer *framebuffer;
+
+  if (stage == NULL)
     return;
 
-  impl = _clutter_stage_get_window (stage);
-  if (impl == NULL)
+  stage_impl = _clutter_stage_get_window (stage);
+  if (stage_impl == NULL)
     return;
 
-  _clutter_stage_window_redraw (impl);
+  framebuffer = _clutter_stage_window_get_active_framebuffer (stage_impl);
+  if (framebuffer == NULL)
+    return;
+
+  cogl_set_framebuffer (framebuffer);
+}
+
+static ClutterFeatureFlags
+clutter_backend_real_get_features (ClutterBackend *backend)
+{
+  ClutterFeatureFlags flags = 0;
+
+  if (cogl_clutter_winsys_has_feature (COGL_WINSYS_FEATURE_MULTIPLE_ONSCREEN))
+    {
+      CLUTTER_NOTE (BACKEND, "Cogl supports multiple onscreen framebuffers");
+      flags |= CLUTTER_FEATURE_STAGE_MULTIPLE;
+    }
+  else
+    {
+      CLUTTER_NOTE (BACKEND, "Cogl only supports one onscreen framebuffer");
+      flags |= CLUTTER_FEATURE_STAGE_STATIC;
+    }
+
+  if (cogl_clutter_winsys_has_feature (COGL_WINSYS_FEATURE_SWAP_THROTTLE))
+    {
+      CLUTTER_NOTE (BACKEND, "Cogl supports swap buffers throttling");
+      flags |= CLUTTER_FEATURE_SYNC_TO_VBLANK;
+    }
+  else
+    CLUTTER_NOTE (BACKEND, "Cogl doesn't support swap buffers throttling");
+
+  if (cogl_clutter_winsys_has_feature (COGL_WINSYS_FEATURE_SWAP_BUFFERS_EVENT))
+    {
+      CLUTTER_NOTE (BACKEND, "Cogl supports swap buffers complete events");
+      flags |= CLUTTER_FEATURE_SWAP_EVENTS;
+    }
+
+  return flags;
+}
+
+static ClutterStageWindow *
+clutter_backend_real_create_stage (ClutterBackend  *backend,
+                                   ClutterStage    *wrapper,
+                                   GError         **error)
+{
+  ClutterBackendClass *klass;
+
+  if (!clutter_feature_available (CLUTTER_FEATURE_STAGE_MULTIPLE))
+    {
+      ClutterStageManager *manager = clutter_stage_manager_get_default ();
+
+      if (clutter_stage_manager_get_default_stage (manager) != NULL)
+        {
+          g_set_error (error, CLUTTER_INIT_ERROR,
+                       CLUTTER_INIT_ERROR_BACKEND,
+                       _("The backend of type '%s' does not support "
+                         "creating multiple stages"),
+                       G_OBJECT_TYPE_NAME (backend));
+          return NULL;
+        }
+    }
+
+  klass = CLUTTER_BACKEND_GET_CLASS (backend);
+  g_assert (klass->stage_window_type != G_TYPE_INVALID);
+
+  return g_object_new (klass->stage_window_type,
+                       "backend", backend,
+                       "wrapper", wrapper,
+                       NULL);
+}
+
+static void
+clutter_backend_real_init_events (ClutterBackend *backend)
+{
+  const char *input_backend = NULL;
+
+  input_backend = g_getenv ("CLUTTER_INPUT_BACKEND");
+  if (input_backend != NULL)
+    input_backend = g_intern_string (input_backend);
+
+#ifdef CLUTTER_INPUT_OSX
+  if (clutter_check_windowing_backend (CLUTTER_WINDOWING_OSX) &&
+      (input_backend == NULL || input_backend == I_(CLUTTER_INPUT_OSX)))
+    {
+      _clutter_backend_osx_events_init (backend);
+    }
+  else
+#endif
+#ifdef CLUTTER_INPUT_WIN32
+  if (clutter_check_windowing_backend (CLUTTER_WINDOWING_WIN32) &&
+      (input_backend == NULL || input_backend == I_(CLUTTER_INPUT_WIN32)))
+    {
+      _clutter_backend_win32_events_init (backend);
+    }
+  else
+#endif
+#ifdef CLUTTER_INPUT_X11
+  if (clutter_check_windowing_backend (CLUTTER_WINDOWING_X11) &&
+      (input_backend == NULL || input_backend == I_(CLUTTER_INPUT_X11)))
+    {
+      _clutter_backend_x11_events_init (backend);
+    }
+  else
+#endif
+#ifdef CLUTTER_INPUT_GDK
+  if (clutter_check_windowing_backend (CLUTTER_WINDOWING_GDK) &&
+      (input_backend == NULL || input_backend == I_(CLUTTER_INPUT_GDK)))
+    {
+      _clutter_backend_gdk_events_init (backend);
+    }
+  else
+#endif
+#ifdef CLUTTER_INPUT_EVDEV
+  /* Evdev can be used regardless of the windowing system */
+  if (input_backend != NULL &&
+      strcmp (input_backend, CLUTTER_INPUT_EVDEV) == 0)
+    {
+      _clutter_events_evdev_init (backend);
+    }
+  else
+#endif
+#ifdef CLUTTER_INPUT_TSLIB
+  /* Tslib can be used regardless of the windowing system */
+  if (input_backend != NULL &&
+      strcmp (input_backend, CLUTTER_INPUT_TSLIB) == 0)
+    {
+      _clutter_events_tslib_init (backend);
+    }
+  else
+#endif
+#ifdef CLUTTER_INPUT_WAYLAND
+  if (clutter_check_windowing_backend (CLUTTER_WINDOWING_WAYLAND) &&
+      (input_backend == NULL || input_backend == I_(CLUTTER_INPUT_WAYLAND)))
+    {
+      _clutter_events_wayland_init (backend);
+    }
+  else
+#endif
+  if (input_backend != NULL)
+    {
+      if (input_backend != I_(CLUTTER_INPUT_NULL))
+        g_error ("Unrecognized input backend '%s'", input_backend);
+    }
+  else
+    g_error ("Unknown input backend");
+}
+
+static ClutterDeviceManager *
+clutter_backend_real_get_device_manager (ClutterBackend *backend)
+{
+  if (G_UNLIKELY (backend->device_manager == NULL))
+    {
+      g_critical ("No device manager available, expect broken input");
+      return NULL;
+    }
+
+  return backend->device_manager;
 }
 
 static gboolean
@@ -261,6 +589,8 @@ clutter_backend_class_init (ClutterBackendClass *klass)
   gobject_class->finalize = clutter_backend_finalize;
 
   g_type_class_add_private (gobject_class, sizeof (ClutterBackendPrivate));
+
+  klass->stage_window_type = G_TYPE_INVALID;
 
   /**
    * ClutterBackend::resolution-changed:
@@ -318,8 +648,14 @@ clutter_backend_class_init (ClutterBackendClass *klass)
 
   klass->resolution_changed = clutter_backend_real_resolution_changed;
   klass->font_changed = clutter_backend_real_font_changed;
+
+  klass->init_events = clutter_backend_real_init_events;
+  klass->get_device_manager = clutter_backend_real_get_device_manager;
   klass->translate_event = clutter_backend_real_translate_event;
-  klass->redraw = clutter_backend_real_redraw;
+  klass->create_context = clutter_backend_real_create_context;
+  klass->ensure_context = clutter_backend_real_ensure_context;
+  klass->get_features = clutter_backend_real_get_features;
+  klass->create_stage = clutter_backend_real_create_stage;
 }
 
 static void
@@ -382,13 +718,10 @@ _clutter_backend_create_stage (ClutterBackend  *backend,
                                GError         **error)
 {
   ClutterBackendClass *klass;
-  ClutterStageManager *stage_manager;
   ClutterStageWindow *stage_window;
 
   g_assert (CLUTTER_IS_BACKEND (backend));
   g_assert (CLUTTER_IS_STAGE (wrapper));
-
-  stage_manager = clutter_stage_manager_get_default ();
 
   klass = CLUTTER_BACKEND_GET_CLASS (backend);
   if (klass->create_stage != NULL)
@@ -400,32 +733,8 @@ _clutter_backend_create_stage (ClutterBackend  *backend,
     return NULL;
 
   g_assert (CLUTTER_IS_STAGE_WINDOW (stage_window));
-  _clutter_stage_set_window (wrapper, stage_window);
-  _clutter_stage_manager_add_stage (stage_manager, wrapper);
 
   return stage_window;
-}
-
-void
-_clutter_backend_redraw (ClutterBackend *backend,
-                         ClutterStage   *stage)
-{
-  CLUTTER_STATIC_COUNTER (redraw_counter,
-                          "_clutter_backend_redraw counter",
-                          "Increments for each _clutter_backend_redraw call",
-                          0 /* no application private data */);
-  CLUTTER_STATIC_TIMER (redraw_timer,
-                        "Master Clock", /* parent */
-                        "Redrawing",
-                        "The time spent redrawing everything",
-                        0 /* no application private data */);
-
-  CLUTTER_COUNTER_INC (_clutter_uprof_context, redraw_counter);
-  CLUTTER_TIMER_START (_clutter_uprof_context, redraw_timer);
-
-  CLUTTER_BACKEND_GET_CLASS (backend)->redraw (backend, stage);
-
-  CLUTTER_TIMER_STOP (_clutter_uprof_context, redraw_timer);
 }
 
 gboolean
@@ -435,10 +744,8 @@ _clutter_backend_create_context (ClutterBackend  *backend,
   ClutterBackendClass *klass;
 
   klass = CLUTTER_BACKEND_GET_CLASS (backend);
-  if (klass->create_context)
-    return klass->create_context (backend, error);
 
-  return TRUE;
+  return klass->create_context (backend, error);
 }
 
 void
@@ -467,7 +774,7 @@ _clutter_backend_ensure_context (ClutterBackend *backend,
         {
           new_stage = NULL;
 
-          CLUTTER_NOTE (MULTISTAGE,
+          CLUTTER_NOTE (BACKEND,
                         "Stage [%p] is not realized, unsetting the stage",
                         stage);
         }
@@ -475,7 +782,7 @@ _clutter_backend_ensure_context (ClutterBackend *backend,
         {
           new_stage = stage;
 
-          CLUTTER_NOTE (MULTISTAGE,
+          CLUTTER_NOTE (BACKEND,
                         "Setting the new stage [%p]",
                         new_stage);
         }
@@ -517,7 +824,7 @@ _clutter_backend_ensure_context (ClutterBackend *backend,
       current_context_stage = new_stage;
     }
   else
-    CLUTTER_NOTE (MULTISTAGE, "Stage is the same");
+    CLUTTER_NOTE (BACKEND, "Stage is the same");
 }
 
 
@@ -569,8 +876,7 @@ _clutter_backend_init_events (ClutterBackend *backend)
   g_assert (CLUTTER_IS_BACKEND (backend));
 
   klass = CLUTTER_BACKEND_GET_CLASS (backend);
-  if (klass->init_events)
-    klass->init_events (backend);
+  klass->init_events (backend);
 }
 
 gfloat
@@ -739,7 +1045,7 @@ clutter_backend_get_double_click_distance (ClutterBackend *backend)
  *
  * Since: 0.4
  *
- * Deprecated: Use #ClutterSettings:font-dpi instead
+ * Deprecated: 1.4: Use #ClutterSettings:font-dpi instead
  */
 void
 clutter_backend_set_resolution (ClutterBackend *backend,
@@ -1000,3 +1306,28 @@ clutter_backend_get_cogl_context (ClutterBackend *backend)
 {
   return backend->cogl_context;
 }
+
+#ifdef HAVE_CLUTTER_WAYLAND_COMPOSITOR
+/**
+ * clutter_wayland_set_compositor_display:
+ * @display: A compositor side struct wl_display pointer
+ *
+ * This informs Clutter of your compositor side Wayland display
+ * object. This must be called before calling clutter_init().
+ *
+ * Since: 1.8
+ * Stability: unstable
+ */
+void
+clutter_wayland_set_compositor_display (struct wl_display *display)
+{
+  if (_clutter_context_is_initialized ())
+    {
+      g_warning ("%s() can only be used before calling clutter_init()",
+                 G_STRFUNC);
+      return;
+    }
+
+  _wayland_compositor_display = display;
+}
+#endif

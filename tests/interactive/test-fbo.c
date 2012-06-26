@@ -1,5 +1,3 @@
-#undef CLUTTER_DISABLE_DEPRECATED
-
 #include <clutter/clutter.h>
 
 #include <errno.h>
@@ -42,8 +40,6 @@ make_source (void)
 G_MODULE_EXPORT int
 test_fbo_main (int argc, char *argv[])
 {
-  ClutterColor      blue   = {0x33, 0x44, 0x55, 0xff};
-
   ClutterActor     *fbo;
   ClutterActor     *onscreen_source;
   ClutterActor     *stage;
@@ -57,9 +53,11 @@ test_fbo_main (int argc, char *argv[])
   if (clutter_feature_available (CLUTTER_FEATURE_OFFSCREEN) == FALSE)
     g_error("This test requires CLUTTER_FEATURE_OFFSCREEN");
 
-  stage = clutter_stage_get_default ();
+  stage = clutter_stage_new ();
   clutter_actor_set_size (stage, STAGE_WIDTH, STAGE_HEIGHT);
-  clutter_stage_set_color (CLUTTER_STAGE (stage), &blue);
+  clutter_actor_set_background_color (stage, CLUTTER_COLOR_SkyBlue);
+  clutter_stage_set_title (CLUTTER_STAGE (stage), "Texture from Actor");
+  g_signal_connect (stage, "destroy", G_CALLBACK (clutter_main_quit), NULL);
 
   /* Create the first source */
   onscreen_source = make_source();
@@ -98,4 +96,10 @@ test_fbo_main (int argc, char *argv[])
   clutter_main ();
 
   return 0;
+}
+
+G_MODULE_EXPORT const char *
+test_fbo_describe (void)
+{
+  return "Create a texture from an actor.";
 }

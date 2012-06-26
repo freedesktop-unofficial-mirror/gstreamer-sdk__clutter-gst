@@ -1,9 +1,10 @@
-
 #ifdef CLUTTER_ENABLE_PROFILE
 
-#include "clutter-profile.h"
-
 #include <stdlib.h>
+
+/* XXX - we need this for g_atexit() */
+#define G_DISABLE_DEPRECATION_WARNINGS
+#include "clutter-profile.h"
 
 UProfContext *_clutter_uprof_context;
 
@@ -279,19 +280,4 @@ _clutter_profile_resume (void)
   /* NB: The Cogl context is linked to this so it will also be resumed... */
   uprof_context_resume (_clutter_uprof_context);
 }
-
-void
-_clutter_profile_trace_message (const char *format, ...)
-{
-  va_list ap;
-
-  va_start (ap, format);
-  g_logv (G_LOG_DOMAIN, G_LOG_LEVEL_MESSAGE, format, ap);
-  va_end (ap);
-
-  if (_clutter_uprof_context)
-    uprof_context_vtrace_message (_clutter_uprof_context, format, ap);
-}
-
 #endif
-

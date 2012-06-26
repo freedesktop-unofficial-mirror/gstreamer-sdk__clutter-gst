@@ -7,7 +7,7 @@
 <link rel="home" href="index.html" title="Clutter Reference Manual">
 <link rel="up" href="clutterbackends.html" title="Part VII. Clutter Backends">
 <link rel="prev" href="clutter-EGL-Specific-Support.html" title="EGL Specific Support">
-<link rel="next" href="clutter-Wayland-Specific-Support.html" title="Wayland Specific Support">
+<link rel="next" href="clutter-GDK-Specific-Support.html" title="GDK Specific Support">
 <meta name="generator" content="GTK-Doc V1.18.1 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
@@ -18,7 +18,7 @@
 <td><a accesskey="u" href="clutterbackends.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
 <td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
 <th width="100%" align="center">Clutter Reference Manual</th>
-<td><a accesskey="n" href="clutter-Wayland-Specific-Support.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+<td><a accesskey="n" href="clutter-GDK-Specific-Support.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
 </tr>
 <tr><td colspan="5" class="shortcuts">
 <a href="#clutter-Intel-CE3100-CE4100-Specific-Support.synopsis" class="shortcut">Top</a>
@@ -40,6 +40,7 @@
 <pre class="synopsis"><span class="returnvalue">void</span>                <a class="link" href="clutter-Intel-CE3100-CE4100-Specific-Support.html#clutter-cex100-set-plane" title="clutter_cex100_set_plane ()">clutter_cex100_set_plane</a>            (<em class="parameter"><code><span class="type">gdl_plane_id_t</span> plane</code></em>);
 enum                <a class="link" href="clutter-Intel-CE3100-CE4100-Specific-Support.html#ClutterCex100BufferingMode" title="enum ClutterCex100BufferingMode">ClutterCex100BufferingMode</a>;
 <span class="returnvalue">void</span>                <a class="link" href="clutter-Intel-CE3100-CE4100-Specific-Support.html#clutter-cex100-set-buffering-mode" title="clutter_cex100_set_buffering_mode ()">clutter_cex100_set_buffering_mode</a>   (<em class="parameter"><code><a class="link" href="clutter-Intel-CE3100-CE4100-Specific-Support.html#ClutterCex100BufferingMode" title="enum ClutterCex100BufferingMode"><span class="type">ClutterCex100BufferingMode</span></a> mode</code></em>);
+<span class="returnvalue">EGLDisplay</span>          <a class="link" href="clutter-Intel-CE3100-CE4100-Specific-Support.html#clutter-cex100-get-egl-display" title="clutter_cex100_get_egl_display ()">clutter_cex100_get_egl_display</a>      (<em class="parameter"><code><span class="type">void</span></code></em>);
 </pre>
 </div>
 <div class="refsect1">
@@ -50,7 +51,7 @@ specific API
 </p>
 <p>
 You need to include
-<code class="filename">&lt;clutter/egl/clutter-cex100.h&gt;</code>
+<code class="filename">&lt;clutter/cex100/clutter-cex100.h&gt;</code>
 to have access to the functions documented here.
 </p>
 </div>
@@ -83,6 +84,7 @@ the stage will be drawn. By default Clutter will pick UPP_C
 <td>a GDL plane</td>
 </tr></tbody>
 </table></div>
+<p class="since">Since 1.6</p>
 </div>
 <hr>
 <div class="refsect2">
@@ -110,6 +112,7 @@ Enum passed to <a class="link" href="clutter-Intel-CE3100-CE4100-Specific-Suppor
 </tr>
 </tbody>
 </table></div>
+<p class="since">Since 1.6</p>
 </div>
 <hr>
 <div class="refsect2">
@@ -138,6 +141,24 @@ Clutter defaults to <a class="link" href="clutter-Intel-CE3100-CE4100-Specific-S
 </td>
 </tr></tbody>
 </table></div>
+<p class="since">Since 1.6</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="clutter-cex100-get-egl-display"></a><h3>clutter_cex100_get_egl_display ()</h3>
+<pre class="programlisting"><span class="returnvalue">EGLDisplay</span>          clutter_cex100_get_egl_display      (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<p>
+Retrieves the EGL display used by Clutter, if it supports the
+EGL windowing system and if it is running using an EGL backend.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>the EGL display used by Clutter, or 0</td>
+</tr></tbody>
+</table></div>
+<p class="since">Since 1.10</p>
 </div>
 </div>
 </div>

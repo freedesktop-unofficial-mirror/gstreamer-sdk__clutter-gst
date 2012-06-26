@@ -37,35 +37,42 @@
  * <refsect2 id="ClutterShaderEffect-implementing">
  *   <title>Implementing a ClutterShaderEffect</title>
  *   <para>Creating a sub-class of #ClutterShaderEffect requires the
- *   overriding of the <function>pre_paint()</function> virtual function
- *   from the #ClutterEffect class.</para>
- *   <para>The <function>pre_paint()</function> should set the shader's
- *   source and eventually set the uniforms. The sub-class should call
- *   clutter_shader_effect_set_shader_source() to set the shader source
- *   code, and  clutter_shader_effect_set_uniform_value() or
- *   clutter_shader_effect_set_uniform() to set the values of the shader
- *   uniforms, if any; the sub-class should then chain up to the
- *   #ClutterShaderEffect implementation.</para>
+ *   overriding of the <function>paint_target()</function> virtual
+ *   function from the #ClutterOffscreenEffect class as well as the
+ *   <function>get_static_shader_source()</function> virtual from the
+ *   #ClutterShaderEffect class.</para>
+ *   <para>The <function>get_static_shader_source()</function>
+ *   function should return a copy of the shader source to use. This
+ *   function is only called once per subclass of #ClutterShaderEffect
+ *   regardless of how many instances of the effect are created. The
+ *   source for the shader is typically stored in a static const
+ *   string which is returned from this function via
+ *   g_strdup().</para>
+ *   <para>The <function>paint_target()</function> should set the
+ *   shader's uniforms if any. This is done by calling
+ *   clutter_shader_effect_set_uniform_value() or
+ *   clutter_shader_effect_set_uniform(). The sub-class should then
+ *   chain up to the #ClutterShaderEffect implementation.</para>
  *   <example id="ClutterShaderEffect-example-uniforms">
  *     <title>Setting uniforms on a ClutterShaderEffect</title>
  *     <para>The example below shows a typical implementation of the
- *     <function>pre_paint()</function> phase of a #ClutterShaderEffect
- *     sub-class.</para>
+ *     <function>get_static_shader_source()</function> and
+ *     <function>paint_target()</function> phases of a
+ *     #ClutterShaderEffect sub-class.</para>
  *     <programlisting>
+ *  static gchar *
+ *  my_effect_get_static_shader_source (ClutterShaderEffect *effect)
+ *  {
+ *    return g_strdup (shader_source);
+ *  }
+ *
  *  static gboolean
- *  my_effect_pre_paint (ClutterEffect *effect)
+ *  my_effect_paint_target (ClutterOffscreenEffect *effect)
  *  {
  *    MyEffect *self = MY_EFFECT (effect);
  *    ClutterShaderEffect *shader = CLUTTER_SHADER_EFFECT (effect);
  *    ClutterEffectClass *parent_class;
  *    gfloat component_r, component_g, component_b;
- *
- *    /&ast; if the effect is not enabled we can bail out now &ast;/
- *    if (!clutter_actor_meta_get_enabled (CLUTTER_ACTOR_META (effect)))
- *      return FALSE;
- *
- *    /&ast; this function is a no-op after the first call &ast;/
- *    clutter_shader_effect_set_shader_source (shader, shader_source);
  *
  *    /&ast; the "tex" uniform is declared in the shader as:
  *     &ast;
@@ -92,8 +99,8 @@
  *                                       component_b);
  *
  *    /&ast; chain up to the parent's implementation &ast;/
- *    parent_class = CLUTTER_EFFECT_CLASS (my_effect_parent_class);
- *    return parent_class->pre_paint (effect);
+ *    parent_class = CLUTTER_OFFSCREEN_EFFECT_CLASS (my_effect_parent_class);
+ *    return parent_class->paint_target (effect);
  *  }
  *     </programlisting>
  *   </example>
@@ -106,9 +113,13 @@
 #include "config.h"
 #endif
 
-#include "clutter-shader-effect.h"
-
+/* XXX: This file depends on the cogl_program_ api with has been
+ * removed for Cogl 2.0 so we undef COGL_ENABLE_EXPERIMENTAL_2_0_API
+ * for this file for now */
+#undef COGL_ENABLE_EXPERIMENTAL_2_0_API
 #include "cogl/cogl.h"
+
+#include "clutter-shader-effect.h"
 
 #include "clutter-debug.h"
 #include "clutter-enum-types.h"
@@ -121,7 +132,7 @@ typedef struct _ShaderUniform
   gchar *name;
   GType type;
   GValue value;
-  GLint location;
+  int location;
 } ShaderUniform;
 
 struct _ClutterShaderEffectPrivate
@@ -134,10 +145,17 @@ struct _ClutterShaderEffectPrivate
   CoglHandle shader;
 
   GHashTable *uniforms;
-
-  guint is_compiled : 1;
-  guint source_set  : 1;
 };
+
+typedef struct _ClutterShaderEffectClassPrivate
+{
+  /* These are the per-class pre-compiled shader and program which is
+     used when the class implements get_static_shader_source without
+     calling set_shader_source. They will be shared by all instances
+     of this class */
+  CoglHandle program;
+  CoglHandle shader;
+} ClutterShaderEffectClassPrivate;
 
 enum
 {
@@ -150,9 +168,11 @@ enum
 
 static GParamSpec *obj_props[PROP_LAST];
 
-G_DEFINE_TYPE (ClutterShaderEffect,
-               clutter_shader_effect,
-               CLUTTER_TYPE_OFFSCREEN_EFFECT);
+G_DEFINE_TYPE_WITH_CODE (ClutterShaderEffect,
+                         clutter_shader_effect,
+                         CLUTTER_TYPE_OFFSCREEN_EFFECT,
+                         g_type_add_class_private (g_define_type_id,
+                                                   sizeof (ClutterShaderEffectClassPrivate)))
 
 static inline void
 clutter_shader_effect_clear (ClutterShaderEffect *self,
@@ -160,15 +180,18 @@ clutter_shader_effect_clear (ClutterShaderEffect *self,
 {
   ClutterShaderEffectPrivate *priv = self->priv;
 
-  if (priv->shader != COGL_INVALID_HANDLE && !priv->is_compiled)
-    cogl_handle_unref (priv->shader);
+  if (priv->shader != COGL_INVALID_HANDLE)
+    {
+      cogl_handle_unref (priv->shader);
+
+      priv->shader = COGL_INVALID_HANDLE;
+    }
 
   if (priv->program != COGL_INVALID_HANDLE)
     {
       cogl_handle_unref (priv->program);
 
       priv->program = COGL_INVALID_HANDLE;
-      priv->shader = COGL_INVALID_HANDLE;
     }
 
   if (reset_uniforms && priv->uniforms != NULL)
@@ -178,8 +201,6 @@ clutter_shader_effect_clear (ClutterShaderEffect *self,
     }
 
   priv->actor = NULL;
-  priv->is_compiled = FALSE;
-  priv->source_set = FALSE;
 }
 
 static void
@@ -208,7 +229,7 @@ clutter_shader_effect_update_uniforms (ClutterShaderEffect *effect)
 
       if (CLUTTER_VALUE_HOLDS_SHADER_FLOAT (&uniform->value))
         {
-          const GLfloat *floats;
+          const float *floats;
 
           floats = clutter_value_get_shader_float (&uniform->value, &size);
           cogl_program_set_uniform_float (priv->program, uniform->location,
@@ -217,7 +238,7 @@ clutter_shader_effect_update_uniforms (ClutterShaderEffect *effect)
         }
       else if (CLUTTER_VALUE_HOLDS_SHADER_INT (&uniform->value))
         {
-          const GLint *ints;
+          const int *ints;
 
           ints = clutter_value_get_shader_int (&uniform->value, &size);
           cogl_program_set_uniform_int (priv->program, uniform->location,
@@ -226,7 +247,7 @@ clutter_shader_effect_update_uniforms (ClutterShaderEffect *effect)
         }
       else if (CLUTTER_VALUE_HOLDS_SHADER_MATRIX (&uniform->value))
         {
-          const GLfloat *matrix;
+          const float *matrix;
 
           matrix = clutter_value_get_shader_matrix (&uniform->value, &size);
           cogl_program_set_uniform_matrix (priv->program, uniform->location,
@@ -236,7 +257,7 @@ clutter_shader_effect_update_uniforms (ClutterShaderEffect *effect)
         }
       else if (G_VALUE_HOLDS_FLOAT (&uniform->value))
         {
-          const GLfloat float_val = g_value_get_float (&uniform->value);
+          const float float_val = g_value_get_float (&uniform->value);
 
           cogl_program_set_uniform_float (priv->program, uniform->location,
                                           1, 1,
@@ -244,8 +265,8 @@ clutter_shader_effect_update_uniforms (ClutterShaderEffect *effect)
         }
       else if (G_VALUE_HOLDS_DOUBLE (&uniform->value))
         {
-          const GLfloat float_val =
-            (GLfloat) g_value_get_double (&uniform->value);
+          const float float_val =
+            (float) g_value_get_double (&uniform->value);
 
           cogl_program_set_uniform_float (priv->program, uniform->location,
                                           1, 1,
@@ -253,7 +274,7 @@ clutter_shader_effect_update_uniforms (ClutterShaderEffect *effect)
         }
       else if (G_VALUE_HOLDS_INT (&uniform->value))
         {
-          const GLint int_val = g_value_get_int (&uniform->value);
+          const int int_val = g_value_get_int (&uniform->value);
 
           cogl_program_set_uniform_int (priv->program, uniform->location,
                                         1, 1,
@@ -298,51 +319,101 @@ clutter_shader_effect_set_actor (ClutterActorMeta *meta,
                 G_OBJECT_TYPE_NAME (meta));
 }
 
+static CoglHandle
+clutter_shader_effect_create_shader (ClutterShaderEffect *self)
+{
+  ClutterShaderEffectPrivate *priv = self->priv;
+
+  switch (priv->shader_type)
+    {
+    case CLUTTER_FRAGMENT_SHADER:
+      return cogl_create_shader (COGL_SHADER_TYPE_FRAGMENT);
+      break;
+
+    case CLUTTER_VERTEX_SHADER:
+      return cogl_create_shader (COGL_SHADER_TYPE_VERTEX);
+      break;
+
+    default:
+      g_assert_not_reached ();
+    }
+}
+
+static void
+clutter_shader_effect_try_static_source (ClutterShaderEffect *self)
+{
+  ClutterShaderEffectPrivate *priv = self->priv;
+  ClutterShaderEffectClass *shader_effect_class =
+    CLUTTER_SHADER_EFFECT_GET_CLASS (self);
+
+  if (shader_effect_class->get_static_shader_source != NULL)
+    {
+      ClutterShaderEffectClassPrivate *class_priv;
+
+      class_priv =
+        G_TYPE_CLASS_GET_PRIVATE (shader_effect_class,
+                                  CLUTTER_TYPE_SHADER_EFFECT,
+                                  ClutterShaderEffectClassPrivate);
+
+      if (class_priv->shader == COGL_INVALID_HANDLE)
+        {
+          gchar *source;
+
+          class_priv->shader = clutter_shader_effect_create_shader (self);
+
+          source = shader_effect_class->get_static_shader_source (self);
+
+          cogl_shader_source (class_priv->shader, source);
+
+          g_free (source);
+
+          CLUTTER_NOTE (SHADER, "Compiling shader effect");
+
+          cogl_shader_compile (class_priv->shader);
+
+          if (cogl_shader_is_compiled (class_priv->shader))
+            {
+              class_priv->program = cogl_create_program ();
+
+              cogl_program_attach_shader (class_priv->program,
+                                          class_priv->shader);
+
+              cogl_program_link (class_priv->program);
+            }
+          else
+            {
+              gchar *log_buf = cogl_shader_get_info_log (class_priv->shader);
+
+              g_warning (G_STRLOC ": Unable to compile the GLSL shader: %s", log_buf);
+              g_free (log_buf);
+            }
+        }
+
+      priv->shader = cogl_handle_ref (class_priv->shader);
+
+      if (class_priv->program != COGL_INVALID_HANDLE)
+        priv->program = cogl_handle_ref (class_priv->program);
+    }
+}
+
 static void
 clutter_shader_effect_paint_target (ClutterOffscreenEffect *effect)
 {
-  ClutterShaderEffectPrivate *priv = CLUTTER_SHADER_EFFECT (effect)->priv;
+  ClutterShaderEffect *self = CLUTTER_SHADER_EFFECT (effect);
+  ClutterShaderEffectPrivate *priv = self->priv;
   ClutterOffscreenEffectClass *parent;
   CoglHandle material;
+
+  /* If the source hasn't been set then we'll try to get it from the
+     static source instead */
+  if (priv->shader == COGL_INVALID_HANDLE)
+    clutter_shader_effect_try_static_source (self);
 
   /* we haven't been prepared or we don't have support for
    * GLSL shaders in Clutter
    */
-  if (priv->program == COGL_INVALID_HANDLE ||
-      priv->shader == COGL_INVALID_HANDLE)
+  if (priv->program == COGL_INVALID_HANDLE)
     goto out;
-
-  if (!priv->source_set)
-    goto out;
-
-  if (!priv->is_compiled)
-    {
-      CLUTTER_NOTE (SHADER, "Compiling shader effect");
-
-      cogl_shader_compile (priv->shader);
-      if (!cogl_shader_is_compiled (priv->shader))
-        {
-          gchar *log_buf = cogl_shader_get_info_log (priv->shader);
-
-          g_warning ("Unable to compile the GLSL shader: %s", log_buf);
-          g_free (log_buf);
-
-          cogl_handle_unref (priv->shader);
-          priv->shader = COGL_INVALID_HANDLE;
-
-          cogl_handle_unref (priv->program);
-          priv->shader = COGL_INVALID_HANDLE;
-
-          goto out;
-        }
-
-      cogl_program_attach_shader (priv->program, priv->shader);
-      cogl_handle_unref (priv->shader);
-
-      cogl_program_link (priv->program);
-
-      priv->is_compiled = TRUE;
-    }
 
   CLUTTER_NOTE (SHADER, "Applying the shader effect of type '%s'",
                 G_OBJECT_TYPE_NAME (effect));
@@ -351,7 +422,7 @@ clutter_shader_effect_paint_target (ClutterOffscreenEffect *effect)
 
   /* associate the program to the offscreen target material */
   material = clutter_offscreen_effect_get_target (effect);
-  cogl_material_set_user_program (material, priv->program);
+  cogl_pipeline_set_user_program (material, priv->program);
 
 out:
   /* paint the offscreen buffer */
@@ -566,14 +637,8 @@ clutter_shader_effect_add_uniform (ClutterShaderEffect *effect,
   else
     shader_uniform_update (uniform, value);
 
-  if (priv->is_compiled)
-    {
-      uniform->location =
-        cogl_program_get_uniform_location (priv->program, uniform->name);
-    }
-
   if (priv->actor != NULL && !CLUTTER_ACTOR_IN_PAINT (priv->actor))
-    clutter_actor_queue_redraw (priv->actor);
+    clutter_effect_queue_repaint (CLUTTER_EFFECT (effect));
 }
 
 /**
@@ -614,7 +679,7 @@ clutter_shader_effect_set_uniform_valist (ClutterShaderEffect *effect,
                                           gsize                n_values,
                                           va_list             *args)
 {
-  GValue value = { 0, };
+  GValue value = G_VALUE_INIT;
 
   if (value_type == CLUTTER_TYPE_SHADER_INT)
     {
@@ -832,35 +897,32 @@ clutter_shader_effect_set_shader_source (ClutterShaderEffect *effect,
 
   priv = effect->priv;
 
-  if (priv->source_set)
+  if (priv->shader != COGL_INVALID_HANDLE)
     return TRUE;
 
-  if (priv->program == COGL_INVALID_HANDLE)
-    priv->program = cogl_create_program ();
-
-  if (priv->shader == COGL_INVALID_HANDLE)
-    {
-      switch (priv->shader_type)
-        {
-        case CLUTTER_FRAGMENT_SHADER:
-          priv->shader = cogl_create_shader (COGL_SHADER_TYPE_FRAGMENT);
-          break;
-
-        case CLUTTER_VERTEX_SHADER:
-          priv->shader = cogl_create_shader (COGL_SHADER_TYPE_VERTEX);
-          break;
-
-        default:
-          priv->shader = COGL_INVALID_HANDLE;
-          break;
-        }
-    }
-
-  g_assert (priv->shader != COGL_INVALID_HANDLE);
+  priv->shader = clutter_shader_effect_create_shader (effect);
 
   cogl_shader_source (priv->shader, source);
 
-  priv->source_set = TRUE;
+  CLUTTER_NOTE (SHADER, "Compiling shader effect");
+
+  cogl_shader_compile (priv->shader);
+
+  if (cogl_shader_is_compiled (priv->shader))
+    {
+      priv->program = cogl_create_program ();
+
+      cogl_program_attach_shader (priv->program, priv->shader);
+
+      cogl_program_link (priv->program);
+    }
+  else
+    {
+      gchar *log_buf = cogl_shader_get_info_log (priv->shader);
+
+      g_warning (G_STRLOC ": Unable to compile the GLSL shader: %s", log_buf);
+      g_free (log_buf);
+    }
 
   return TRUE;
 }

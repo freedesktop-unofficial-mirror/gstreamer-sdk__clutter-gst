@@ -72,8 +72,6 @@ test_flow_layout_main (int argc, char *argv[])
 {
   ClutterActor *stage, *box;
   ClutterLayoutManager *layout;
-  ClutterColor stage_color = { 0xe0, 0xf2, 0xfc, 0xff };
-  ClutterColor box_color = { 255, 255, 255, 255 };
   GError *error;
   gint i;
 
@@ -90,10 +88,11 @@ test_flow_layout_main (int argc, char *argv[])
       return EXIT_FAILURE;
     }
 
-  stage = clutter_stage_get_default ();
+  stage = clutter_stage_new ();
+  clutter_actor_set_background_color (stage, CLUTTER_COLOR_LightSkyBlue);
   clutter_stage_set_title (CLUTTER_STAGE (stage), "Flow Layout");
-  clutter_stage_set_color (CLUTTER_STAGE (stage), &stage_color);
   clutter_stage_set_user_resizable (CLUTTER_STAGE (stage), TRUE);
+  g_signal_connect (stage, "destroy", G_CALLBACK (clutter_main_quit), NULL);
 
   layout = clutter_flow_layout_new (vertical ? CLUTTER_FLOW_VERTICAL
                                              : CLUTTER_FLOW_HORIZONTAL);
@@ -105,7 +104,7 @@ test_flow_layout_main (int argc, char *argv[])
                                        y_spacing);
 
   box = clutter_box_new (layout);
-  clutter_box_set_color (CLUTTER_BOX (box), &box_color);
+  clutter_box_set_color (CLUTTER_BOX (box), CLUTTER_COLOR_Aluminium2);
   clutter_container_add_actor (CLUTTER_CONTAINER (stage), box);
 
   if (!fixed_size)
@@ -153,4 +152,10 @@ test_flow_layout_main (int argc, char *argv[])
   clutter_main ();
 
   return EXIT_SUCCESS;
+}
+
+G_MODULE_EXPORT const char *
+test_flow_layout_describe (void)
+{
+  return "FlowLayout layout manager example";
 }

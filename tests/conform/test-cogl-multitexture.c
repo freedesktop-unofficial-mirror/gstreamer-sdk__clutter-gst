@@ -169,7 +169,7 @@ queue_redraw (gpointer stage)
 {
   clutter_actor_queue_redraw (CLUTTER_ACTOR (stage));
 
-  return TRUE;
+  return G_SOURCE_CONTINUE;
 }
 
 void
@@ -181,7 +181,7 @@ test_cogl_multitexture (TestConformSimpleFixture *fixture,
   ClutterActor *group;
   guint idle_source;
 
-  stage = clutter_stage_get_default ();
+  stage = clutter_stage_new ();
 
   clutter_stage_set_color (CLUTTER_STAGE (stage), &stage_color);
 
@@ -191,7 +191,7 @@ test_cogl_multitexture (TestConformSimpleFixture *fixture,
   /* We force continuous redrawing incase someone comments out the
    * clutter_main_quit and wants visual feedback for the test since we
    * wont be doing anything else that will trigger redrawing. */
-  idle_source = g_idle_add (queue_redraw, stage);
+  idle_source = clutter_threads_add_idle (queue_redraw, stage);
 
   g_signal_connect (group, "paint", G_CALLBACK (on_paint), &state);
 
@@ -200,6 +200,8 @@ test_cogl_multitexture (TestConformSimpleFixture *fixture,
   clutter_main ();
 
   g_source_remove (idle_source);
+
+  clutter_actor_destroy (stage);
 
   if (g_test_verbose ())
     g_print ("OK\n");

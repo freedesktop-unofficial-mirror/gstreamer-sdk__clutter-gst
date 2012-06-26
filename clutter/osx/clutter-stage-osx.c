@@ -22,15 +22,21 @@
  */
 #include "config.h"
 
-#include "clutter-osx.h"
-#include "clutter-stage-osx.h"
-#include "clutter-backend-osx.h"
+#import "clutter-osx.h"
+#import "clutter-stage-osx.h"
+#import "clutter-backend-osx.h"
 
 #include "clutter-debug.h"
 #include "clutter-private.h"
 #include "clutter-stage-private.h"
 
-#import <AppKit/AppKit.h>
+enum
+{
+  PROP_0,
+
+  PROP_BACKEND,
+  PROP_WRAPPER
+};
 
 static void clutter_stage_window_iface_init (ClutterStageWindowIface *iface);
 
@@ -41,12 +47,6 @@ G_DEFINE_TYPE_WITH_CODE (ClutterStageOSX,
                          G_TYPE_OBJECT,
                          G_IMPLEMENT_INTERFACE (CLUTTER_TYPE_STAGE_WINDOW,
                                                 clutter_stage_window_iface_init))
-
-/* FIXME: this should be in clutter-stage.c */
-static void
-clutter_stage_osx_state_update (ClutterStageOSX   *self,
-                                ClutterStageState  unset_flags,
-                                ClutterStageState  set_flags);
 
 static ClutterActor *
 clutter_stage_osx_get_wrapper (ClutterStageWindow *stage_window);
@@ -79,7 +79,7 @@ clutter_stage_osx_get_wrapper (ClutterStageWindow *stage_window);
   CLUTTER_NOTE (BACKEND, "[%p] windowShouldClose", self->stage_osx);
 
   event.type = CLUTTER_DELETE;
-  event.any.stage = CLUTTER_STAGE (self->stage_osx->wrapper);
+  event.any.stage = self->stage_osx->wrapper;
   clutter_event_put (&event);
 
   return NO;
@@ -96,31 +96,39 @@ clutter_stage_osx_get_wrapper (ClutterStageWindow *stage_window);
 
 - (void) windowDidBecomeKey:(NSNotification*)aNotification
 {
+  ClutterStage *stage;
+
   CLUTTER_NOTE (BACKEND, "[%p] windowDidBecomeKey", self->stage_osx);
 
-  if (self->stage_osx->stage_state & CLUTTER_STAGE_STATE_FULLSCREEN)
+  stage = self->stage_osx->wrapper;
+
+  if (_clutter_stage_is_fullscreen (stage))
     [self setLevel: CLUTTER_OSX_FULLSCREEN_WINDOW_LEVEL];
 
-  clutter_stage_osx_state_update (self->stage_osx, 0, CLUTTER_STAGE_STATE_ACTIVATED);
+  _clutter_stage_update_state (stage, 0, CLUTTER_STAGE_STATE_ACTIVATED);
 }
 
 - (void) windowDidResignKey:(NSNotification*)aNotification
 {
+  ClutterStage *stage;
+
   CLUTTER_NOTE (BACKEND, "[%p] windowDidResignKey", self->stage_osx);
 
-  if (self->stage_osx->stage_state & CLUTTER_STAGE_STATE_FULLSCREEN)
+  stage = self->stage_osx->wrapper;
+
+  if (_clutter_stage_is_fullscreen (stage))
     {
       [self setLevel: NSNormalWindowLevel];
       if (!self->stage_osx->isHiding)
         [self orderBack: nil];
     }
 
-  clutter_stage_osx_state_update (self->stage_osx, CLUTTER_STAGE_STATE_ACTIVATED, 0);
+  _clutter_stage_update_state (stage, CLUTTER_STAGE_STATE_ACTIVATED, 0);
 }
 
 - (NSSize) windowWillResize:(NSWindow *) sender toSize:(NSSize) frameSize
 {
-  if ( clutter_stage_get_user_resizable (self->stage_osx->wrapper) )
+  if (clutter_stage_get_user_resizable (self->stage_osx->wrapper))
     {
       guint min_width, min_height;
       clutter_stage_get_minimum_size (self->stage_osx->wrapper,
@@ -135,7 +143,7 @@ clutter_stage_osx_get_wrapper (ClutterStageWindow *stage_window);
 
 - (void)windowDidChangeScreen:(NSNotification *)notification
 {
-  clutter_redraw(CLUTTER_STAGE(self->stage_osx->wrapper));
+  clutter_stage_ensure_redraw (self->stage_osx->wrapper);
 }
 @end
 
@@ -143,7 +151,8 @@ clutter_stage_osx_get_wrapper (ClutterStageWindow *stage_window);
 @interface ClutterGLView : NSOpenGLView
 {
   ClutterStageOSX *stage_osx;
-  NSTrackingRectTag tracking_rect;
+
+  NSTrackingRectTag trackingRect;
 }
 - (void) drawRect: (NSRect) bounds;
 @end
@@ -154,19 +163,44 @@ clutter_stage_osx_get_wrapper (ClutterStageWindow *stage_window);
   if ((self = [super initWithFrame:aFrame pixelFormat:aFormat]) != nil)
     {
       self->stage_osx = aStage;
-      tracking_rect = [self addTrackingRect:[self bounds]
-                                      owner:self
-                                   userData:NULL
-                               assumeInside:NO];
+      trackingRect = [self addTrackingRect:[self bounds]
+                                     owner:self
+                                  userData:NULL
+                              assumeInside:NO];
     }
 
   return self;
 }
 
+- (void) dealloc
+{
+  if (trackingRect)
+    {
+      [self removeTrackingRect:trackingRect];
+      trackingRect = 0;
+    }
+
+  [super dealloc];
+}
+
+- (NSTrackingRectTag) trackingRect
+{
+  return trackingRect;
+}
+
+- (ClutterActor *) clutterStage
+{
+  return (ClutterActor *) stage_osx->wrapper;
+}
+
 - (void) drawRect: (NSRect) bounds
 {
-  _clutter_stage_do_paint (CLUTTER_STAGE (self->stage_osx->wrapper), NULL);
+  ClutterActor *stage = [self clutterStage];
+
+  _clutter_stage_do_paint (CLUTTER_STAGE (stage), NULL);
+
   cogl_flush ();
+
   [[self openGLContext] flushBuffer];
 }
 
@@ -184,7 +218,12 @@ clutter_stage_osx_get_wrapper (ClutterStageWindow *stage_window);
 
 - (BOOL) isOpaque
 {
-  if (clutter_stage_get_use_alpha (CLUTTER_STAGE (self->stage_osx->wrapper)))
+  ClutterActor *stage = [self clutterStage];
+
+  if (CLUTTER_ACTOR_IN_DESTRUCTION (stage))
+   return YES;
+
+  if (clutter_stage_get_use_alpha (CLUTTER_STAGE (stage)))
     return NO;
 
   return YES;
@@ -192,24 +231,28 @@ clutter_stage_osx_get_wrapper (ClutterStageWindow *stage_window);
 
 - (void) reshape
 {
+  ClutterActor *stage;
+
   stage_osx->requisition_width = [self bounds].size.width;
   stage_osx->requisition_height = [self bounds].size.height;
-  clutter_actor_set_size (CLUTTER_ACTOR (self->stage_osx->wrapper),
-                          (int)[self bounds].size.width,
-                          (int)[self bounds].size.height);
 
-  [self removeTrackingRect:tracking_rect];
-  tracking_rect = [self addTrackingRect:[self bounds]
-                                  owner:self
-                               userData:NULL
-                           assumeInside:NO];
+  stage = [self clutterStage];
+  clutter_actor_set_size (stage,
+                          stage_osx->requisition_width,
+                          stage_osx->requisition_height);
+
+  [self removeTrackingRect:trackingRect];
+  trackingRect = [self addTrackingRect:[self bounds]
+                                 owner:self
+                              userData:NULL
+                          assumeInside:NO];
 }
 
 /* Simply forward all events that reach our view to clutter. */
 
 #define EVENT_HANDLER(event) \
 -(void)event:(NSEvent *) theEvent { \
-  _clutter_event_osx_put (theEvent, self->stage_osx->wrapper);  \
+  _clutter_event_osx_put (theEvent, stage_osx->wrapper);  \
 }
 
 EVENT_HANDLER(mouseDown)
@@ -236,28 +279,6 @@ EVENT_HANDLER(tabletProximity)
 @end
 
 /*************************************************************************/
-static void
-clutter_stage_osx_state_update (ClutterStageOSX   *self,
-                                ClutterStageState  unset_flags,
-                                ClutterStageState  set_flags)
-{
-  ClutterStageStateEvent event;
-
-  event.new_state = self->stage_state;
-  event.new_state |= set_flags;
-  event.new_state &= ~unset_flags;
-
-  if (event.new_state == self->stage_state)
-    return;
-
-  event.changed_mask = event.new_state ^ self->stage_state;
-
-  self->stage_state = event.new_state;
-
-  event.type = CLUTTER_STAGE_STATE;
-  event.stage = CLUTTER_STAGE (self->wrapper);
-  clutter_event_put ((ClutterEvent*)&event);
-}
 
 static void
 clutter_stage_osx_save_frame (ClutterStageOSX *self)
@@ -273,7 +294,7 @@ clutter_stage_osx_set_frame (ClutterStageOSX *self)
 {
   g_assert (self->window != NULL);
 
-  if (self->stage_state & CLUTTER_STAGE_STATE_FULLSCREEN)
+  if (_clutter_stage_is_fullscreen (self->wrapper))
     {
       /* Raise above the menubar (and dock) covering the whole screen.
        *
@@ -380,6 +401,7 @@ clutter_stage_osx_show (ClutterStageWindow *stage_window,
 {
   ClutterStageOSX *self = CLUTTER_STAGE_OSX (stage_window);
   BOOL isViewHidden;
+  NSPoint nspoint;
 
   CLUTTER_OSX_POOL_ALLOC();
 
@@ -401,6 +423,28 @@ clutter_stage_osx_show (ClutterStageWindow *stage_window,
     [self->window makeKeyAndOrderFront: nil];
   else
     [self->window orderFront: nil];
+
+  /* If the window is placed directly under the mouse pointer, Quartz will
+   * not send a NSMouseEntered event; we can easily synthesize one ourselves
+   * though.
+   */
+  nspoint = [self->window mouseLocationOutsideOfEventStream];
+  if ([self->view mouse:nspoint inRect:[self->view frame]])
+    {
+      NSEvent *event;
+
+      event = [NSEvent enterExitEventWithType: NSMouseEntered
+                                     location: NSMakePoint(0, 0)
+                                modifierFlags: 0
+                                    timestamp: 0
+                                 windowNumber: [self->window windowNumber]
+                                      context: NULL
+                                  eventNumber: 0
+                               trackingNumber: [self->view trackingRect]
+                                     userData: nil];
+
+      [NSApp postEvent:event atStart:NO];
+    }
 
   [self->view setHidden:isViewHidden];
   [self->window setExcludedFromWindowsMenu:NO];
@@ -434,8 +478,8 @@ clutter_stage_osx_hide (ClutterStageWindow *stage_window)
 }
 
 static void
-clutter_stage_osx_get_geometry (ClutterStageWindow *stage_window,
-                                ClutterGeometry    *geometry)
+clutter_stage_osx_get_geometry (ClutterStageWindow    *stage_window,
+                                cairo_rectangle_int_t *geometry)
 {
   ClutterBackend *backend = clutter_get_default_backend ();
   ClutterStageOSX *self = CLUTTER_STAGE_OSX (stage_window);
@@ -520,11 +564,17 @@ clutter_stage_osx_set_fullscreen (ClutterStageWindow *stage_window,
    */
   if (fullscreen)
     {
-      clutter_stage_osx_state_update (self, 0, CLUTTER_STAGE_STATE_FULLSCREEN);
+      _clutter_stage_update_state (CLUTTER_STAGE (self->wrapper),
+                                   0,
+                                   CLUTTER_STAGE_STATE_FULLSCREEN);
       clutter_stage_osx_save_frame (self);
     }
   else
-    clutter_stage_osx_state_update (self, CLUTTER_STAGE_STATE_FULLSCREEN, 0);
+    {
+      _clutter_stage_update_state (CLUTTER_STAGE (self->wrapper),
+                                   CLUTTER_STAGE_STATE_FULLSCREEN,
+                                   0);
+    }
 
   clutter_stage_osx_set_frame (self);
 
@@ -602,30 +652,41 @@ clutter_stage_window_iface_init (ClutterStageWindowIface *iface)
 }
 
 /*************************************************************************/
-ClutterStageWindow *
-_clutter_stage_osx_new (ClutterBackend *backend,
-                        ClutterStage   *wrapper)
-{
-  ClutterStageOSX *self;
-
-  self = g_object_new (CLUTTER_TYPE_STAGE_OSX, NULL);
-  self->backend = backend;
-  self->wrapper = wrapper;
-  self->isHiding = false;
-  self->haveRealized = false;
-  self->view = NULL;
-  self->window = NULL;
-
-  return CLUTTER_STAGE_WINDOW(self);
-}
-
-/*************************************************************************/
 static void
 clutter_stage_osx_init (ClutterStageOSX *self)
 {
   self->requisition_width  = 640;
   self->requisition_height = 480;
   self->acceptFocus = TRUE;
+
+  self->isHiding = false;
+  self->haveRealized = false;
+  self->view = NULL;
+  self->window = NULL;
+}
+
+static void
+clutter_stage_osx_set_property (GObject      *gobject,
+                                guint         prop_id,
+                                const GValue *value,
+                                GParamSpec   *pspec)
+{
+  ClutterStageOSX *self = CLUTTER_STAGE_OSX (gobject);
+
+  switch (prop_id)
+    {
+    case PROP_BACKEND:
+      self->backend = g_value_get_object (value);
+      break;
+
+    case PROP_WRAPPER:
+      self->wrapper = g_value_get_object (value);
+      break;
+
+    default:
+      G_OBJECT_WARN_INVALID_PROPERTY_ID (gobject, prop_id, pspec);
+      break;
+    }
 }
 
 static void
@@ -645,6 +706,10 @@ clutter_stage_osx_class_init (ClutterStageOSXClass *klass)
 {
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
 
+  gobject_class->set_property = clutter_stage_osx_set_property;
   gobject_class->finalize = clutter_stage_osx_finalize;
   gobject_class->dispose = clutter_stage_osx_dispose;
+
+  g_object_class_override_property (gobject_class, PROP_BACKEND, "backend");
+  g_object_class_override_property (gobject_class, PROP_WRAPPER, "wrapper");
 }

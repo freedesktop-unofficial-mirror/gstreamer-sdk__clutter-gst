@@ -5,8 +5,8 @@
 <title>ClutterOffscreenEffect</title>
 <meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
 <link rel="home" href="index.html" title="Clutter Reference Manual">
-<link rel="up" href="ch07.html" title="Effects">
-<link rel="prev" href="ch07.html" title="Effects">
+<link rel="up" href="ch06.html" title="Effects">
+<link rel="prev" href="ch06.html" title="Effects">
 <link rel="next" href="ClutterShaderEffect.html" title="ClutterShaderEffect">
 <meta name="generator" content="GTK-Doc V1.18.1 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
@@ -14,8 +14,8 @@
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
 <tr valign="middle">
-<td><a accesskey="p" href="ch07.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
-<td><a accesskey="u" href="ch07.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="ch06.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="ch06.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
 <td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
 <th width="100%" align="center">Clutter Reference Manual</th>
 <td><a accesskey="n" href="ClutterShaderEffect.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
@@ -42,6 +42,8 @@
 <pre class="synopsis">struct              <a class="link" href="ClutterOffscreenEffect.html#ClutterOffscreenEffect-struct" title="struct ClutterOffscreenEffect">ClutterOffscreenEffect</a>;
 struct              <a class="link" href="ClutterOffscreenEffect.html#ClutterOffscreenEffectClass" title="struct ClutterOffscreenEffectClass">ClutterOffscreenEffectClass</a>;
 <span class="returnvalue">CoglMaterial</span> *      <a class="link" href="ClutterOffscreenEffect.html#clutter-offscreen-effect-get-target" title="clutter_offscreen_effect_get_target ()">clutter_offscreen_effect_get_target</a> (<em class="parameter"><code><a class="link" href="ClutterOffscreenEffect.html" title="ClutterOffscreenEffect"><span class="type">ClutterOffscreenEffect</span></a> *effect</code></em>);
+<span class="returnvalue">CoglHandle</span>          <a class="link" href="ClutterOffscreenEffect.html#clutter-offscreen-effect-get-texture" title="clutter_offscreen_effect_get_texture ()">clutter_offscreen_effect_get_texture</a>
+                                                        (<em class="parameter"><code><a class="link" href="ClutterOffscreenEffect.html" title="ClutterOffscreenEffect"><span class="type">ClutterOffscreenEffect</span></a> *effect</code></em>);
 <span class="returnvalue">CoglHandle</span>          <a class="link" href="ClutterOffscreenEffect.html#clutter-offscreen-effect-create-texture" title="clutter_offscreen_effect_create_texture ()">clutter_offscreen_effect_create_texture</a>
                                                         (<em class="parameter"><code><a class="link" href="ClutterOffscreenEffect.html" title="ClutterOffscreenEffect"><span class="type">ClutterOffscreenEffect</span></a> *effect</code></em>,
                                                          <em class="parameter"><code><span class="type">gfloat</span> width</code></em>,
@@ -63,6 +65,7 @@ struct              <a class="link" href="ClutterOffscreenEffect.html#ClutterOff
                +----<a class="link" href="ClutterEffect.html" title="ClutterEffect">ClutterEffect</a>
                      +----ClutterOffscreenEffect
                            +----<a class="link" href="ClutterBlurEffect.html" title="ClutterBlurEffect">ClutterBlurEffect</a>
+                           +----<a class="link" href="ClutterBrightnessContrastEffect.html" title="ClutterBrightnessContrastEffect">ClutterBrightnessContrastEffect</a>
                            +----<a class="link" href="ClutterColorizeEffect.html" title="ClutterColorizeEffect">ClutterColorizeEffect</a>
                            +----<a class="link" href="ClutterDeformEffect.html" title="ClutterDeformEffect">ClutterDeformEffect</a>
                            +----<a class="link" href="ClutterDesaturateEffect.html" title="ClutterDesaturateEffect">ClutterDesaturateEffect</a>
@@ -180,6 +183,42 @@ modified or freed. <span class="annotation">[<acronym title="Don't free data aft
 </tbody>
 </table></div>
 <p class="since">Since 1.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="clutter-offscreen-effect-get-texture"></a><h3>clutter_offscreen_effect_get_texture ()</h3>
+<pre class="programlisting"><span class="returnvalue">CoglHandle</span>          clutter_offscreen_effect_get_texture
+                                                        (<em class="parameter"><code><a class="link" href="ClutterOffscreenEffect.html" title="ClutterOffscreenEffect"><span class="type">ClutterOffscreenEffect</span></a> *effect</code></em>);</pre>
+<p>
+Retrieves the texture used as a render target for the offscreen
+buffer created by <em class="parameter"><code>effect</code></em>
+</p>
+<p>
+You should only use the returned texture when painting. The texture
+may change after ClutterEffect::pre_paint is called so the effect
+implementation should update any references to the texture after
+chaining-up to the parent's pre_paint implementation. This can be
+used instead of <a class="link" href="ClutterOffscreenEffect.html#clutter-offscreen-effect-get-target" title="clutter_offscreen_effect_get_target ()"><code class="function">clutter_offscreen_effect_get_target()</code></a> when the
+effect subclass wants to paint using its own material.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>effect</code></em> :</span></p></td>
+<td>a <a class="link" href="ClutterOffscreenEffect.html" title="ClutterOffscreenEffect"><span class="type">ClutterOffscreenEffect</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a <span class="type">CoglHandle</span> or <code class="literal">COGL_INVALID_HANDLE</code>. The
+returned texture is owned by Clutter and it should not be
+modified or freed. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 1.10</p>
 </div>
 <hr>
 <div class="refsect2">

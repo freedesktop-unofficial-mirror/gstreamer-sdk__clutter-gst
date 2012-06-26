@@ -1,10 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <gmodule.h>
-
-#undef CLUTTER_DISABLE_DEPRECATED
 #include <clutter/clutter.h>
 
+/* our thread-specific data */
 typedef struct
 {
   ClutterActor *stage;
@@ -12,8 +11,6 @@ typedef struct
   ClutterActor *progress;
 
   ClutterTimeline *timeline;
-
-  volatile gboolean cancelled;
 } TestThreadData;
 
 static TestThreadData *
@@ -27,8 +24,13 @@ test_thread_data_new (void)
 }
 
 static void
-test_thread_data_free (TestThreadData *data)
+test_thread_data_free (gpointer _data)
 {
+  TestThreadData *data = _data;
+
+  if (data == NULL)
+    return;
+
   g_object_unref (data->progress);
   g_object_unref (data->label);
   g_object_unref (data->stage);
@@ -52,7 +54,22 @@ test_thread_done_idle (gpointer user_data)
   return FALSE;
 }
 
-static GStaticPrivate test_thread_data = G_STATIC_PRIVATE_INIT;
+static void
+test_thread_data_done (gpointer _data)
+{
+  TestThreadData *data = _data;
+
+  /* since the TestThreadData structure references Clutter data structures
+   * we need to free it from within the same thread that called clutter_main()
+   * which means using an idle handler in the main loop.
+   *
+   * clutter_threads_add_idle() is guaranteed to run the callback passed to
+   * to it under the Big Clutter Lock.
+   */
+  clutter_threads_add_idle (test_thread_done_idle, data);
+}
+
+static GPrivate test_thread_data = G_PRIVATE_INIT (test_thread_data_done);
 
 typedef struct
 {
@@ -68,7 +85,6 @@ update_label_idle (gpointer data)
   gchar *text;
 
   text = g_strdup_printf ("Count to %d", update->count);
-
   clutter_text_set_text (CLUTTER_TEXT (update->thread_data->label), text);
   clutter_actor_set_width (update->thread_data->label, -1);
 
@@ -93,9 +109,7 @@ do_something_very_slow (void)
   TestThreadData *data;
   gint i;
 
-  data = (TestThreadData *) g_static_private_get (&test_thread_data);
-  if (data->cancelled)
-    return;
+  data = g_private_get (&test_thread_data);
 
   for (i = 0; i < 100; i++)
     {
@@ -103,13 +117,18 @@ do_something_very_slow (void)
 
       msecs = 1 + (int) (100.0 * rand () / ((RAND_MAX + 1.0) / 3));
 
-      /* sleep for a while */
+      /* sleep for a while, to emulate some work being done */
       g_usleep (msecs * 1000);
 
       if ((i % 10) == 0)
         {
           TestUpdate *update;
 
+          /* update the UI from within the main loop, making sure that the
+           * Big Clutter Lock is held; only one thread at a time can call
+           * Clutter API, and it's better to do this from the same thread
+           * that called clutter_init()/clutter_main().
+           */
           update = g_new (TestUpdate, 1);
           update->count = i;
           update->thread_data = data;
@@ -124,16 +143,12 @@ do_something_very_slow (void)
 static gpointer
 test_thread_func (gpointer user_data)
 {
-  TestThreadData *data;
+  TestThreadData *data = user_data;
 
-  data = user_data;
-  g_static_private_set (&test_thread_data, data, NULL);
+  g_private_set (&test_thread_data, data);
 
+  /* this function will block */
   do_something_very_slow ();
-
-  clutter_threads_add_idle_full (G_PRIORITY_DEFAULT + 30,
-                                 test_thread_done_idle,
-                                 data, NULL);
 
   return NULL;
 }
@@ -162,11 +177,15 @@ on_key_press_event (ClutterStage *stage,
       data->label = g_object_ref (count_label);
       data->progress = g_object_ref (progress_rect);
       data->timeline = g_object_ref (timeline);
-      g_thread_create (test_thread_func, data, FALSE, NULL);
+
+      /* start the thread that updates the counter and the progress bar */
+      g_thread_new ("counter", test_thread_func, data);
+
       return TRUE;
 
     case CLUTTER_KEY_q:
       clutter_main_quit ();
+
       return TRUE;
 
     default:
@@ -188,14 +207,12 @@ test_threads_main (int argc, char *argv[])
     { 400, 150 }
   };
 
-  g_thread_init (NULL);
-  clutter_threads_init ();
   if (clutter_init (&argc, &argv) != CLUTTER_INIT_SUCCESS)
     return 1;
 
   stage = clutter_stage_new ();
   clutter_stage_set_title (CLUTTER_STAGE (stage), "Threading");
-  clutter_stage_set_color (CLUTTER_STAGE (stage), CLUTTER_COLOR_Aluminium3);
+  clutter_actor_set_background_color (stage, CLUTTER_COLOR_Aluminium3);
   clutter_actor_set_size (stage, 600, 300);
   g_signal_connect (stage, "destroy", G_CALLBACK (clutter_main_quit), NULL);
   
@@ -221,8 +238,8 @@ test_threads_main (int argc, char *argv[])
                          NULL);
 
   timeline = clutter_timeline_new (3000);
-  clutter_timeline_set_loop (timeline, TRUE);
   clutter_timeline_set_auto_reverse (timeline, TRUE);
+  clutter_timeline_set_repeat_count (timeline, -1);
 
   alpha = clutter_alpha_new_full (timeline, CLUTTER_LINEAR);
   r_behaviour = clutter_behaviour_rotate_new (alpha,
@@ -255,4 +272,10 @@ test_threads_main (int argc, char *argv[])
   g_object_unref (timeline);
 
   return EXIT_SUCCESS;
+}
+
+const char *
+test_threads_describe (void)
+{
+  return "Multi-threading programming with Clutter";
 }

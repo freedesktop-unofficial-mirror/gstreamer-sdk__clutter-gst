@@ -160,6 +160,8 @@
 #include "clutter-scriptable.h"
 #include "clutter-script-private.h"
 
+#include "deprecated/clutter-animation.h"
+
 enum
 {
   PROP_0,
@@ -193,10 +195,11 @@ struct _ClutterAnimationPrivate
   GHashTable *properties;
 
   ClutterAlpha *alpha;
+  ClutterTimeline *timeline;
 
   guint timeline_started_id;
   guint timeline_completed_id;
-  guint alpha_notify_id;
+  guint timeline_frame_id;
 };
 
 static guint animation_signals[LAST_SIGNAL] = { 0, };
@@ -205,9 +208,34 @@ static GQuark quark_object_animation = 0;
 
 static void clutter_scriptable_init (ClutterScriptableIface *iface);
 
+static void                     clutter_animation_set_alpha_internal    (ClutterAnimation *animation,
+                                                                         ClutterAlpha     *alpha);
+static ClutterAlpha *           clutter_animation_get_alpha_internal    (ClutterAnimation *animation);
+static ClutterTimeline *        clutter_animation_get_timeline_internal (ClutterAnimation *animation);
+
 G_DEFINE_TYPE_WITH_CODE (ClutterAnimation, clutter_animation, G_TYPE_OBJECT,
                          G_IMPLEMENT_INTERFACE (CLUTTER_TYPE_SCRIPTABLE,
                                                 clutter_scriptable_init));
+
+static ClutterAlpha *
+clutter_animation_get_alpha_internal (ClutterAnimation *animation)
+{
+  ClutterAnimationPrivate *priv = animation->priv;
+
+  if (priv->alpha == NULL)
+    {
+      ClutterAlpha *alpha;
+
+      alpha = clutter_alpha_new ();
+      clutter_alpha_set_mode (alpha, CLUTTER_LINEAR);
+
+      priv->alpha = g_object_ref_sink (alpha);
+
+      g_object_notify_by_pspec (G_OBJECT (animation), obj_props[PROP_ALPHA]);
+    }
+
+  return priv->alpha;
+}
 
 static void
 on_actor_destroy (ClutterActor     *actor,
@@ -310,7 +338,7 @@ clutter_animation_dispose (GObject *gobject)
   if (priv->alpha != NULL)
     timeline = clutter_alpha_get_timeline (priv->alpha);
   else
-    timeline = NULL;
+    timeline = priv->timeline;
 
   if (timeline != NULL && priv->timeline_started_id != 0)
     g_signal_handler_disconnect (timeline, priv->timeline_started_id);
@@ -318,24 +346,24 @@ clutter_animation_dispose (GObject *gobject)
   if (timeline != NULL && priv->timeline_completed_id != 0)
     g_signal_handler_disconnect (timeline, priv->timeline_completed_id);
 
+  if (timeline != NULL && priv->timeline_frame_id != 0)
+    g_signal_handler_disconnect (timeline, priv->timeline_frame_id);
+
   priv->timeline_started_id = 0;
   priv->timeline_completed_id = 0;
+  priv->timeline_frame_id = 0;
 
   if (priv->alpha != NULL)
     {
-      if (priv->alpha_notify_id != 0)
-        g_signal_handler_disconnect (priv->alpha, priv->alpha_notify_id);
-
       g_object_unref (priv->alpha);
+      priv->alpha = NULL;
     }
 
-  priv->alpha_notify_id = 0;
-  priv->alpha = NULL;
-
   if (priv->object != NULL)
-    g_object_unref (priv->object);
-
-  priv->object = NULL;
+    {
+      g_object_unref (priv->object);
+      priv->object = NULL;
+    }
 
   G_OBJECT_CLASS (clutter_animation_parent_class)->dispose (gobject);
 }
@@ -371,7 +399,7 @@ clutter_animation_set_property (GObject      *gobject,
       break;
 
     case PROP_ALPHA:
-      clutter_animation_set_alpha (animation, g_value_get_object (value));
+      clutter_animation_set_alpha_internal (animation, g_value_get_object (value));
       break;
 
     default:
@@ -412,7 +440,7 @@ clutter_animation_get_property (GObject    *gobject,
       break;
 
     case PROP_ALPHA:
-      g_value_set_object (value, clutter_animation_get_alpha (animation));
+      g_value_set_object (value, clutter_animation_get_alpha_internal (animation));
       break;
 
     default:
@@ -546,13 +574,16 @@ clutter_animation_class_init (ClutterAnimationClass *klass)
    * The #ClutterAlpha used by the animation.
    *
    * Since: 1.0
+   *
+   * Deprecated: 1.10: Use the #ClutterAnimation:timeline property and
+   *   the #ClutterTimeline:progress-mode property instead.
    */
   obj_props[PROP_ALPHA] =
     g_param_spec_object ("alpha",
                          P_("Alpha"),
                          P_("The alpha used by the animation"),
                          CLUTTER_TYPE_ALPHA,
-                         CLUTTER_PARAM_READWRITE);
+                         CLUTTER_PARAM_READWRITE | G_PARAM_DEPRECATED);
 
   g_object_class_install_properties (gobject_class,
                                      PROP_LAST,
@@ -791,8 +822,8 @@ clutter_animation_bind (ClutterAnimation *animation,
   GParamSpec *pspec;
   ClutterInterval *interval;
   GType type;
-  GValue initial = { 0, };
-  GValue real_final = { 0, };
+  GValue initial = G_VALUE_INIT;
+  GValue real_final = G_VALUE_INIT;
 
   g_return_val_if_fail (CLUTTER_IS_ANIMATION (animation), NULL);
   g_return_val_if_fail (property_name != NULL, NULL);
@@ -1074,9 +1105,9 @@ on_timeline_completed (ClutterTimeline  *timeline,
 }
 
 static void
-on_alpha_notify (GObject          *gobject,
-                 GParamSpec       *pspec,
-                 ClutterAnimation *animation)
+on_timeline_frame (ClutterTimeline  *timeline,
+                   gint              elapsed,
+                   ClutterAnimation *animation)
 {
   ClutterAnimationPrivate *priv;
   GList *properties, *p;
@@ -1089,7 +1120,10 @@ on_alpha_notify (GObject          *gobject,
 
   priv = animation->priv;
 
-  alpha_value = clutter_alpha_get_alpha (CLUTTER_ALPHA (gobject));
+  if (priv->alpha != NULL)
+    alpha_value = clutter_alpha_get_alpha (priv->alpha);
+  else
+    alpha_value = clutter_timeline_get_progress (priv->timeline);
 
   if (CLUTTER_IS_ANIMATABLE (priv->object))
     {
@@ -1104,7 +1138,7 @@ on_alpha_notify (GObject          *gobject,
     {
       const gchar *p_name = p->data;
       ClutterInterval *interval;
-      GValue value = { 0, };
+      GValue value = G_VALUE_INIT;
       gboolean apply;
 
       interval = g_hash_table_lookup (priv->properties, p_name);
@@ -1144,42 +1178,21 @@ on_alpha_notify (GObject          *gobject,
   g_object_unref (animation);
 }
 
-static ClutterAlpha *
-clutter_animation_get_alpha_internal (ClutterAnimation *animation)
-{
-  ClutterAnimationPrivate *priv = animation->priv;
-
-  if (priv->alpha == NULL)
-    {
-      ClutterAlpha *alpha;
-
-      alpha = clutter_alpha_new ();
-      clutter_alpha_set_mode (alpha, CLUTTER_LINEAR);
-
-      priv->alpha_notify_id =
-        g_signal_connect (alpha, "notify::alpha",
-                          G_CALLBACK (on_alpha_notify),
-                          animation);
-
-      priv->alpha = g_object_ref_sink (alpha);
-
-      g_object_notify_by_pspec (G_OBJECT (animation), obj_props[PROP_ALPHA]);
-    }
-
-  return priv->alpha;
-}
-
 static ClutterTimeline *
 clutter_animation_get_timeline_internal (ClutterAnimation *animation)
 {
   ClutterAnimationPrivate *priv = animation->priv;
   ClutterTimeline *timeline;
-  ClutterAlpha *alpha;
 
-  alpha = clutter_animation_get_alpha_internal (animation);
-  timeline = clutter_alpha_get_timeline (alpha);
-  if (timeline != NULL)
-    return timeline;
+  if (priv->timeline != NULL)
+    return priv->timeline;
+
+  if (priv->alpha != NULL)
+    {
+      timeline = clutter_alpha_get_timeline (priv->alpha);
+      if (timeline != NULL)
+        return timeline;
+    }
 
   timeline = g_object_new (CLUTTER_TYPE_TIMELINE, NULL);
 
@@ -1193,14 +1206,111 @@ clutter_animation_get_timeline_internal (ClutterAnimation *animation)
                       G_CALLBACK (on_timeline_completed),
                       animation);
 
-  clutter_alpha_set_timeline (alpha, timeline);
+  priv->timeline_frame_id =
+    g_signal_connect (timeline, "new-frame",
+                      G_CALLBACK (on_timeline_frame),
+                      animation);
 
-  /* the alpha owns the timeline now */
-  g_object_unref (timeline);
+  if (priv->alpha != NULL)
+    {
+      clutter_alpha_set_timeline (priv->alpha, timeline);
+
+      /* the alpha owns the timeline now */
+      g_object_unref (timeline);
+    }
+
+  priv->timeline = timeline;
 
   g_object_notify_by_pspec (G_OBJECT (animation), obj_props[PROP_TIMELINE]);
 
-  return timeline;
+  return priv->timeline;
+}
+
+static void
+clutter_animation_set_alpha_internal (ClutterAnimation *animation,
+                                      ClutterAlpha     *alpha)
+{
+  ClutterAnimationPrivate *priv;
+  ClutterTimeline *timeline;
+
+  priv = animation->priv;
+
+  if (priv->alpha == alpha)
+    return;
+
+  g_object_freeze_notify (G_OBJECT (animation));
+
+  if (priv->alpha != NULL)
+    timeline = clutter_alpha_get_timeline (priv->alpha);
+  else
+    timeline = NULL;
+
+  /* disconnect the old timeline first */
+  if (timeline != NULL && priv->timeline_started_id != 0)
+    {
+      g_signal_handler_disconnect (timeline, priv->timeline_started_id);
+      priv->timeline_started_id = 0;
+    }
+
+  if (timeline != NULL && priv->timeline_completed_id != 0)
+    {
+      g_signal_handler_disconnect (timeline, priv->timeline_completed_id);
+      priv->timeline_completed_id = 0;
+    }
+
+  /* then we need to disconnect the signal handler from the old alpha */
+  if (timeline != NULL && priv->timeline_frame_id != 0)
+    {
+      g_signal_handler_disconnect (timeline, priv->timeline_frame_id);
+      priv->timeline_frame_id = 0;
+    }
+
+  if (priv->alpha != NULL)
+    {
+      /* this will take care of any reference we hold on the timeline */
+      g_object_unref (priv->alpha);
+      priv->alpha = NULL;
+    }
+
+  if (alpha == NULL)
+    goto out;
+
+  priv->alpha = g_object_ref_sink (alpha);
+
+  /* if the alpha has a timeline then we use it, otherwise we create one */
+  timeline = clutter_alpha_get_timeline (priv->alpha);
+  if (timeline != NULL)
+    {
+      priv->timeline_started_id =
+        g_signal_connect (timeline, "started",
+                          G_CALLBACK (on_timeline_started),
+                          animation);
+      priv->timeline_completed_id =
+        g_signal_connect (timeline, "completed",
+                          G_CALLBACK (on_timeline_completed),
+                          animation);
+      priv->timeline_frame_id =
+        g_signal_connect (timeline, "new-frame",
+                          G_CALLBACK (on_timeline_frame),
+                          animation);
+    }
+  else
+    {
+      /* FIXME - add a create_timeline_internal() because this does
+       * not look very good
+       */
+      (void) clutter_animation_get_timeline_internal (animation);
+    }
+
+out:
+  /* emit all relevant notifications */
+  g_object_notify_by_pspec (G_OBJECT (animation), obj_props[PROP_MODE]);
+  g_object_notify_by_pspec (G_OBJECT (animation), obj_props[PROP_DURATION]);
+  g_object_notify_by_pspec (G_OBJECT (animation), obj_props[PROP_LOOP]);
+  g_object_notify_by_pspec (G_OBJECT (animation), obj_props[PROP_ALPHA]);
+  g_object_notify_by_pspec (G_OBJECT (animation), obj_props[PROP_TIMELINE]);
+
+  g_object_thaw_notify (G_OBJECT (animation));
 }
 
 /**
@@ -1301,16 +1411,29 @@ void
 clutter_animation_set_mode (ClutterAnimation *animation,
                             gulong            mode)
 {
-  ClutterAlpha *alpha;
-
   g_return_if_fail (CLUTTER_IS_ANIMATION (animation));
 
   g_object_freeze_notify (G_OBJECT (animation));
 
-  alpha = clutter_animation_get_alpha_internal (animation);
-  g_assert (CLUTTER_IS_ALPHA (alpha));
+  if (animation->priv->alpha != NULL || mode > CLUTTER_ANIMATION_LAST)
+    {
+      ClutterAlpha *alpha;
 
-  clutter_alpha_set_mode (alpha, mode);
+      if (animation->priv->alpha == NULL)
+        alpha = clutter_animation_get_alpha_internal (animation);
+      else
+        alpha = animation->priv->alpha;
+
+      clutter_alpha_set_mode (alpha, mode);
+    }
+  else
+    {
+      ClutterTimeline *timeline;
+
+      timeline = clutter_animation_get_timeline_internal (animation);
+
+      clutter_timeline_set_progress_mode (timeline, mode);
+    }
 
   g_object_notify_by_pspec (G_OBJECT (animation), obj_props[PROP_MODE]);
 
@@ -1331,13 +1454,16 @@ clutter_animation_set_mode (ClutterAnimation *animation,
 gulong
 clutter_animation_get_mode (ClutterAnimation *animation)
 {
-  ClutterAlpha *alpha;
+  ClutterTimeline *timeline;
 
   g_return_val_if_fail (CLUTTER_IS_ANIMATION (animation), CLUTTER_LINEAR);
 
-  alpha = clutter_animation_get_alpha_internal (animation);
+  if (animation->priv->alpha != NULL)
+    return clutter_alpha_get_mode (animation->priv->alpha);
 
-  return clutter_alpha_get_mode (alpha);
+  timeline = clutter_animation_get_timeline_internal (animation);
+
+  return clutter_timeline_get_progress_mode (timeline);
 }
 
 /**
@@ -1363,8 +1489,6 @@ clutter_animation_set_duration (ClutterAnimation *animation,
   g_object_freeze_notify (G_OBJECT (animation));
 
   timeline = clutter_animation_get_timeline_internal (animation);
-  g_assert (CLUTTER_IS_TIMELINE (timeline));
-
   clutter_timeline_set_duration (timeline, msecs);
   clutter_timeline_rewind (timeline);
 
@@ -1399,7 +1523,7 @@ clutter_animation_set_loop (ClutterAnimation *animation,
   g_object_freeze_notify (G_OBJECT (animation));
 
   timeline = clutter_animation_get_timeline_internal (animation);
-  clutter_timeline_set_loop (timeline, loop);
+  clutter_timeline_set_repeat_count (timeline, loop ? -1 : 0);
 
   g_object_notify_by_pspec (G_OBJECT (animation), obj_props[PROP_LOOP]);
 
@@ -1425,7 +1549,7 @@ clutter_animation_get_loop (ClutterAnimation *animation)
 
   timeline = clutter_animation_get_timeline_internal (animation);
 
-  return clutter_timeline_get_loop (timeline);
+  return clutter_timeline_get_repeat_count (timeline) != 0;
 }
 
 /**
@@ -1453,10 +1577,12 @@ clutter_animation_get_duration (ClutterAnimation *animation)
 /**
  * clutter_animation_set_timeline:
  * @animation: a #ClutterAnimation
- * @timeline: a #ClutterTimeline, or %NULL to unset the
+ * @timeline: (allow-none): a #ClutterTimeline, or %NULL to unset the
  *   current #ClutterTimeline
  *
  * Sets the #ClutterTimeline used by @animation.
+ *
+ * This function will take a reference on the passed @timeline.
  *
  * Since: 1.0
  */
@@ -1466,7 +1592,6 @@ clutter_animation_set_timeline (ClutterAnimation *animation,
 {
   ClutterAnimationPrivate *priv;
   ClutterTimeline *cur_timeline;
-  ClutterAlpha *alpha;
 
   g_return_if_fail (CLUTTER_IS_ANIMATION (animation));
   g_return_if_fail (timeline == NULL || CLUTTER_IS_TIMELINE (timeline));
@@ -1476,7 +1601,7 @@ clutter_animation_set_timeline (ClutterAnimation *animation,
   if (priv->alpha != NULL)
     cur_timeline = clutter_alpha_get_timeline (priv->alpha);
   else
-    cur_timeline = NULL;
+    cur_timeline = priv->timeline;
 
   if (cur_timeline == timeline)
     return;
@@ -1489,16 +1614,32 @@ clutter_animation_set_timeline (ClutterAnimation *animation,
   if (cur_timeline != NULL && priv->timeline_completed_id != 0)
     g_signal_handler_disconnect (cur_timeline, priv->timeline_completed_id);
 
+  if (cur_timeline != NULL && priv->timeline_frame_id != 0)
+    g_signal_handler_disconnect (cur_timeline, priv->timeline_frame_id);
+
   priv->timeline_started_id = 0;
   priv->timeline_completed_id = 0;
+  priv->timeline_frame_id = 0;
 
-  alpha = clutter_animation_get_alpha_internal (animation);
-  clutter_alpha_set_timeline (alpha, timeline);
+  /* Release previously set timeline if any */
+  g_clear_object (&priv->timeline);
+
+  if (priv->alpha != NULL)
+    clutter_alpha_set_timeline (priv->alpha, timeline);
+  else
+    {
+      /* Hold a reference to the timeline if it's not reffed by the priv->alpha */
+      priv->timeline = timeline;
+
+      if (priv->timeline)
+	g_object_ref (priv->timeline);
+    }
+
   g_object_notify_by_pspec (G_OBJECT (animation), obj_props[PROP_TIMELINE]);
   g_object_notify_by_pspec (G_OBJECT (animation), obj_props[PROP_DURATION]);
   g_object_notify_by_pspec (G_OBJECT (animation), obj_props[PROP_LOOP]);
 
-  if (timeline)
+  if (timeline != NULL)
     {
       priv->timeline_started_id =
         g_signal_connect (timeline, "started",
@@ -1507,6 +1648,10 @@ clutter_animation_set_timeline (ClutterAnimation *animation,
       priv->timeline_completed_id =
         g_signal_connect (timeline, "completed",
                           G_CALLBACK (on_timeline_completed),
+                          animation);
+      priv->timeline_frame_id =
+        g_signal_connect (timeline, "new-frame",
+                          G_CALLBACK (on_timeline_frame),
                           animation);
     }
 
@@ -1542,95 +1687,18 @@ clutter_animation_get_timeline (ClutterAnimation *animation)
  * of the #ClutterAlpha instance.
  *
  * Since: 1.0
+ *
+ * Deprecated: 1.10: Use clutter_animation_get_timeline() and
+ *   clutter_timeline_set_progress_mode() instead.
  */
 void
 clutter_animation_set_alpha (ClutterAnimation *animation,
                              ClutterAlpha     *alpha)
 {
-  ClutterAnimationPrivate *priv;
-  ClutterTimeline *timeline;
-
   g_return_if_fail (CLUTTER_IS_ANIMATION (animation));
   g_return_if_fail (alpha == NULL || CLUTTER_IS_ALPHA (alpha));
 
-  priv = animation->priv;
-
-  if (priv->alpha == alpha)
-    return;
-
-  g_object_freeze_notify (G_OBJECT (animation));
-
-  if (priv->alpha != NULL)
-    timeline = clutter_alpha_get_timeline (priv->alpha);
-  else
-    timeline = NULL;
-
-  /* disconnect the old timeline first */
-  if (timeline != NULL && priv->timeline_started_id != 0)
-    {
-      g_signal_handler_disconnect (timeline, priv->timeline_started_id);
-      priv->timeline_started_id = 0;
-    }
-
-  if (timeline != NULL && priv->timeline_completed_id != 0)
-    {
-      g_signal_handler_disconnect (timeline, priv->timeline_completed_id);
-      priv->timeline_completed_id = 0;
-    }
-
-  /* then we need to disconnect the signal handler from the old alpha */
-  if (priv->alpha_notify_id != 0)
-    {
-      g_signal_handler_disconnect (priv->alpha, priv->alpha_notify_id);
-      priv->alpha_notify_id = 0;
-    }
-
-  if (priv->alpha != NULL)
-    {
-      /* this will take care of any reference we hold on the timeline */
-      g_object_unref (priv->alpha);
-      priv->alpha = NULL;
-    }
-
-  if (alpha == NULL)
-    goto out;
-
-  priv->alpha = g_object_ref_sink (alpha);
-  priv->alpha_notify_id =
-    g_signal_connect (priv->alpha, "notify::alpha",
-                      G_CALLBACK (on_alpha_notify),
-                      animation);
-
-  /* if the alpha has a timeline then we use it, otherwise we create one */
-  timeline = clutter_alpha_get_timeline (priv->alpha);
-  if (timeline != NULL)
-    {
-      priv->timeline_started_id =
-        g_signal_connect (timeline, "started",
-                          G_CALLBACK (on_timeline_started),
-                          animation);
-      priv->timeline_completed_id =
-        g_signal_connect (timeline, "completed",
-                          G_CALLBACK (on_timeline_completed),
-                          animation);
-    }
-  else
-    {
-      /* FIXME - add a create_timeline_internal() because this does
-       * not look very good
-       */
-      (void) clutter_animation_get_timeline_internal (animation);
-    }
-
-out:
-  /* emit all relevant notifications */
-  g_object_notify_by_pspec (G_OBJECT (animation), obj_props[PROP_MODE]);
-  g_object_notify_by_pspec (G_OBJECT (animation), obj_props[PROP_DURATION]);
-  g_object_notify_by_pspec (G_OBJECT (animation), obj_props[PROP_LOOP]);
-  g_object_notify_by_pspec (G_OBJECT (animation), obj_props[PROP_ALPHA]);
-  g_object_notify_by_pspec (G_OBJECT (animation), obj_props[PROP_TIMELINE]);
-
-  g_object_thaw_notify (G_OBJECT (animation));
+  clutter_animation_set_alpha_internal (animation, alpha);
 }
 
 /**
@@ -1642,6 +1710,9 @@ out:
  * Return value: (transfer none): the alpha object used by the animation
  *
  * Since: 1.0
+ *
+ * Deprecated: 1.10: Use clutter_animation_get_timeline() and
+ *   clutter_timeline_get_progress_mode() instead.
  */
 ClutterAlpha *
 clutter_animation_get_alpha (ClutterAnimation *animation)
@@ -1701,7 +1772,7 @@ clutter_animation_setup_property (ClutterAnimation *animation,
                                   gboolean          is_fixed)
 {
   ClutterAnimationPrivate *priv = animation->priv;
-  GValue real_value = { 0, };
+  GValue real_value = G_VALUE_INIT;
 
   if (pspec->flags & G_PARAM_CONSTRUCT_ONLY)
     {
@@ -1767,7 +1838,7 @@ done:
   if (G_LIKELY (!is_fixed))
     {
       ClutterInterval *interval;
-      GValue cur_value = { 0, };
+      GValue cur_value = G_VALUE_INIT;
 
       g_value_init (&cur_value, G_PARAM_SPEC_VALUE_TYPE (pspec));
 
@@ -1908,7 +1979,7 @@ clutter_animation_setup_valist (ClutterAnimation *animation,
   while (property_name != NULL)
     {
       GParamSpec *pspec;
-      GValue final = { 0, };
+      GValue final = G_VALUE_INIT;
       gchar *error = NULL;
       gboolean is_fixed = FALSE;
       GConnectFlags flags;
@@ -1964,6 +2035,9 @@ clutter_animation_setup_valist (ClutterAnimation *animation,
                                             &final,
                                             pspec,
                                             is_fixed);
+
+
+	  g_value_unset (&final);
         }
 
       property_name = va_arg (var_args, gchar*);
@@ -2027,6 +2101,8 @@ animation_create_for_actor (ClutterActor *actor)
  *   #ClutterActor and should not be unreferenced with g_object_unref()
  *
  * Since: 1.0
+ *
+ * Deprecated: 1.10: Use clutter_actor_animate_with_timeline() instead
  */
 ClutterAnimation *
 clutter_actor_animate_with_alpha (ClutterActor *actor,
@@ -2051,7 +2127,7 @@ clutter_actor_animate_with_alpha (ClutterActor *actor,
     }
 
   animation = animation_create_for_actor (actor);
-  clutter_animation_set_alpha (animation, alpha);
+  clutter_animation_set_alpha_internal (animation, alpha);
 
   va_start (args, first_property_name);
   clutter_animation_setup_valist (animation, first_property_name, args);
@@ -2436,6 +2512,8 @@ clutter_actor_animate_with_timelinev (ClutterActor        *actor,
  *   #ClutterActor and should not be unreferenced with g_object_unref()
  *
  * Since: 1.0
+ *
+ * Deprecated: 1.10: Use clutter_actor_animate_with_timelinev() instead
  */
 ClutterAnimation *
 clutter_actor_animate_with_alphav (ClutterActor        *actor,
@@ -2461,7 +2539,7 @@ clutter_actor_animate_with_alphav (ClutterActor        *actor,
     }
 
   animation = animation_create_for_actor (actor);
-  clutter_animation_set_alpha (animation, alpha);
+  clutter_animation_set_alpha_internal (animation, alpha);
   clutter_animation_setupv (animation, n_properties, properties, values);
   clutter_animation_start (animation);
 

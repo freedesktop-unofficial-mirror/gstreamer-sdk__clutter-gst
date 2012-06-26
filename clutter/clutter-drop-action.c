@@ -133,17 +133,17 @@ on_stage_capture (ClutterStage *stage,
 
   if (!(clutter_event_type (event) == CLUTTER_MOTION ||
         clutter_event_type (event) == CLUTTER_BUTTON_RELEASE))
-    return FALSE;
+    return CLUTTER_EVENT_PROPAGATE;
 
   if (!(clutter_event_get_state (event) & CLUTTER_BUTTON1_MASK))
-    return FALSE;
+    return CLUTTER_EVENT_PROPAGATE;
 
   clutter_event_get_coords (event, &event_x, &event_y);
   device = clutter_event_get_device (event);
 
   drag_actor = _clutter_stage_get_drag_actor (stage, device);
   if (drag_actor == NULL)
-    return FALSE;
+    return CLUTTER_EVENT_PROPAGATE;
 
   /* get the actor under the cursor, excluding the dragged actor; we
    * use reactivity because it won't cause any scene invalidation
@@ -235,7 +235,7 @@ out:
   if (drag_actor != NULL)
     clutter_actor_set_reactive (drag_actor, was_reactive);
 
-  return FALSE;
+  return CLUTTER_EVENT_PROPAGATE;
 }
 
 static void
@@ -268,9 +268,11 @@ static void
 drop_action_unregister (ClutterDropAction *self)
 {
   ClutterDropActionPrivate *priv = self->priv;
-  DropTarget *data;
+  DropTarget *data = NULL;
 
-  data = g_object_get_data (G_OBJECT (priv->stage), "__clutter_drop_targets");
+  if (priv->stage != NULL)
+    data = g_object_get_data (G_OBJECT (priv->stage), "__clutter_drop_targets");
+
   if (data == NULL)
     return;
 
@@ -367,6 +369,8 @@ clutter_drop_action_class_init (ClutterDropActionClass *klass)
    * ClutterDropAction::can-drop:
    * @action: the #ClutterDropAction that emitted the signal
    * @actor: the #ClutterActor attached to the @action
+   * @event_x: the X coordinate (in stage space) of the drop event
+   * @event_y: the Y coordinate (in stage space) of the drop event
    *
    * The ::can-drop signal is emitted when the dragged actor is dropped
    * on @actor. The return value of the ::can-drop signal will determine
@@ -436,6 +440,8 @@ clutter_drop_action_class_init (ClutterDropActionClass *klass)
    * ClutterDropAction::drop:
    * @action: the #ClutterDropAction that emitted the signal
    * @actor: the #ClutterActor attached to the @action
+   * @event_x: the X coordinate (in stage space) of the drop event
+   * @event_y: the Y coordinate (in stage space) of the drop event
    *
    * The ::drop signal is emitted when the dragged actor is dropped
    * on @actor. This signal is only emitted if at least an handler of

@@ -34,8 +34,10 @@
 #include <glib.h>
 #include <gmodule.h>
 
+#define CLUTTER_DISABLE_DEPRECATION_WARNINGS
+#include "deprecated/clutter-container.h"
+
 #include "clutter-actor.h"
-#include "clutter-container.h"
 #include "clutter-debug.h"
 #include "clutter-enum-types.h"
 
@@ -43,11 +45,15 @@
 #include "clutter-script-private.h"
 #include "clutter-scriptable.h"
 
+#include "clutter-stage-manager.h"
+
 #include "clutter-private.h"
 
 static void clutter_script_parser_object_end (JsonParser *parser,
                                               JsonObject *object);
 static void clutter_script_parser_parse_end  (JsonParser *parser);
+
+#define clutter_script_parser_get_type  _clutter_script_parser_get_type
 
 G_DEFINE_TYPE (ClutterScriptParser, clutter_script_parser, JSON_TYPE_PARSER);
 
@@ -1083,13 +1089,66 @@ clutter_script_parser_parse_end (JsonParser *parser)
 }
 
 gboolean
+_clutter_script_parse_translatable_string (ClutterScript *script,
+                                           JsonNode      *node,
+                                           char         **str)
+{
+  JsonObject *obj;
+  const char *string, *domain, *context;
+  const char *res;
+  gboolean translatable;
+
+  if (!JSON_NODE_HOLDS_OBJECT (node))
+    return FALSE;
+
+  obj = json_node_get_object (node);
+  if (!(json_object_has_member (obj, "translatable") &&
+        json_object_has_member (obj, "string")))
+    return FALSE;
+
+  translatable = json_object_get_boolean_member (obj, "translatable");
+
+  string = json_object_get_string_member (obj, "string");
+  if (string == NULL || *string == '\0')
+    return FALSE;
+
+  if (json_object_has_member (obj, "context"))
+    context = json_object_get_string_member (obj, "context");
+  else
+    context = NULL;
+
+  if (json_object_has_member (obj, "domain"))
+    domain = json_object_get_string_member (obj, "domain");
+  else
+    domain = NULL;
+
+  if (domain == NULL || *domain == '\0')
+    domain = clutter_script_get_translation_domain (script);
+
+  if (translatable)
+    {
+      if (context != NULL && *context != '\0')
+        res = g_dpgettext2 (domain, context, string);
+      else
+        res = g_dgettext (domain, string);
+    }
+  else
+    res = string;
+
+  if (str != NULL)
+    *str = g_strdup (res);
+
+  return TRUE;
+}
+
+gboolean
 _clutter_script_parse_node (ClutterScript *script,
                             GValue        *value,
                             const gchar   *name,
                             JsonNode      *node,
                             GParamSpec    *pspec)
 {
-  GValue node_value = { 0, };
+  GValue node_value = G_VALUE_INIT;
   gboolean retval = FALSE;
 
   g_return_val_if_fail (CLUTTER_IS_SCRIPT (script), FALSE);
@@ -1194,6 +1253,16 @@ _clutter_script_parse_node (ClutterScript *script,
               if (_clutter_script_parse_color (script, node, &color))
                 {
                   g_value_set_boxed (value, &color);
+                  return TRUE;
+                }
+            }
+          else if (p_type == G_TYPE_STRING)
+            {
+              char *str = NULL;
+
+              if (_clutter_script_parse_translatable_string (script, node, &str))
+                {
+                  g_value_take_string (value, str);
                   return TRUE;
                 }
             }
@@ -1598,7 +1667,7 @@ apply_layout_properties (ClutterScript    *script,
   for (l = properties; l != NULL; l = l->next)
     {
       PropertyInfo *pinfo = l->data;
-      GValue value = { 0, };
+      GValue value = G_VALUE_INIT;
       gboolean res = FALSE;
       const gchar *name;
 
@@ -1698,7 +1767,7 @@ apply_child_properties (ClutterScript    *script,
   for (l = properties; l != NULL; l = l->next)
     {
       PropertyInfo *pinfo = l->data;
-      GValue value = { 0, };
+      GValue value = G_VALUE_INIT;
       gboolean res = FALSE;
       const gchar *name;
 
@@ -1830,20 +1899,19 @@ _clutter_script_check_unresolved (ClutterScript *script,
       ClutterActor *parent;
 
       parent = clutter_actor_get_parent (CLUTTER_ACTOR (oinfo->object));
-      if (parent != NULL && CLUTTER_IS_CONTAINER (parent))
+      if (parent != NULL)
         {
           ClutterContainer *container = CLUTTER_CONTAINER (parent);
-          GList *children, *l;
+          ClutterActor *child;
 
-          children = clutter_container_get_children (container);
-
-          for (l = children; l != NULL; l = l->next)
+          for (child = clutter_actor_get_first_child (parent);
+               child != NULL;
+               child = clutter_actor_get_next_sibling (child))
             {
-              GObject *child = l->data;
               ObjectInfo *child_info;
               const gchar *id_;
 
-              id_ = clutter_get_script_id (child);
+              id_ = clutter_get_script_id (G_OBJECT (child));
               if (id_ == NULL || *id_ == '\0')
                 continue;
 
@@ -1852,14 +1920,12 @@ _clutter_script_check_unresolved (ClutterScript *script,
                 continue;
 
               apply_child_properties (script, container,
-                                      CLUTTER_ACTOR (child),
+                                      child,
                                       child_info);
               apply_layout_properties (script, container,
-                                       CLUTTER_ACTOR (child),
+                                       child,
                                        child_info);
             }
-
-          g_list_free (children);
         }
     }
 
@@ -1937,7 +2003,7 @@ void
 _clutter_script_construct_object (ClutterScript *script,
                                   ObjectInfo    *oinfo)
 {
-  GArray *params;
+  GArray *params = NULL;
   guint i;
 
   /* we have completely updated the object */
@@ -1966,7 +2032,9 @@ _clutter_script_construct_object (ClutterScript *script,
 
   if (oinfo->is_stage && oinfo->is_stage_default)
     {
+      ClutterStageManager *manager = clutter_stage_manager_get_default ();
       GList *properties = oinfo->properties;
+      ClutterStage *default_stage;
 
       /* the default stage is a complex beast: we cannot create it using
        * g_object_newv() but we need clutter_script_construct_parameters()
@@ -1981,7 +2049,8 @@ _clutter_script_construct_object (ClutterScript *script,
                                              properties,
                                              &params);
 
-      oinfo->object = G_OBJECT (clutter_stage_get_default ());
+      default_stage = clutter_stage_manager_get_default_stage (manager);
+      oinfo->object = G_OBJECT (default_stage);
 
       for (i = 0; i < params->len; i++)
         {
@@ -1996,6 +2065,7 @@ _clutter_script_construct_object (ClutterScript *script,
   else
     {
       GList *properties = oinfo->properties;
+      GParameter *parameters;
 
       /* every other object: first, we get the construction parameters */
       oinfo->properties =
@@ -2005,9 +2075,10 @@ _clutter_script_construct_object (ClutterScript *script,
                                              properties,
                                              &params);
 
+      parameters = (GParameter *) (void *) params->data;
       oinfo->object = g_object_newv (oinfo->gtype,
                                      params->len,
-                                     (GParameter *) params->data);
+                                     parameters);
 
       /* by sinking the floating reference, we make sure that the reference
        * count is correct whether the object is referenced from somewhere

@@ -1,10 +1,13 @@
+#include <cogl/cogl.h>
+
+#define CLUTTER_ENABLE_EXPERIMENTAL_API
 #include <clutter/clutter.h>
 
 #include "test-conform-common.h"
 
 static const ClutterColor stage_color = { 0x00, 0x00, 0x00, 0xff };
 
-#ifdef COGL_HAS_XLIB
+#ifdef CLUTTER_WINDOWING_X11
 
 #include <clutter/x11/clutter-x11.h>
 #include <cogl/cogl-texture-pixmap-x11.h>
@@ -195,51 +198,53 @@ queue_redraw (gpointer stage)
   return TRUE;
 }
 
-#endif /* COGL_HAS_XLIB */
+#endif /* CLUTTER_WINDOWING_X11 */
 
 void
 test_cogl_texture_pixmap_x11 (TestConformSimpleFixture *fixture,
                               gconstpointer data)
 {
-#ifdef COGL_HAS_XLIB
+#ifdef CLUTTER_WINDOWING_X11
+  if (clutter_check_windowing_backend (CLUTTER_WINDOWING_X11))
+    {
+      TestState state;
+      guint idle_handler;
+      guint paint_handler;
+      CoglContext *ctx =
+        clutter_backend_get_cogl_context (clutter_get_default_backend ());
 
-  TestState state;
-  guint idle_handler;
-  guint paint_handler;
+      state.frame_count = 0;
+      state.stage = clutter_stage_new ();
 
-  state.frame_count = 0;
-  state.stage = clutter_stage_get_default ();
+      state.display = clutter_x11_get_default_display ();
 
-  state.display = clutter_x11_get_default_display ();
+      state.pixmap = create_pixmap (&state);
+      state.tfp = cogl_texture_pixmap_x11_new (ctx, state.pixmap, TRUE, NULL);
 
-  state.pixmap = create_pixmap (&state);
-  state.tfp = cogl_texture_pixmap_x11_new (state.pixmap, TRUE);
+      clutter_stage_set_color (CLUTTER_STAGE (state.stage), &stage_color);
 
-  clutter_stage_set_color (CLUTTER_STAGE (state.stage), &stage_color);
+      paint_handler = g_signal_connect_after (state.stage, "paint",
+                                              G_CALLBACK (on_paint), &state);
 
-  paint_handler = g_signal_connect_after (state.stage, "paint",
-                                          G_CALLBACK (on_paint), &state);
+      idle_handler = g_idle_add (queue_redraw, state.stage);
 
-  idle_handler = g_idle_add (queue_redraw, state.stage);
+      clutter_actor_show_all (state.stage);
 
-  clutter_actor_show_all (state.stage);
+      clutter_main ();
 
-  clutter_main ();
+      g_signal_handler_disconnect (state.stage, paint_handler);
 
-  g_signal_handler_disconnect (state.stage, paint_handler);
+      g_source_remove (idle_handler);
 
-  g_source_remove (idle_handler);
+      XFreePixmap (state.display, state.pixmap);
 
-  XFreePixmap (state.display, state.pixmap);
+      clutter_actor_destroy (state.stage);
 
+      if (g_test_verbose ())
+        g_print ("OK\n");
+    }
+  else
+#endif
   if (g_test_verbose ())
-    g_print ("OK\n");
-
-#else /* COGL_HAS_XLIB */
-
-  if (g_test_verbose ())
-   g_print ("Skipping\n");
-
-#endif /* COGL_HAS_XLIB */
+    g_print ("Skipping\n");
 }
-

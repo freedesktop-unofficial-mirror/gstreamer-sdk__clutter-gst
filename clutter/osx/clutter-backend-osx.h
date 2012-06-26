@@ -23,14 +23,19 @@
 #ifndef __CLUTTER_BACKEND_OSX_H__
 #define __CLUTTER_BACKEND_OSX_H__
 
+#import <AppKit/AppKit.h>
+#import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
+
+#include <glib.h>
+
 #include "clutter-backend-private.h"
-#include "clutter-device-manager.h"
 
 @class NSOpenGLPixelFormat, NSOpenGLContext;
 
 G_BEGIN_DECLS
 
-#define CLUTTER_TYPE_BACKEND_OSX             (clutter_backend_osx_get_type())
+#define CLUTTER_TYPE_BACKEND_OSX             (_clutter_backend_osx_get_type())
 #define CLUTTER_BACKEND_OSX(obj)             (G_TYPE_CHECK_INSTANCE_CAST((obj),CLUTTER_TYPE_BACKEND_OSX,ClutterBackendOSX))
 #define CLUTTER_BACKEND_OSX_CLASS(klass)     (G_TYPE_CHECK_CLASS_CAST((klass),CLUTTER_TYPE_BACKEND_OSX,ClutterBackend))
 #define CLUTTER_IS_BACKEND_OSX(obj)          (G_TYPE_CHECK_INSTANCE_TYPE((obj),CLUTTER_TYPE_BACKEND_OSX))
@@ -54,7 +59,9 @@ struct _ClutterBackendOSXClass
   ClutterBackendClass parent_class;
 };
 
-GType        clutter_backend_osx_get_type    (void) G_GNUC_CONST;
+GType _clutter_backend_osx_get_type (void) G_GNUC_CONST;
+
+void            _clutter_backend_osx_events_init        (ClutterBackend *backend);
 
 G_END_DECLS
 

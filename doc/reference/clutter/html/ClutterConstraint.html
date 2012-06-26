@@ -112,7 +112,7 @@ allocation of the actor to which they are applied by overriding the
 </tbody>
 </table></div>
 <div class="example">
-<a name="ClutterConstraint-usage-example"></a><p class="title"><b>Example 3. Usage of constraints</b></p>
+<a name="ClutterConstraint-usage-example"></a><p class="title"><b>Example 2. Usage of constraints</b></p>
 <div class="example-contents">
 <p>The example below uses various <a class="link" href="ClutterConstraint.html" title="ClutterConstraint"><span class="type">ClutterConstraint</span></a>s to
     lay out three actors on a resizable stage. Only the central actor has
@@ -149,7 +149,7 @@ allocation of the actor to which they are applied by overriding the
       <span class="emphasis"><em>layerC</em></span>;</li>
 </ol></div>
 <div class="figure">
-<a name="constraints-example"></a><p class="title"><b>Figure 4. Constraints</b></p>
+<a name="constraints-example"></a><p class="title"><b>Figure 3. Constraints</b></p>
 <div class="figure-contents"><div><img src="constraints-example.png" alt="Constraints"></div></div>
 </div>
 <br class="figure-break"><pre class="programlisting">
@@ -182,8 +182,7 @@ test_snap_constraint_main (int   argc,
   clutter_actor_set_size (layer_a, 100.0, 25.0);
 
   /* the first layer is anchored to the middle of the stage */
-  clutter_actor_add_constraint (layer_a, clutter_align_constraint_new (stage, CLUTTER_ALIGN_X_AXIS, 0.5));
-  clutter_actor_add_constraint (layer_a, clutter_align_constraint_new (stage, CLUTTER_ALIGN_Y_AXIS, 0.5));
+  clutter_actor_add_constraint (layer_a, clutter_align_constraint_new (stage, CLUTTER_ALIGN_BOTH, 0.5));
 
   /* second layer, with no implicit size */
   layer_b = clutter_rectangle_new_with_color (CLUTTER_COLOR_DarkButter);

@@ -1,18 +1,17 @@
 #ifndef __CLUTTER_STAGE_WINDOW_H__
 #define __CLUTTER_STAGE_WINDOW_H__
 
-#include <clutter/clutter-actor.h>
 #include <cogl/cogl.h>
-#include <cairo.h>
+#include <clutter/clutter-types.h>
 
 G_BEGIN_DECLS
 
-#define CLUTTER_TYPE_STAGE_WINDOW               (clutter_stage_window_get_type ())
+#define CLUTTER_TYPE_STAGE_WINDOW               (_clutter_stage_window_get_type ())
 #define CLUTTER_STAGE_WINDOW(obj)               (G_TYPE_CHECK_INSTANCE_CAST ((obj), CLUTTER_TYPE_STAGE_WINDOW, ClutterStageWindow))
 #define CLUTTER_IS_STAGE_WINDOW(obj)            (G_TYPE_CHECK_INSTANCE_TYPE ((obj), CLUTTER_TYPE_STAGE_WINDOW))
 #define CLUTTER_STAGE_WINDOW_GET_IFACE(obj)     (G_TYPE_INSTANCE_GET_INTERFACE ((obj), CLUTTER_TYPE_STAGE_WINDOW, ClutterStageWindowIface))
 
-/**
+/*
  * ClutterStageWindow: (skip)
  *
  * <structname>ClutterStageWindow</structname> is an opaque structure
@@ -23,7 +22,7 @@ G_BEGIN_DECLS
 typedef struct _ClutterStageWindow      ClutterStageWindow; /* dummy */
 typedef struct _ClutterStageWindowIface ClutterStageWindowIface;
 
-/**
+/*
  * ClutterStageWindowIface: (skip)
  *
  * The interface implemented by backends for stage windows
@@ -57,15 +56,15 @@ struct _ClutterStageWindowIface
                                                  gint                width,
                                                  gint                height);
   void              (* get_geometry)            (ClutterStageWindow *stage_window,
-                                                 ClutterGeometry    *geometry);
+                                                 cairo_rectangle_int_t *geometry);
 
   int               (* get_pending_swaps)       (ClutterStageWindow *stage_window);
 
-  void              (* add_redraw_clip)         (ClutterStageWindow *stage_window,
-                                                 ClutterGeometry    *stage_rectangle);
-  gboolean          (* has_redraw_clips)        (ClutterStageWindow *stage_window);
-  gboolean          (* ignoring_redraw_clips)   (ClutterStageWindow *stage_window);
-  gboolean          (* get_redraw_clip_bounds)  (ClutterStageWindow *stage_window,
+  void              (* add_redraw_clip)         (ClutterStageWindow    *stage_window,
+                                                 cairo_rectangle_int_t *stage_rectangle);
+  gboolean          (* has_redraw_clips)        (ClutterStageWindow    *stage_window);
+  gboolean          (* ignoring_redraw_clips)   (ClutterStageWindow    *stage_window);
+  gboolean          (* get_redraw_clip_bounds)  (ClutterStageWindow    *stage_window,
                                                  cairo_rectangle_int_t *clip);
 
 
@@ -75,9 +74,11 @@ struct _ClutterStageWindowIface
   void              (* redraw)                  (ClutterStageWindow *stage_window);
 
   CoglFramebuffer  *(* get_active_framebuffer)  (ClutterStageWindow *stage_window);
+
+  gboolean          (* can_clip_redraws)        (ClutterStageWindow *stage_window);
 };
 
-GType clutter_stage_window_get_type (void) G_GNUC_CONST;
+GType _clutter_stage_window_get_type (void) G_GNUC_CONST;
 
 ClutterActor *    _clutter_stage_window_get_wrapper        (ClutterStageWindow *window);
 
@@ -101,22 +102,24 @@ void              _clutter_stage_window_resize                  (ClutterStageWin
                                                                  gint                width,
                                                                  gint                height);
 void              _clutter_stage_window_get_geometry            (ClutterStageWindow *window,
-                                                                 ClutterGeometry    *geometry);
+                                                                 cairo_rectangle_int_t *geometry);
 int               _clutter_stage_window_get_pending_swaps       (ClutterStageWindow *window);
 
-void              _clutter_stage_window_add_redraw_clip         (ClutterStageWindow *window,
-                                                                 ClutterGeometry    *stage_clip);
-gboolean          _clutter_stage_window_has_redraw_clips        (ClutterStageWindow *window);
-gboolean          _clutter_stage_window_ignoring_redraw_clips   (ClutterStageWindow *window);
-gboolean          _clutter_stage_window_get_redraw_clip_bounds  (ClutterStageWindow *window,
+void              _clutter_stage_window_add_redraw_clip         (ClutterStageWindow    *window,
+                                                                 cairo_rectangle_int_t *stage_clip);
+gboolean          _clutter_stage_window_has_redraw_clips        (ClutterStageWindow    *window);
+gboolean          _clutter_stage_window_ignoring_redraw_clips   (ClutterStageWindow    *window);
+gboolean          _clutter_stage_window_get_redraw_clip_bounds  (ClutterStageWindow    *window,
                                                                  cairo_rectangle_int_t *clip);
 
 void              _clutter_stage_window_set_accept_focus        (ClutterStageWindow *window,
-                                                           gboolean            accept_focus);
+                                                                 gboolean            accept_focus);
 
 void              _clutter_stage_window_redraw                  (ClutterStageWindow *window);
 
 CoglFramebuffer  *_clutter_stage_window_get_active_framebuffer  (ClutterStageWindow *window);
+
+gboolean          _clutter_stage_window_can_clip_redraws        (ClutterStageWindow *window);
 
 G_END_DECLS
 

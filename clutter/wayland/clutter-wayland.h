@@ -3,7 +3,7 @@
  *
  * An OpenGL based 'interactive canvas' library.
  *
- * Copyright (C) 2010  Intel Corporation.
+ * Copyright (C) 2012 Intel Corporation
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -17,45 +17,32 @@
  *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library. If not, see <http://www.gnu.org/licenses/>.
-
- * Authors:
- *  Matthew Allum
- *  Robert Bragg
- *  Kristian Høgsberg
+ *
+ *
  */
 
 /**
  * SECTION:clutter-wayland
  * @short_description: Wayland specific API
  *
- * The Wayland backend for Clutter provides some Wayland specific API
+ * The Wayland backend for Clutter provides some specific API, allowing
+ * integration with the Wayland client API for acessing the underlying data
+ * structures
  *
- * You need to include
- * <filename class="headerfile">&lt;clutter/egl/clutter-wayland.h&gt;</filename>
- * to have access to the functions documented here.
+ * The Clutter Wayland API is available since Clutter 1.10
  */
 
 #ifndef __CLUTTER_WAYLAND_H__
 #define __CLUTTER_WAYLAND_H__
 
 #include <glib.h>
-
-#include <EGL/egl.h>
-#include <EGL/eglext.h>
-
+#include <wayland-client.h>
+#include <clutter/clutter.h>
 G_BEGIN_DECLS
 
-/**
- * clutter_wayland_get_egl_display:
- *
- * Retrieves the <structname>EGLDisplay</structname> used by Clutter
- *
- * Return value: the EGL display
- *
- * Since: 1.6
- */
-EGLDisplay      clutter_wayland_get_egl_display         (void);
-
+struct wl_input_device *clutter_wayland_input_device_get_wl_input_device (ClutterInputDevice *device);
+struct wl_shell_surface *clutter_wayland_stage_get_wl_shell_surface (ClutterStage *stage);
+struct wl_surface *clutter_wayland_stage_get_wl_surface (ClutterStage *stage);
 G_END_DECLS
 
 #endif /* __CLUTTER_WAYLAND_H__ */

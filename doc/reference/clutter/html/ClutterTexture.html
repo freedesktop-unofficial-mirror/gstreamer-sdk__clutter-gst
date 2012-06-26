@@ -6,7 +6,7 @@
 <meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
 <link rel="home" href="index.html" title="Clutter Reference Manual">
 <link rel="up" href="ch02.html" title="Base actors">
-<link rel="prev" href="ClutterRectangle.html" title="ClutterRectangle">
+<link rel="prev" href="ClutterStage.html" title="ClutterStage">
 <link rel="next" href="ClutterClone.html" title="ClutterClone">
 <meta name="generator" content="GTK-Doc V1.18.1 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
@@ -14,7 +14,7 @@
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
 <tr valign="middle">
-<td><a accesskey="p" href="ClutterRectangle.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="p" href="ClutterStage.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
 <td><a accesskey="u" href="ch02.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
 <td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
 <th width="100%" align="center">Clutter Reference Manual</th>
@@ -142,7 +142,7 @@ enum                <a class="link" href="ClutterTexture.html#ClutterTextureErro
 <a name="ClutterTexture.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
 <p>
 ClutterTexture implements
- <a class="link" href="ClutterScriptable.html" title="ClutterScriptable">ClutterScriptable</a>,  <a class="link" href="ClutterAnimatable.html" title="ClutterAnimatable">ClutterAnimatable</a> and  AtkImplementorIface.</p>
+ <a class="link" href="ClutterContainer.html" title="ClutterContainer">ClutterContainer</a>,  <a class="link" href="ClutterScriptable.html" title="ClutterScriptable">ClutterScriptable</a>,  <a class="link" href="ClutterAnimatable.html" title="ClutterAnimatable">ClutterAnimatable</a> and  AtkImplementorIface.</p>
 </div>
 <div class="refsect1">
 <a name="ClutterTexture.properties"></a><h2>Properties</h2>
@@ -557,34 +557,34 @@ Sets <a class="link" href="ClutterTexture.html" title="ClutterTexture"><span cla
 <tbody>
 <tr>
 <td><p><span class="term"><em class="parameter"><code>texture</code></em> :</span></p></td>
-<td>A <a class="link" href="ClutterTexture.html" title="ClutterTexture"><span class="type">ClutterTexture</span></a>
+<td>a <a class="link" href="ClutterTexture.html" title="ClutterTexture"><span class="type">ClutterTexture</span></a>
 </td>
 </tr>
 <tr>
 <td><p><span class="term"><em class="parameter"><code>data</code></em> :</span></p></td>
-<td>Image data in RGBA type colorspace. <span class="annotation">[<acronym title="Parameter points to an array of items."><span class="acronym">array</span></acronym>]</span>
+<td>image data in RGBA type colorspace. <span class="annotation">[<acronym title="Parameter points to an array of items."><span class="acronym">array</span></acronym>]</span>
 </td>
 </tr>
 <tr>
 <td><p><span class="term"><em class="parameter"><code>has_alpha</code></em> :</span></p></td>
-<td>Set to TRUE if image data has an alpha channel.</td>
+<td>set to <code class="literal">TRUE</code> if image data has an alpha channel.</td>
 </tr>
 <tr>
 <td><p><span class="term"><em class="parameter"><code>width</code></em> :</span></p></td>
-<td>Width in pixels of image data.</td>
+<td>width in pixels of image data.</td>
 </tr>
 <tr>
 <td><p><span class="term"><em class="parameter"><code>height</code></em> :</span></p></td>
-<td>Height in pixels of image data</td>
+<td>height in pixels of image data</td>
 </tr>
 <tr>
 <td><p><span class="term"><em class="parameter"><code>rowstride</code></em> :</span></p></td>
-<td>Distance in bytes between row starts.</td>
+<td>distance in bytes between row starts.</td>
 </tr>
 <tr>
 <td><p><span class="term"><em class="parameter"><code>bpp</code></em> :</span></p></td>
-<td>bytes per pixel (Currently only 3 and 4 supported,
-depending on <em class="parameter"><code>has_alpha</code></em>)</td>
+<td>bytes per pixel (currently only 3 and 4 supported, depending
+on the value of <em class="parameter"><code>has_alpha</code></em>)</td>
 </tr>
 <tr>
 <td><p><span class="term"><em class="parameter"><code>flags</code></em> :</span></p></td>
@@ -612,9 +612,24 @@ depending on <em class="parameter"><code>has_alpha</code></em>)</td>
                                                          <em class="parameter"><code><span class="type">gint</span> height</code></em>,
                                                          <em class="parameter"><code><a class="link" href="ClutterTexture.html#ClutterTextureFlags" title="enum ClutterTextureFlags"><span class="type">ClutterTextureFlags</span></a> flags</code></em>,
                                                          <em class="parameter"><code><span class="type">GError</span> **error</code></em>);</pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">clutter_texture_set_from_yuv_data</code> has been deprecated since version 1.10 and should not be used in newly-written code. Use <a class="link" href="ClutterTexture.html#clutter-texture-get-cogl-material" title="clutter_texture_get_cogl_material ()"><code class="function">clutter_texture_get_cogl_material()</code></a> and
+  the Cogl API to install a fragment shader for decoding YUV
+  formats on the GPU</p>
+</div>
 <p>
 Sets a <a class="link" href="ClutterTexture.html" title="ClutterTexture"><span class="type">ClutterTexture</span></a> from YUV image data. If an error occurred,
 <code class="literal">FALSE</code> is returned and <em class="parameter"><code>error</code></em> is set.
+</p>
+<p>
+The YUV support depends on the driver; the format supported by the
+few drivers exposing this capability are not really useful.
+</p>
+<p>
+The proper way to convert image data in any YUV colorspace to any
+RGB colorspace is to use a fragment shader associated with the
+<a class="link" href="ClutterTexture.html" title="ClutterTexture"><span class="type">ClutterTexture</span></a> material.
 </p>
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">

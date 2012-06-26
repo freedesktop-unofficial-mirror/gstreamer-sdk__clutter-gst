@@ -42,6 +42,8 @@
 #include "config.h"
 #endif
 
+#define CLUTTER_ENABLE_EXPERIMENTAL_API
+
 #include "clutter-x11-texture-pixmap.h"
 #include "clutter-x11.h"
 #include "clutter-backend-x11.h"
@@ -341,12 +343,10 @@ clutter_x11_texture_pixmap_real_queue_damage_redraw (
                                               gint height)
 {
   ClutterX11TexturePixmapPrivate *priv = texture->priv;
-  ClutterActor    *self = CLUTTER_ACTOR (texture);
-  ClutterActorBox  allocation;
-  float            scale_x;
-  float            scale_y;
-  ClutterVertex    origin;
-  ClutterPaintVolume clip;
+  ClutterActor *self = CLUTTER_ACTOR (texture);
+  ClutterActorBox allocation;
+  float scale_x, scale_y;
+  cairo_rectangle_int_t clip;
 
   /* NB: clutter_actor_queue_clipped_redraw expects a box in the actor's
    * coordinate space so we need to convert from pixmap coordinates to
@@ -373,17 +373,11 @@ clutter_x11_texture_pixmap_real_queue_damage_redraw (
   scale_x = (allocation.x2 - allocation.x1) / priv->pixmap_width;
   scale_y = (allocation.y2 - allocation.y1) / priv->pixmap_height;
 
-  _clutter_paint_volume_init_static (&clip, self);
-
-  origin.x = x * scale_x;
-  origin.y = y * scale_y;
-  origin.z = 0;
-  clutter_paint_volume_set_origin (&clip, &origin);
-  clutter_paint_volume_set_width (&clip, width * scale_x);
-  clutter_paint_volume_set_height (&clip, height * scale_y);
-
-  _clutter_actor_queue_redraw_with_clip (self, 0, &clip);
-  clutter_paint_volume_free (&clip);
+  clip.x = x * scale_x;
+  clip.y = y * scale_y;
+  clip.width = width * scale_x;
+  clip.height = height * scale_y;
+  clutter_actor_queue_redraw_with_clip (self, &clip);
 }
 
 static void
@@ -529,7 +523,6 @@ clutter_x11_texture_pixmap_class_init (ClutterX11TexturePixmapClass *klass)
   GObjectClass      *object_class = G_OBJECT_CLASS (klass);
   ClutterActorClass *actor_class = CLUTTER_ACTOR_CLASS (klass);
   GParamSpec        *pspec;
-  ClutterBackend    *default_backend;
 
   g_type_class_add_private (klass, sizeof (ClutterX11TexturePixmapPrivate));
 
@@ -676,7 +669,7 @@ clutter_x11_texture_pixmap_class_init (ClutterX11TexturePixmapClass *klass)
                     G_TYPE_INT);
 
   /**
-   * ClutterX11TexturePixmap::queue-damage-redraw
+   * ClutterX11TexturePixmap::queue-damage-redraw:
    * @texture: the object which received the signal
    * @x: The top left x position of the damage region
    * @y: The top left y position of the damage region
@@ -714,15 +707,6 @@ clutter_x11_texture_pixmap_class_init (ClutterX11TexturePixmapClass *klass)
   g_signal_override_class_handler ("queue-damage-redraw",
                                    CLUTTER_X11_TYPE_TEXTURE_PIXMAP,
                                    G_CALLBACK (clutter_x11_texture_pixmap_real_queue_damage_redraw));
-
-  default_backend = clutter_get_default_backend ();
-
-  if (!CLUTTER_IS_BACKEND_X11 (default_backend))
-    {
-      g_critical ("ClutterX11TexturePixmap instantiated with a "
-                  "non-X11 backend");
-      return;
-    }
 }
 
 static void
@@ -817,14 +801,13 @@ void
 clutter_x11_texture_pixmap_set_pixmap (ClutterX11TexturePixmap *texture,
                                        Pixmap                   pixmap)
 {
-  Window       root;
-  int          x, y;
-  unsigned int width, height, border_width, depth;
-  Status       status = 0;
-  gboolean     new_pixmap = FALSE, new_pixmap_width = FALSE;
-  gboolean     new_pixmap_height = FALSE, new_pixmap_depth = FALSE;
-  CoglHandle   material;
-  CoglHandle   cogl_texture;
+  Window        root;
+  int           x, y;
+  unsigned int  width, height, border_width, depth;
+  Status        status = 0;
+  gboolean      new_pixmap = FALSE, new_pixmap_width = FALSE;
+  gboolean      new_pixmap_height = FALSE, new_pixmap_depth = FALSE;
+  CoglPipeline *pipeline;
 
   ClutterX11TexturePixmapPrivate *priv;
 
@@ -834,9 +817,10 @@ clutter_x11_texture_pixmap_set_pixmap (ClutterX11TexturePixmap *texture,
 
   /* Get rid of the existing Cogl texture early because it may try to
      use the pixmap which we might destroy */
-  material = clutter_texture_get_cogl_material (CLUTTER_TEXTURE (texture));
-  if (material)
-    cogl_material_set_layer (material, 0, COGL_INVALID_HANDLE);
+  pipeline = (CoglPipeline *)
+    clutter_texture_get_cogl_material (CLUTTER_TEXTURE (texture));
+  if (pipeline)
+    cogl_pipeline_set_layer_texture (pipeline, 0, NULL);
 
   if (pixmap != None)
     {
@@ -915,11 +899,24 @@ clutter_x11_texture_pixmap_set_pixmap (ClutterX11TexturePixmap *texture,
 
   if (pixmap)
     {
-      cogl_texture = cogl_texture_pixmap_x11_new (pixmap, FALSE);
-      clutter_texture_set_cogl_texture (CLUTTER_TEXTURE (texture),
-                                        cogl_texture);
-      cogl_handle_unref (cogl_texture);
-      update_pixmap_damage_object (texture);
+      CoglContext *ctx =
+        clutter_backend_get_cogl_context (clutter_get_default_backend ());
+      GError *error = NULL;
+      CoglTexturePixmapX11 *texture_pixmap =
+        cogl_texture_pixmap_x11_new (ctx, pixmap, FALSE, &error);
+      if (texture_pixmap)
+        {
+          clutter_texture_set_cogl_texture (CLUTTER_TEXTURE (texture),
+                                            COGL_TEXTURE (texture_pixmap));
+          cogl_object_unref (texture_pixmap);
+          update_pixmap_damage_object (texture);
+        }
+      else
+        {
+          g_warning ("Failed to create CoglTexturePixmapX11: %s",
+                     error->message);
+          g_error_free (error);
+        }
     }
 
   /*
@@ -954,11 +951,15 @@ clutter_x11_texture_pixmap_set_window (ClutterX11TexturePixmap *texture,
 {
   ClutterX11TexturePixmapPrivate *priv;
   XWindowAttributes attr;
-  Display *dpy = clutter_x11_get_default_display ();
+  Display *dpy;
 
   g_return_if_fail (CLUTTER_X11_IS_TEXTURE_PIXMAP (texture));
 
   if (!clutter_x11_has_composite_extension ())
+    return;
+
+  dpy = clutter_x11_get_default_display ();
+  if (dpy == NULL)
     return;
 
 #if HAVE_XCOMPOSITE
@@ -1058,7 +1059,7 @@ clutter_x11_texture_pixmap_sync_window_internal (ClutterX11TexturePixmap *textur
   priv->window_height = height;
   priv->override_redirect = override_redirect;
 
-  if (!clutter_x11_has_composite_extension())
+  if (!clutter_x11_has_composite_extension ())
     {
       /* FIXME: this should just be an error, this is unlikely to work worth anything */
       clutter_x11_texture_pixmap_set_pixmap (texture, priv->window);
@@ -1148,11 +1149,14 @@ clutter_x11_texture_pixmap_sync_window (ClutterX11TexturePixmap *texture)
   if (priv->destroyed)
     return;
 
-  if (priv->window)
+  if (priv->window != None)
     {
-      XWindowAttributes attr;
       Display *dpy = clutter_x11_get_default_display ();
+      XWindowAttributes attr;
       Status status;
+
+      if (dpy == NULL)
+        return;
 
       clutter_x11_trap_x_errors ();
 

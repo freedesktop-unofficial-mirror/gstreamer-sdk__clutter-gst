@@ -632,14 +632,14 @@ clutter_path_parse_description (const gchar  *p,
           node = clutter_path_node_full_new ();
           nodes = g_slist_prepend (nodes, node);
 
-          node->k.type = (*p == 'M' ? CLUTTER_PATH_MOVE_TO
-                          : *p == 'm' ? CLUTTER_PATH_REL_MOVE_TO
-                          : *p == 'L' ? CLUTTER_PATH_LINE_TO
-                          : CLUTTER_PATH_REL_LINE_TO);
+          node->k.type = (*p == 'M' ? CLUTTER_PATH_MOVE_TO :
+                          *p == 'm' ? CLUTTER_PATH_REL_MOVE_TO :
+                          *p == 'L' ? CLUTTER_PATH_LINE_TO :
+                          CLUTTER_PATH_REL_LINE_TO);
           p++;
 
-          if (!clutter_path_parse_number (&p, FALSE, &node->k.points[0].x)
-              || !clutter_path_parse_number (&p, TRUE, &node->k.points[0].y))
+          if (!clutter_path_parse_number (&p, FALSE, &node->k.points[0].x) ||
+              !clutter_path_parse_number (&p, TRUE, &node->k.points[0].y))
             goto fail;
           break;
 
@@ -648,16 +648,16 @@ clutter_path_parse_description (const gchar  *p,
           node = clutter_path_node_full_new ();
           nodes = g_slist_prepend (nodes, node);
 
-          node->k.type = (*p == 'C' ? CLUTTER_PATH_CURVE_TO
-                          : CLUTTER_PATH_REL_CURVE_TO);
+          node->k.type = (*p == 'C' ? CLUTTER_PATH_CURVE_TO :
+                          CLUTTER_PATH_REL_CURVE_TO);
           p++;
 
-          if (!clutter_path_parse_number (&p, FALSE, &node->k.points[0].x)
-              || !clutter_path_parse_number (&p, TRUE, &node->k.points[0].y)
-              || !clutter_path_parse_number (&p, TRUE, &node->k.points[1].x)
-              || !clutter_path_parse_number (&p, TRUE, &node->k.points[1].y)
-              || !clutter_path_parse_number (&p, TRUE, &node->k.points[2].x)
-              || !clutter_path_parse_number (&p, TRUE, &node->k.points[2].y))
+          if (!clutter_path_parse_number (&p, FALSE, &node->k.points[0].x) ||
+              !clutter_path_parse_number (&p, TRUE, &node->k.points[0].y) ||
+              !clutter_path_parse_number (&p, TRUE, &node->k.points[1].x) ||
+              !clutter_path_parse_number (&p, TRUE, &node->k.points[1].y) ||
+              !clutter_path_parse_number (&p, TRUE, &node->k.points[2].x) ||
+              !clutter_path_parse_number (&p, TRUE, &node->k.points[2].y))
             goto fail;
           break;
 
@@ -1244,11 +1244,12 @@ clutter_path_get_description (ClutterPath *path)
   return g_string_free (str, FALSE);
 }
 
-static gint
+static guint
 clutter_path_node_distance (const ClutterKnot *start,
                             const ClutterKnot *end)
 {
-  gint t;
+  gint64 x_d, y_d;
+  float t;
 
   g_return_val_if_fail (start != NULL, 0);
   g_return_val_if_fail (end != NULL, 0);
@@ -1256,21 +1257,12 @@ clutter_path_node_distance (const ClutterKnot *start,
   if (clutter_knot_equal (start, end))
     return 0;
 
-  t = (end->x - start->x) * (end->x - start->x) +
-    (end->y - start->y) * (end->y - start->y);
+  x_d = end->x - start->x;
+  y_d = end->y - start->y;
 
-  /*
-   * If we are using limited precision sqrti implementation, fallback on
-   * clib sqrt if the precission would be less than 10%
-   */
-#if INT_MAX > COGL_SQRTI_ARG_10_PERCENT
-  if (t <= COGL_SQRTI_ARG_10_PERCENT)
-    return cogl_sqrti (t);
-  else
-    return COGL_FLOAT_TO_INT (sqrtf(t));
-#else
-  return cogl_sqrti (t);
-#endif
+  t = floorf (sqrtf ((x_d * x_d) + (y_d * y_d)));
+
+  return (guint) t;
 }
 
 static void
@@ -1581,4 +1573,66 @@ clutter_path_node_equal (const ClutterPathNode *node_a,
       return FALSE;
 
   return TRUE;
+}
+
+G_DEFINE_BOXED_TYPE (ClutterKnot, clutter_knot,
+                     clutter_knot_copy,
+                     clutter_knot_free);
+
+/**
+ * clutter_knot_copy:
+ * @knot: a #ClutterKnot
+ *
+ * Makes an allocated copy of a knot.
+ *
+ * Return value: the copied knot.
+ *
+ * Since: 0.2
+ */
+ClutterKnot *
+clutter_knot_copy (const ClutterKnot *knot)
+{
+  if (G_UNLIKELY (knot == NULL))
+    return NULL;
+
+  return g_slice_dup (ClutterKnot, knot);
+}
+
+/**
+ * clutter_knot_free:
+ * @knot: a #ClutterKnot
+ *
+ * Frees the memory of an allocated knot.
+ *
+ * Since: 0.2
+ */
+void
+clutter_knot_free (ClutterKnot *knot)
+{
+  if (G_LIKELY (knot != NULL))
+    g_slice_free (ClutterKnot, knot);
+}
+
+/**
+ * clutter_knot_equal:
+ * @knot_a: First knot
+ * @knot_b: Second knot
+ *
+ * Compares to knot and checks if the point to the same location.
+ *
+ * Return value: %TRUE if the knots point to the same location.
+ *
+ * Since: 0.2
+ */
+gboolean
+clutter_knot_equal (const ClutterKnot *knot_a,
+                    const ClutterKnot *knot_b)
+{
+  g_return_val_if_fail (knot_a != NULL, FALSE);
+  g_return_val_if_fail (knot_b != NULL, FALSE);
+
+  if (knot_a == knot_b)
+    return TRUE;
+
+  return knot_a->x == knot_b->x && knot_a->y == knot_b->y;
 }

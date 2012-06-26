@@ -28,6 +28,7 @@
 #include <X11/Xatom.h>
 
 #include "clutter-backend-x11.h"
+#include "cogl/clutter-stage-cogl.h"
 
 G_BEGIN_DECLS
 
@@ -48,7 +49,7 @@ typedef enum
 
 struct _ClutterStageX11
 {
-  GObject parent_instance;
+  ClutterStageCogl parent_instance;
 
   Window xwin;
   gint xwin_width;
@@ -58,24 +59,19 @@ struct _ClutterStageX11
 
   guint clipped_redraws_cool_off;
 
-  ClutterStageState state;
-
   ClutterStageX11State wm_state;
 
-  /* backpointers */
-  ClutterStage *wrapper;
-  ClutterBackendX11 *backend;
-
-  guint is_foreign_xwin      : 1;
-  guint fullscreening        : 1;
-  guint is_cursor_visible    : 1;
-  guint viewport_initialized : 1;
-  guint accept_focus         : 1;
+  guint is_foreign_xwin       : 1;
+  guint fullscreening         : 1;
+  guint is_cursor_visible     : 1;
+  guint viewport_initialized  : 1;
+  guint accept_focus          : 1;
+  guint fullscreen_on_realize : 1;
 };
 
 struct _ClutterStageX11Class
 {
-  GObjectClass parent_class;
+  ClutterStageCoglClass parent_class;
 };
 
 #define CLUTTER_STAGE_X11_EVENT_MASK \
@@ -96,6 +92,9 @@ GType _clutter_stage_x11_get_type (void) G_GNUC_CONST;
 void  _clutter_stage_x11_update_foreign_event_mask (CoglOnscreen *onscreen,
                                                     guint32 event_mask,
                                                     void *user_data);
+void  _clutter_stage_x11_events_device_changed (ClutterStageX11 *stage_x11,
+                                                ClutterInputDevice *device,
+                                                ClutterDeviceManager *device_manager);
 
 /* Private to subclasses */
 void            _clutter_stage_x11_set_user_time                (ClutterStageX11 *stage_x11,

@@ -73,8 +73,6 @@
 
 #include "clutter-main.h"
 
-static void cally_text_class_init (CallyTextClass *klass);
-static void cally_text_init       (CallyText *cally_text);
 static void cally_text_finalize   (GObject *obj);
 
 /* AtkObject */
@@ -218,13 +216,13 @@ struct _CallyTextPrivate
   gint selection_bound;
 
   /* text_changed::insert stuff */
-  gchar *signal_name_insert;
+  const gchar *signal_name_insert;
   gint position_insert;
   gint length_insert;
   guint insert_idle_handler;
 
   /* text_changed::delete stuff */
-  gchar *signal_name_delete;
+  const gchar *signal_name_delete;
   gint position_delete;
   gint length_delete;
 
@@ -344,7 +342,10 @@ cally_text_real_initialize(AtkObject *obj,
 
   _check_activate_action (cally_text, clutter_text);
 
-  obj->role = ATK_ROLE_TEXT;
+  if (clutter_text_get_password_char (clutter_text) != 0)
+    obj->role = ATK_ROLE_PASSWORD_TEXT;
+  else
+    obj->role = ATK_ROLE_TEXT;
 }
 
 static const gchar *
@@ -1090,6 +1091,13 @@ cally_text_notify_clutter (GObject    *obj,
   else if (g_strcmp0 (pspec->name, "activatable") == 0)
     {
       _check_activate_action (cally_text, clutter_text);
+    }
+  else if (g_strcmp0 (pspec->name, "password-char") == 0)
+    {
+      if (clutter_text_get_password_char (clutter_text) != 0)
+        atk_object_set_role (atk_obj, ATK_ROLE_PASSWORD_TEXT);
+      else
+        atk_object_set_role (atk_obj, ATK_ROLE_TEXT);
     }
   else
     {

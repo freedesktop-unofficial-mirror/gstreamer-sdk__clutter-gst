@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <clutter/clutter.h>
 #include <math.h>
 #include <gmodule.h>
@@ -213,13 +214,12 @@ idle_cb (gpointer data)
 {
   clutter_actor_queue_redraw (data);
 
-  return TRUE;
+  return G_SOURCE_CONTINUE;
 }
 
 G_MODULE_EXPORT int
 test_cogl_point_sprites_main (int argc, char *argv[])
 {
-  static const ClutterColor black = { 0, 0, 0, 255 };
   ClutterActor *stage;
   CoglHandle tex;
   Data data;
@@ -227,7 +227,7 @@ test_cogl_point_sprites_main (int argc, char *argv[])
   int i;
 
   if (clutter_init (&argc, &argv) != CLUTTER_INIT_SUCCESS)
-    return 1;
+    return EXIT_FAILURE;
 
   data.material = cogl_material_new ();
   data.last_spark_time = g_timer_new ();
@@ -260,14 +260,15 @@ test_cogl_point_sprites_main (int argc, char *argv[])
       data.sparks[i].y = 2.0f;
     }
 
-  stage = clutter_stage_get_default ();
-  clutter_stage_set_color (CLUTTER_STAGE (stage), &black);
-
+  stage = clutter_stage_new ();
+  clutter_stage_set_color (CLUTTER_STAGE (stage), CLUTTER_COLOR_Black);
+  clutter_stage_set_title (CLUTTER_STAGE (stage), "Cogl Point Sprites");
+  g_signal_connect (stage, "destroy", G_CALLBACK (clutter_main_quit), NULL);
   g_signal_connect_after (stage, "paint", G_CALLBACK (paint_cb), &data);
 
   clutter_actor_show (stage);
 
-  g_idle_add (idle_cb, stage);
+  clutter_threads_add_idle (idle_cb, stage);
 
   clutter_main ();
 
@@ -278,4 +279,10 @@ test_cogl_point_sprites_main (int argc, char *argv[])
     g_timer_destroy (data.fireworks[i].timer);
 
   return 0;
+}
+
+G_MODULE_EXPORT const char *
+test_cogl_point_sprites_describe (void)
+{
+  return "Point sprites support in Cogl.";
 }

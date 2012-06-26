@@ -43,7 +43,6 @@ G_BEGIN_DECLS
 #define CLUTTER_IS_LAYOUT_MANAGER_CLASS(klass)  (G_TYPE_CHECK_CLASS_TYPE ((klass), CLUTTER_TYPE_LAYOUT_MANAGER))
 #define CLUTTER_LAYOUT_MANAGER_GET_CLASS(obj)   (G_TYPE_INSTANCE_GET_CLASS ((obj), CLUTTER_TYPE_LAYOUT_MANAGER, ClutterLayoutManagerClass))
 
-typedef struct _ClutterLayoutManager            ClutterLayoutManager;
 typedef struct _ClutterLayoutManagerClass       ClutterLayoutManagerClass;
 
 /**
@@ -103,7 +102,6 @@ struct _ClutterLayoutManagerClass
   GInitiallyUnownedClass parent_class;
 
   /*< public >*/
-  /* vfuncs, not signals */
   void               (* get_preferred_width)    (ClutterLayoutManager   *manager,
                                                  ClutterContainer       *container,
                                                  gfloat                  for_height,
@@ -133,7 +131,6 @@ struct _ClutterLayoutManagerClass
   gdouble            (* get_animation_progress) (ClutterLayoutManager   *manager);
   void               (* end_animation)          (ClutterLayoutManager   *manager);
 
-  /* signals */
   void               (* layout_changed)         (ClutterLayoutManager   *manager);
 
   /*< private >*/

@@ -7,7 +7,7 @@
 <link rel="home" href="index.html" title="Clutter Reference Manual">
 <link rel="up" href="ch11.html" title="General purpose API">
 <link rel="prev" href="ClutterPath.html" title="ClutterPath">
-<link rel="next" href="clutter-Shaders.html" title="Shaders">
+<link rel="next" href="clutter-Stage-Manager.html" title="Stage Manager">
 <meta name="generator" content="GTK-Doc V1.18.1 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
@@ -18,7 +18,7 @@
 <td><a accesskey="u" href="ch11.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
 <td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
 <th width="100%" align="center">Clutter Reference Manual</th>
-<td><a accesskey="n" href="clutter-Shaders.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+<td><a accesskey="n" href="clutter-Stage-Manager.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
 </tr>
 <tr><td colspan="5" class="shortcuts">
 <a href="#ClutterSettings.synopsis" class="shortcut">Top</a>
@@ -67,6 +67,7 @@
   "<a class="link" href="ClutterSettings.html#ClutterSettings--font-subpixel-order" title='The "font-subpixel-order" property'>font-subpixel-order</a>"      <span class="type">gchar</span>*                : Read / Write
   "<a class="link" href="ClutterSettings.html#ClutterSettings--fontconfig-timestamp" title='The "fontconfig-timestamp" property'>fontconfig-timestamp</a>"     <span class="type">guint</span>                 : Write
   "<a class="link" href="ClutterSettings.html#ClutterSettings--long-press-duration" title='The "long-press-duration" property'>long-press-duration</a>"      <span class="type">gint</span>                  : Read / Write
+  "<a class="link" href="ClutterSettings.html#ClutterSettings--password-hint-time" title='The "password-hint-time" property'>password-hint-time</a>"       <span class="type">guint</span>                 : Read / Write
 </pre>
 </div>
 <div class="refsect1">
@@ -124,6 +125,10 @@ directly. <span class="annotation">[<acronym title="Don't free data after the co
 <div class="refsect2">
 <a name="ClutterSettings--backend"></a><h3>The <code class="literal">"backend"</code> property</h3>
 <pre class="programlisting">  "backend"                  <a class="link" href="ClutterBackend.html" title="ClutterBackend"><span class="type">ClutterBackend</span></a>*       : Write / Construct Only</pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">ClutterSettings:backend</code> is deprecated and should not be used in newly-written code. 1.10</p>
+</div>
 <p>
 A back pointer to the <a class="link" href="ClutterBackend.html" title="ClutterBackend"><span class="type">ClutterBackend</span></a>
 </p>
@@ -276,6 +281,13 @@ See also <a class="link" href="ClutterClickAction.html#ClutterClickAction--long-
 <p>Allowed values: &gt;= 0</p>
 <p>Default value: 500</p>
 <p class="since">Since 1.8</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ClutterSettings--password-hint-time"></a><h3>The <code class="literal">"password-hint-time"</code> property</h3>
+<pre class="programlisting">  "password-hint-time"       <span class="type">guint</span>                 : Read / Write</pre>
+<p>How long to show the last input character in hidden entries.</p>
+<p>Default value: 0</p>
 </div>
 </div>
 </div>

@@ -92,6 +92,16 @@ clutter_input_device_xi2_select_stage_events (ClutterInputDevice *device,
   if (event_mask & LeaveWindowMask)
     XISetMask (mask, XI_Leave);
 
+#ifdef HAVE_XINPUT_2_2
+  /* enable touch event support if we're running on XInput 2.2 */
+  if (backend_x11->xi_minor >= 2)
+    {
+      XISetMask (mask, XI_TouchBegin);
+      XISetMask (mask, XI_TouchUpdate);
+      XISetMask (mask, XI_TouchEnd);
+    }
+#endif /* HAVE_XINPUT_2_2 */
+
   xi_event_mask.deviceid = device_xi2->device_id;
   xi_event_mask.mask = mask;
   xi_event_mask.mask_len = len;
@@ -115,6 +125,20 @@ clutter_input_device_xi2_constructed (GObject *gobject)
     G_OBJECT_CLASS (clutter_input_device_xi2_parent_class)->constructed (gobject);
 }
 
+static gboolean
+clutter_input_device_xi2_keycode_to_evdev (ClutterInputDevice *device,
+                                           guint hardware_keycode,
+                                           guint *evdev_keycode)
+{
+  /* When using evdev under X11 the hardware keycodes are the evdev
+     keycodes plus 8. I haven't been able to find any documentation to
+     know what the +8 is for. FIXME: This should probably verify that
+     X server is using evdev. */
+  *evdev_keycode = hardware_keycode - 8;
+
+  return TRUE;
+}
+
 static void
 clutter_input_device_xi2_class_init (ClutterInputDeviceXI2Class *klass)
 {
@@ -124,6 +148,7 @@ clutter_input_device_xi2_class_init (ClutterInputDeviceXI2Class *klass)
   gobject_class->constructed = clutter_input_device_xi2_constructed;
 
   device_class->select_stage_events = clutter_input_device_xi2_select_stage_events;
+  device_class->keycode_to_evdev = clutter_input_device_xi2_keycode_to_evdev;
 }
 
 static void

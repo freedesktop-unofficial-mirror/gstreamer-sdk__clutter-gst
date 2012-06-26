@@ -74,11 +74,13 @@ on_box_enter (ClutterActor *box,
               ClutterEvent *event,
               ClutterActor *emblem)
 {
-  clutter_actor_animate (emblem, CLUTTER_LINEAR, 150,
-                         "opacity", 255,
-                         NULL);
+  clutter_actor_save_easing_state (emblem);
+  clutter_actor_set_easing_duration (emblem, 150);
+  clutter_actor_set_easing_mode (emblem, CLUTTER_LINEAR);
+  clutter_actor_set_opacity (emblem, 255);
+  clutter_actor_restore_easing_state (emblem);
 
-  return TRUE;
+  return CLUTTER_EVENT_STOP;
 }
 
 static gboolean
@@ -86,11 +88,13 @@ on_box_leave (ClutterActor *box,
               ClutterEvent *event,
               ClutterActor *emblem)
 {
-  clutter_actor_animate (emblem, CLUTTER_LINEAR, 150,
-                         "opacity", 0,
-                         NULL);
+  clutter_actor_save_easing_state (emblem);
+  clutter_actor_set_easing_duration (emblem, 150);
+  clutter_actor_set_easing_mode (emblem, CLUTTER_LINEAR);
+  clutter_actor_set_opacity (emblem, 0);
+  clutter_actor_restore_easing_state (emblem);
 
-  return TRUE;
+  return CLUTTER_EVENT_STOP;
 }
 
 static void
@@ -98,16 +102,16 @@ on_rect_clicked (ClutterClickAction *action,
                  ClutterActor       *rect,
                  ClutterActor       *box)
 {
+  clutter_actor_save_easing_state (box);
+  clutter_actor_set_easing_mode (box, CLUTTER_EASE_OUT_BOUNCE);
+  clutter_actor_set_easing_duration (box, 500);
+
   if (!is_expanded)
-    clutter_actor_animate (box, CLUTTER_EASE_OUT_BOUNCE, 250,
-                           "width", 400.0,
-                           "height", 400.0,
-                           NULL);
+    clutter_actor_set_size (box, 400, 400);
   else
-    clutter_actor_animate (box, CLUTTER_EASE_OUT_BOUNCE, 250,
-                           "width", 200.0,
-                           "height", 200.0,
-                           NULL);
+    clutter_actor_set_size (box, 200, 200);
+
+  clutter_actor_restore_easing_state (box);
 
   is_expanded = !is_expanded;
 }
@@ -163,10 +167,11 @@ test_bin_layout_main (int argc, char *argv[])
   if (clutter_init (&argc, &argv) != CLUTTER_INIT_SUCCESS)
     return 1;
 
-  stage = clutter_stage_get_default ();
-  clutter_stage_set_title (CLUTTER_STAGE (stage), "Box test");
-  clutter_stage_set_color (CLUTTER_STAGE (stage), &stage_color);
+  stage = clutter_stage_new ();
+  clutter_stage_set_title (CLUTTER_STAGE (stage), "BinLayout");
+  clutter_actor_set_background_color (stage, &stage_color);
   clutter_actor_set_size (stage, 640, 480);
+  g_signal_connect (stage, "destroy", G_CALLBACK (clutter_main_quit), NULL);
 
   layout = clutter_bin_layout_new (CLUTTER_BIN_ALIGNMENT_CENTER,
                                    CLUTTER_BIN_ALIGNMENT_CENTER);
@@ -268,4 +273,10 @@ test_bin_layout_main (int argc, char *argv[])
   clutter_color_free (color);
 
   return EXIT_SUCCESS;
+}
+
+G_MODULE_EXPORT const char *
+test_bin_layout_describe (void)
+{
+  return "BinLayout layout manager example";
 }

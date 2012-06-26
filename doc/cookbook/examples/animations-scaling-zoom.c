@@ -55,9 +55,9 @@ clicked_cb (ClutterActor *actor,
 
   clutter_actor_get_scale (actor, &scale, NULL);
 
-  if (button == 1)
+  if (button == CLUTTER_BUTTON_PRIMARY)
     scale *= 1.2;
-  else if (button == 3)
+  else if (button == CLUTTER_BUTTON_SECONDARY)
     scale /= 1.2;
 
   /* don't do anything if scale is outside bounds */
@@ -109,7 +109,7 @@ main (int   argc,
   if (clutter_init (&argc, &argv) != CLUTTER_INIT_SUCCESS)
     return 1;
 
-  stage = clutter_stage_get_default ();
+  stage = clutter_stage_new ();
   clutter_actor_set_size (stage, STAGE_SIDE, STAGE_SIDE);
   clutter_stage_set_color (CLUTTER_STAGE (stage), &stage_color);
   g_signal_connect (stage, "destroy", G_CALLBACK (clutter_main_quit), NULL);

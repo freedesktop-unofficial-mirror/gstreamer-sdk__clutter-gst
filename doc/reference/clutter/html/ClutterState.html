@@ -45,7 +45,7 @@
 </tr></table></div>
 <div class="refsynopsisdiv">
 <a name="ClutterState.synopsis"></a><h2>Synopsis</h2>
-<pre class="synopsis">struct              <a class="link" href="ClutterState.html#ClutterState-struct" title="struct ClutterState">ClutterState</a>;
+<pre class="synopsis">                    <a class="link" href="ClutterState.html#ClutterState-struct" title="ClutterState">ClutterState</a>;
 struct              <a class="link" href="ClutterState.html#ClutterStateClass" title="struct ClutterStateClass">ClutterStateClass</a>;
 <a class="link" href="ClutterState.html" title="ClutterState"><span class="returnvalue">ClutterState</span></a> *      <a class="link" href="ClutterState.html#clutter-state-new" title="clutter_state_new ()">clutter_state_new</a>                   (<em class="parameter"><code><span class="type">void</span></code></em>);
 <a class="link" href="ClutterTimeline.html" title="ClutterTimeline"><span class="returnvalue">ClutterTimeline</span></a> *   <a class="link" href="ClutterState.html#clutter-state-set-state" title="clutter_state_set_state ()">clutter_state_set_state</a>             (<em class="parameter"><code><a class="link" href="ClutterState.html" title="ClutterState"><span class="type">ClutterState</span></a> *state</code></em>,
@@ -149,7 +149,7 @@ exists for transitioning from the current state to the requested state.
 <p>
 </p>
 <div class="example">
-<a name="ClutterState-example"></a><p class="title"><b>Example 15. A ClutterState example</b></p>
+<a name="ClutterState-example"></a><p class="title"><b>Example 13. A ClutterState example</b></p>
 <div class="example-contents">
 <p>The following example defines a "base" and a "hover" state in a
   <a class="link" href="ClutterState.html" title="ClutterState"><span class="type">ClutterState</span></a> instance.</p>
@@ -299,7 +299,7 @@ on_leave (ClutterActor *actor,
   exclusive. The <span class="emphasis"><em>pre-delay</em></span> and
   <span class="emphasis"><em>post-delay</em></span> values are optional.</p>
 <div class="example">
-<a name="ClutterState-script-example"></a><p class="title"><b>Example 16. ClutterState definition</b></p>
+<a name="ClutterState-script-example"></a><p class="title"><b>Example 14. ClutterState definition</b></p>
 <div class="example-contents">
 <p>The example below is a translation into a <a class="link" href="ClutterScript.html" title="ClutterScript"><span class="type">ClutterScript</span></a>
     definition of the code in the <a class="ulink" href="" target="_top">example
@@ -344,8 +344,8 @@ on_leave (ClutterActor *actor,
 <div class="refsect1">
 <a name="ClutterState.details"></a><h2>Details</h2>
 <div class="refsect2">
-<a name="ClutterState-struct"></a><h3>struct ClutterState</h3>
-<pre class="programlisting">struct ClutterState;</pre>
+<a name="ClutterState-struct"></a><h3>ClutterState</h3>
+<pre class="programlisting">typedef struct _ClutterState ClutterState;</pre>
 <p>
 The <span class="structname">ClutterState</span> structure contains only
 private data and should be accessed using the provided API

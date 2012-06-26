@@ -107,13 +107,9 @@ data and should be accessed using the provided API
 <div class="refsect2">
 <a name="CallyActorClass"></a><h3>struct CallyActorClass</h3>
 <pre class="programlisting">struct CallyActorClass {
-  /* Signal handler for notify signal on Clutter Actor */
   void     (*notify_clutter) (GObject    *object,
                               GParamSpec *pspec);
 
-  /*
-   * Signal handler for key_focus_in and key_focus_out on Clutter Actor
-   */
   gboolean (*focus_clutter)  (ClutterActor *actor,
                               gpointer      data);
 
@@ -127,8 +123,8 @@ data and should be accessed using the provided API
 };
 </pre>
 <p>
-The <span class="structname">CallyActorClass</span> structure contains only
-private data
+The <span class="structname">CallyActorClass</span> structure contains
+only private data
 </p>
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
@@ -139,15 +135,18 @@ private data
 </tr>
 <tr>
 <td><p><span class="term"><em class="structfield"><code><a name="CallyActorClass.focus-clutter"></a>focus_clutter</code></em> ()</span></p></td>
-<td>Signal handler for key-focus-in and key-focus-out signal on Clutter actor</td>
+<td>Signal handler for key-focus-in and key-focus-out
+signal on Clutter actor. This virtual functions is deprecated.</td>
 </tr>
 <tr>
 <td><p><span class="term"><em class="structfield"><code><a name="CallyActorClass.add-actor"></a>add_actor</code></em> ()</span></p></td>
-<td>Signal handler for actor-added signal on ClutterContainer interface</td>
+<td>Signal handler for actor-added signal on
+ClutterContainer interface</td>
 </tr>
 <tr>
 <td><p><span class="term"><em class="structfield"><code><a name="CallyActorClass.remove-actor"></a>remove_actor</code></em> ()</span></p></td>
-<td>Signal handler for actor-added signal on ClutterContainer interface</td>
+<td>Signal handler for actor-added signal on
+ClutterContainer interface</td>
 </tr>
 </tbody>
 </table></div>

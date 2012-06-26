@@ -62,18 +62,19 @@ static TestConformSharedState *shared_state = NULL;
 
 /* this is a macro that conditionally executes a test if CONDITION
  * evaluates to TRUE; otherwise, it will put the test under the
- * "/skip" namespace and execute a dummy function that will always
+ * "/skipped" namespace and execute a dummy function that will always
  * pass.
  */
 #define TEST_CONFORM_SKIP(CONDITION, NAMESPACE, FUNC)   G_STMT_START {  \
-  if (CONDITION) {                                                      \
+  if (CONDITION) { TEST_CONFORM_SIMPLE (NAMESPACE, FUNC); }             \
+  else {                                                                \
     g_test_add ("/skipped" NAMESPACE "/" #FUNC,                         \
                 TestConformSimpleFixture,                               \
                 shared_state, /* data argument for test */              \
                 test_conform_simple_fixture_setup,                      \
                 test_conform_skip_test,                                 \
                 test_conform_simple_fixture_teardown);                  \
-  } else { TEST_CONFORM_SIMPLE (NAMESPACE, FUNC); }     } G_STMT_END
+  }                                                     } G_STMT_END
 
 #define TEST_CONFORM_TODO(NAMESPACE, FUNC)              G_STMT_START {  \
    extern void FUNC (TestConformSimpleFixture *, gconstpointer);        \
@@ -106,7 +107,7 @@ clutter_test_init (gint    *argc,
 
   g_test_init (argc, argv, NULL);
 
-  g_test_bug_base ("http://bugzilla.openedhand.com/show_bug.cgi?id=%s");
+  g_test_bug_base ("http://bugzilla.gnome.org/show_bug.cgi?id=%s");
 
   /* Initialise the state you need to share with everything.
    */
@@ -128,26 +129,42 @@ main (int argc, char **argv)
   /* sanity check for the test suite itself */
   TEST_CONFORM_TODO ("/suite", verify_failure);
 
+  TEST_CONFORM_SIMPLE ("/actor", actor_add_child);
+  TEST_CONFORM_SIMPLE ("/actor", actor_insert_child);
+  TEST_CONFORM_SIMPLE ("/actor", actor_raise_child);
+  TEST_CONFORM_SIMPLE ("/actor", actor_lower_child);
+  TEST_CONFORM_SIMPLE ("/actor", actor_replace_child);
+  TEST_CONFORM_SIMPLE ("/actor", actor_remove_child);
+  TEST_CONFORM_SIMPLE ("/actor", actor_remove_all);
+  TEST_CONFORM_SIMPLE ("/actor", actor_container_signals);
   TEST_CONFORM_SIMPLE ("/actor", actor_destruction);
   TEST_CONFORM_SIMPLE ("/actor", actor_anchors);
-  TEST_CONFORM_SIMPLE ("/actor", actor_picking);
+  TEST_CONFORM_SIMPLE ("/actor", actor_pick);
   TEST_CONFORM_SIMPLE ("/actor", actor_fixed_size);
   TEST_CONFORM_SIMPLE ("/actor", actor_preferred_size);
-  TEST_CONFORM_SIMPLE ("/actor", test_offscreen_redirect);
+  TEST_CONFORM_SIMPLE ("/actor", actor_basic_layout);
+  TEST_CONFORM_SIMPLE ("/actor", actor_margin_layout);
+  TEST_CONFORM_SIMPLE ("/actor", actor_offscreen_redirect);
+  TEST_CONFORM_SIMPLE ("/actor", actor_shader_effect);
 
-  TEST_CONFORM_SIMPLE ("/invariants", test_initial_state);
-  TEST_CONFORM_SIMPLE ("/invariants", test_shown_not_parented);
-  TEST_CONFORM_SIMPLE ("/invariants", test_realized);
-  TEST_CONFORM_SIMPLE ("/invariants", test_realize_not_recursive);
-  TEST_CONFORM_SIMPLE ("/invariants", test_map_recursive);
-  TEST_CONFORM_SIMPLE ("/invariants", test_mapped);
-  TEST_CONFORM_SIMPLE ("/invariants", test_show_on_set_parent);
-  TEST_CONFORM_SIMPLE ("/invariants", test_clone_no_map);
-  TEST_CONFORM_SIMPLE ("/invariants", test_contains);
+  TEST_CONFORM_SIMPLE ("/actor/iter", actor_iter_traverse_children);
+  TEST_CONFORM_SIMPLE ("/actor/iter", actor_iter_traverse_remove);
 
-  TEST_CONFORM_SIMPLE ("/opacity", test_label_opacity);
-  TEST_CONFORM_SIMPLE ("/opacity", test_rectangle_opacity);
-  TEST_CONFORM_SIMPLE ("/opacity", test_paint_opacity);
+  TEST_CONFORM_SIMPLE ("/actor/invariants", actor_initial_state);
+  TEST_CONFORM_SIMPLE ("/actor/invariants", actor_shown_not_parented);
+  TEST_CONFORM_SIMPLE ("/actor/invariants", actor_visibility_not_recursive);
+  TEST_CONFORM_SIMPLE ("/actor/invariants", actor_realized);
+  TEST_CONFORM_SIMPLE ("/actor/invariants", actor_realize_not_recursive);
+  TEST_CONFORM_SIMPLE ("/actor/invariants", actor_map_recursive);
+  TEST_CONFORM_SIMPLE ("/actor/invariants", actor_mapped);
+  TEST_CONFORM_SIMPLE ("/actor/invariants", actor_show_on_set_parent);
+  TEST_CONFORM_SIMPLE ("/actor/invariants", clone_no_map);
+  TEST_CONFORM_SIMPLE ("/actor/invariants", actor_contains);
+  TEST_CONFORM_SIMPLE ("/actor/invariants", default_stage);
+
+  TEST_CONFORM_SIMPLE ("/actor/opacity", opacity_label);
+  TEST_CONFORM_SIMPLE ("/actor/opacity", opacity_rectangle);
+  TEST_CONFORM_SIMPLE ("/actor/opacity", opacity_paint);
 
   TEST_CONFORM_SIMPLE ("/text", text_utf8_validation);
   TEST_CONFORM_SIMPLE ("/text", text_set_empty);
@@ -162,78 +179,71 @@ main (int argc, char **argv)
   TEST_CONFORM_SIMPLE ("/text", text_get_chars);
   TEST_CONFORM_SIMPLE ("/text", text_cache);
   TEST_CONFORM_SIMPLE ("/text", text_password_char);
-  TEST_CONFORM_SIMPLE ("/text", idempotent_use_markup);
+  TEST_CONFORM_SIMPLE ("/text", text_idempotent_use_markup);
 
-  TEST_CONFORM_SIMPLE ("/rectangle", test_rect_set_size);
-  TEST_CONFORM_SIMPLE ("/rectangle", test_rect_set_color);
+  TEST_CONFORM_SIMPLE ("/rectangle", rectangle_set_size);
+  TEST_CONFORM_SIMPLE ("/rectangle", rectangle_set_color);
 
-  TEST_CONFORM_SIMPLE ("/texture", test_texture_pick_with_alpha);
-  TEST_CONFORM_SIMPLE ("/texture", test_texture_fbo);
-  TEST_CONFORM_SIMPLE ("/texture/cairo", test_clutter_cairo_texture);
+  TEST_CONFORM_SIMPLE ("/texture", texture_pick_with_alpha);
+  TEST_CONFORM_SIMPLE ("/texture", texture_fbo);
+  TEST_CONFORM_SIMPLE ("/texture/cairo", texture_cairo);
 
-  TEST_CONFORM_SIMPLE ("/path", test_path);
+  TEST_CONFORM_SIMPLE ("/path", path_base);
 
-  TEST_CONFORM_SIMPLE ("/binding-pool", test_binding_pool);
+  TEST_CONFORM_SIMPLE ("/binding-pool", binding_pool);
 
-  TEST_CONFORM_SIMPLE ("/model", test_list_model_populate);
-  TEST_CONFORM_SIMPLE ("/model", test_list_model_iterate);
-  TEST_CONFORM_SIMPLE ("/model", test_list_model_filter);
-  TEST_CONFORM_SIMPLE ("/model", test_list_model_from_script);
-  TEST_CONFORM_SIMPLE ("/model", test_list_model_row_changed);
+  TEST_CONFORM_SIMPLE ("/model", list_model_populate);
+  TEST_CONFORM_SIMPLE ("/model", list_model_iterate);
+  TEST_CONFORM_SIMPLE ("/model", list_model_filter);
+  TEST_CONFORM_SIMPLE ("/model", list_model_from_script);
+  TEST_CONFORM_SIMPLE ("/model", list_model_row_changed);
 
-  TEST_CONFORM_SIMPLE ("/color", test_color_from_string);
-  TEST_CONFORM_SIMPLE ("/color", test_color_to_string);
-  TEST_CONFORM_SIMPLE ("/color", test_color_hls_roundtrip);
-  TEST_CONFORM_SIMPLE ("/color", test_color_operators);
+  TEST_CONFORM_SIMPLE ("/color", color_from_string_valid);
+  TEST_CONFORM_SIMPLE ("/color", color_from_string_invalid);
+  TEST_CONFORM_SIMPLE ("/color", color_to_string);
+  TEST_CONFORM_SIMPLE ("/color", color_hls_roundtrip);
+  TEST_CONFORM_SIMPLE ("/color", color_operators);
 
-  TEST_CONFORM_SIMPLE ("/units", test_units_constructors);
-  TEST_CONFORM_SIMPLE ("/units", test_units_string);
-  TEST_CONFORM_SIMPLE ("/units", test_units_cache);
+  TEST_CONFORM_SIMPLE ("/units", units_constructors);
+  TEST_CONFORM_SIMPLE ("/units", units_string);
+  TEST_CONFORM_SIMPLE ("/units", units_cache);
 
-  TEST_CONFORM_SIMPLE ("/group", test_group_depth_sorting);
+  TEST_CONFORM_SIMPLE ("/group", group_depth_sorting);
 
-  TEST_CONFORM_SIMPLE ("/script", test_script_single);
-  TEST_CONFORM_SIMPLE ("/script", test_script_child);
-  TEST_CONFORM_SIMPLE ("/script", test_script_implicit_alpha);
-  TEST_CONFORM_SIMPLE ("/script", test_script_object_property);
-  TEST_CONFORM_SIMPLE ("/script", test_script_animation);
-  TEST_CONFORM_SIMPLE ("/script", test_script_named_object);
-  TEST_CONFORM_SIMPLE ("/script", test_animator_base);
-  TEST_CONFORM_SIMPLE ("/script", test_animator_properties);
-  TEST_CONFORM_SIMPLE ("/script", test_animator_multi_properties);
-  TEST_CONFORM_SIMPLE ("/script", test_state_base);
-  TEST_CONFORM_SIMPLE ("/script", test_script_layout_property);
+  TEST_CONFORM_SIMPLE ("/script", script_single);
+  TEST_CONFORM_SIMPLE ("/script", script_child);
+  TEST_CONFORM_SIMPLE ("/script", script_implicit_alpha);
+  TEST_CONFORM_SIMPLE ("/script", script_object_property);
+  TEST_CONFORM_SIMPLE ("/script", script_animation);
+  TEST_CONFORM_SIMPLE ("/script", script_named_object);
+  TEST_CONFORM_SIMPLE ("/script", script_layout_property);
+  TEST_CONFORM_SIMPLE ("/script", animator_base);
+  TEST_CONFORM_SIMPLE ("/script", animator_properties);
+  TEST_CONFORM_SIMPLE ("/script", animator_multi_properties);
+  TEST_CONFORM_SIMPLE ("/script", state_base);
 
-  TEST_CONFORM_SIMPLE ("/timeline", test_timeline);
-  TEST_CONFORM_SKIP (!g_test_slow (), "/timeline", timeline_interpolation);
-  TEST_CONFORM_SKIP (!g_test_slow (), "/timeline", timeline_rewind);
+  TEST_CONFORM_SIMPLE ("/timeline", timeline_base);
+  TEST_CONFORM_SIMPLE ("/timeline", timeline_markers_from_script);
+  TEST_CONFORM_SKIP (g_test_slow (), "/timeline", timeline_interpolation);
+  TEST_CONFORM_SKIP (g_test_slow (), "/timeline", timeline_rewind);
 
-  TEST_CONFORM_SIMPLE ("/score", test_score);
+  TEST_CONFORM_SIMPLE ("/score", score_base);
 
-  TEST_CONFORM_SIMPLE ("/behaviours", test_behaviours);
+  TEST_CONFORM_SIMPLE ("/behaviours", behaviours_base);
 
   /* FIXME - see bug https://bugzilla.gnome.org/show_bug.cgi?id=655588 */
   TEST_CONFORM_TODO ("/cally", cally_text);
 
   TEST_CONFORM_SIMPLE ("/cogl", test_cogl_object);
   TEST_CONFORM_SIMPLE ("/cogl", test_cogl_fixed);
-  TEST_CONFORM_SIMPLE ("/cogl", test_cogl_backface_culling);
   TEST_CONFORM_SIMPLE ("/cogl", test_cogl_materials);
-  TEST_CONFORM_SIMPLE ("/cogl", test_cogl_pipeline_user_matrix);
-  TEST_CONFORM_SIMPLE ("/cogl", test_cogl_blend_strings);
   TEST_CONFORM_SIMPLE ("/cogl", test_cogl_premult);
   TEST_CONFORM_SIMPLE ("/cogl", test_cogl_readpixels);
-  TEST_CONFORM_SIMPLE ("/cogl", test_cogl_path);
-  TEST_CONFORM_SIMPLE ("/cogl", test_cogl_depth_test);
 
   TEST_CONFORM_SIMPLE ("/cogl/texture", test_cogl_npot_texture);
   TEST_CONFORM_SIMPLE ("/cogl/texture", test_cogl_multitexture);
   TEST_CONFORM_SIMPLE ("/cogl/texture", test_cogl_texture_mipmaps);
-  TEST_CONFORM_SIMPLE ("/cogl/texture", test_cogl_sub_texture);
-  TEST_CONFORM_SIMPLE ("/cogl/texture", test_cogl_pixel_array);
   TEST_CONFORM_SIMPLE ("/cogl/texture", test_cogl_texture_rectangle);
-  TEST_CONFORM_SIMPLE ("/cogl/texture", test_cogl_texture_3d);
-  TEST_CONFORM_SIMPLE ("/cogl/texture", test_cogl_wrap_modes);
   TEST_CONFORM_SIMPLE ("/cogl/texture", test_cogl_texture_pixmap_x11);
   TEST_CONFORM_SIMPLE ("/cogl/texture", test_cogl_texture_get_set_data);
   TEST_CONFORM_SIMPLE ("/cogl/texture", test_cogl_atlas_migration);
@@ -242,14 +252,9 @@ main (int argc, char **argv)
   TEST_CONFORM_SIMPLE ("/cogl/vertex-buffer", test_cogl_vertex_buffer_interleved);
   TEST_CONFORM_SIMPLE ("/cogl/vertex-buffer", test_cogl_vertex_buffer_mutability);
 
-  TEST_CONFORM_SIMPLE ("/cogl/vertex-array", test_cogl_primitive);
-
-  TEST_CONFORM_SIMPLE ("/cogl/shaders", test_cogl_just_vertex_shader);
-
   /* left to the end because they aren't currently very orthogonal and tend to
    * break subsequent tests! */
   TEST_CONFORM_SIMPLE ("/cogl", test_cogl_viewport);
-  TEST_CONFORM_SIMPLE ("/cogl", test_cogl_offscreen);
 
   return g_test_run ();
 }

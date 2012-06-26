@@ -1,6 +1,4 @@
 #include <gmodule.h>
-
-#undef CLUTTER_DISABLE_DEPRECATED
 #include <clutter/clutter.h>
 
 static GList *stages = NULL;
@@ -42,8 +40,8 @@ on_button_press (ClutterActor *actor,
   stage_name = g_strdup_printf ("Stage [%d]", ++n_stages);
 
   clutter_stage_set_title (CLUTTER_STAGE (new_stage), stage_name);
-  clutter_stage_set_color (CLUTTER_STAGE (new_stage),
-                           CLUTTER_COLOR_DarkScarletRed);
+  clutter_actor_set_background_color (new_stage,
+                                      CLUTTER_COLOR_DarkScarletRed);
   clutter_actor_set_size (new_stage, 320, 240);
   clutter_actor_set_name (new_stage, stage_name);
 
@@ -84,7 +82,7 @@ on_button_press (ClutterActor *actor,
   */
 
   timeline = clutter_timeline_new (2000);
-  clutter_timeline_set_loop (timeline, TRUE);
+  clutter_timeline_set_repeat_count (timeline, -1);
 
   alpha = clutter_alpha_new_full (timeline, CLUTTER_LINEAR);
   r_behave = clutter_behaviour_rotate_new (alpha,
@@ -119,10 +117,12 @@ test_multistage_main (int argc, char *argv[])
   if (clutter_init (&argc, &argv) != CLUTTER_INIT_SUCCESS)
     return 1;
   
-  stage_default = clutter_stage_get_default ();
+  stage_default = clutter_stage_new ();
   clutter_stage_set_title (CLUTTER_STAGE (stage_default), "Default Stage");
   clutter_actor_set_name (stage_default, "Default Stage");
-
+  g_signal_connect (stage_default, "destroy",
+                    G_CALLBACK (clutter_main_quit),
+                    NULL);
   g_signal_connect (stage_default, "button-press-event",
                     G_CALLBACK (on_button_press),
                     NULL);

@@ -41,6 +41,8 @@
 #include "config.h"
 #endif
 
+#define CLUTTER_ENABLE_EXPERIMENTAL_API
+
 #include "clutter-colorize-effect.h"
 
 #include "cogl/cogl.h"
@@ -54,24 +56,22 @@ struct _ClutterColorizeEffect
 {
   ClutterOffscreenEffect parent_instance;
 
-  /* a back pointer to our actor, so that we can query it */
-  ClutterActor *actor;
-
   /* the tint of the colorization */
   ClutterColor tint;
 
-  CoglHandle shader;
-  CoglHandle program;
-
-  gint tex_uniform;
   gint tint_uniform;
 
-  guint is_compiled : 1;
+  gint tex_width;
+  gint tex_height;
+
+  CoglPipeline *pipeline;
 };
 
 struct _ClutterColorizeEffectClass
 {
   ClutterOffscreenEffectClass parent_class;
+
+  CoglPipeline *base_pipeline;
 };
 
 /* the magic gray vec3 has been taken from the NTSC conversion weights
@@ -81,16 +81,12 @@ struct _ClutterColorizeEffectClass
  *   -- Richard S. Wright Jr, Benjamin Lipchak, Nicholas Haemel
  *   Addison-Wesley
  */
-static const gchar *colorize_glsl_shader =
-"uniform sampler2D tex;\n"
-"uniform vec3 tint;\n"
-"\n"
-"void main ()\n"
-"{\n"
-"  vec4 color = cogl_color_in * texture2D (tex, vec2 (cogl_tex_coord_in[0].xy));\n"
-"  float gray = dot (color.rgb, vec3 (0.299, 0.587, 0.114));\n"
-"  cogl_color_out = vec4 (gray * tint, color.a);\n"
-"}\n";
+static const gchar *colorize_glsl_declarations =
+"uniform vec3 tint;\n";
+
+static const gchar *colorize_glsl_source =
+"float gray = dot (cogl_color_out.rgb, vec3 (0.299, 0.587, 0.114));\n"
+"cogl_color_out.rgb = gray * tint;\n";
 
 /* a lame sepia */
 static const ClutterColor default_tint = { 255, 204, 153, 255 };
@@ -119,10 +115,6 @@ clutter_colorize_effect_pre_paint (ClutterEffect *effect)
   if (!clutter_actor_meta_get_enabled (CLUTTER_ACTOR_META (effect)))
     return FALSE;
 
-  self->actor = clutter_actor_meta_get_actor (CLUTTER_ACTOR_META (effect));
-  if (self->actor == NULL)
-    return FALSE;
-
   if (!clutter_feature_available (CLUTTER_FEATURE_SHADERS_GLSL))
     {
       /* if we don't have support for GLSL shaders then we
@@ -135,91 +127,45 @@ clutter_colorize_effect_pre_paint (ClutterEffect *effect)
       return FALSE;
     }
 
-  if (self->shader == COGL_INVALID_HANDLE)
-    {
-      self->shader = cogl_create_shader (COGL_SHADER_TYPE_FRAGMENT);
-      cogl_shader_source (self->shader, colorize_glsl_shader);
-
-      self->is_compiled = FALSE;
-      self->tex_uniform = -1;
-      self->tint_uniform = -1;
-    }
-
-  if (self->program == COGL_INVALID_HANDLE)
-    self->program = cogl_create_program ();
-
-  if (!self->is_compiled)
-    {
-      g_assert (self->shader != COGL_INVALID_HANDLE);
-      g_assert (self->program != COGL_INVALID_HANDLE);
-
-      cogl_shader_compile (self->shader);
-      if (!cogl_shader_is_compiled (self->shader))
-        {
-          gchar *log_buf = cogl_shader_get_info_log (self->shader);
-
-          g_warning (G_STRLOC ": Unable to compile the colorize shader: %s",
-                     log_buf);
-          g_free (log_buf);
-
-          cogl_handle_unref (self->shader);
-          cogl_handle_unref (self->program);
-
-          self->shader = COGL_INVALID_HANDLE;
-          self->program = COGL_INVALID_HANDLE;
-        }
-      else
-        {
-          cogl_program_attach_shader (self->program, self->shader);
-          cogl_program_link (self->program);
-
-          cogl_handle_unref (self->shader);
-
-          self->is_compiled = TRUE;
-
-          self->tex_uniform =
-            cogl_program_get_uniform_location (self->program, "tex");
-          self->tint_uniform =
-            cogl_program_get_uniform_location (self->program, "tint");
-        }
-    }
-
   parent_class = CLUTTER_EFFECT_CLASS (clutter_colorize_effect_parent_class);
-  return parent_class->pre_paint (effect);
+  if (parent_class->pre_paint (effect))
+    {
+      ClutterOffscreenEffect *offscreen_effect =
+        CLUTTER_OFFSCREEN_EFFECT (effect);
+      CoglHandle texture;
+
+      texture = clutter_offscreen_effect_get_texture (offscreen_effect);
+      self->tex_width = cogl_texture_get_width (texture);
+      self->tex_height = cogl_texture_get_height (texture);
+
+      cogl_pipeline_set_layer_texture (self->pipeline, 0, texture);
+
+      return TRUE;
+    }
+  else
+    return FALSE;
 }
 
 static void
 clutter_colorize_effect_paint_target (ClutterOffscreenEffect *effect)
 {
   ClutterColorizeEffect *self = CLUTTER_COLORIZE_EFFECT (effect);
-  ClutterOffscreenEffectClass *parent;
-  CoglHandle material;
+  ClutterActor *actor;
+  guint8 paint_opacity;
 
-  if (self->program == COGL_INVALID_HANDLE)
-    goto out;
+  actor = clutter_actor_meta_get_actor (CLUTTER_ACTOR_META (effect));
+  paint_opacity = clutter_actor_get_paint_opacity (actor);
 
-  if (self->tex_uniform > -1)
-    cogl_program_set_uniform_1i (self->program, self->tex_uniform, 0);
+  cogl_pipeline_set_color4ub (self->pipeline,
+                              paint_opacity,
+                              paint_opacity,
+                              paint_opacity,
+                              paint_opacity);
+  cogl_push_source (self->pipeline);
 
-  if (self->tint_uniform > -1)
-    {
-      float tint[3] = {
-        self->tint.red / 255.0,
-        self->tint.green / 255.0,
-        self->tint.blue / 255.0
-      };
+  cogl_rectangle (0, 0, self->tex_width, self->tex_height);
 
-      cogl_program_set_uniform_float (self->program, self->tint_uniform,
-                                      3, 1,
-                                      tint);
-    }
-
-  material = clutter_offscreen_effect_get_target (effect);
-  cogl_material_set_user_program (material, self->program);
-
-out:
-  parent = CLUTTER_OFFSCREEN_EFFECT_CLASS (clutter_colorize_effect_parent_class);
-  parent->paint_target (effect);
+  cogl_pop_source ();
 }
 
 static void
@@ -227,12 +173,10 @@ clutter_colorize_effect_dispose (GObject *gobject)
 {
   ClutterColorizeEffect *self = CLUTTER_COLORIZE_EFFECT (gobject);
 
-  if (self->program != COGL_INVALID_HANDLE)
+  if (self->pipeline != NULL)
     {
-      cogl_handle_unref (self->program);
-
-      self->program = COGL_INVALID_HANDLE;
-      self->shader = COGL_INVALID_HANDLE;
+      cogl_object_unref (self->pipeline);
+      self->pipeline = NULL;
     }
 
   G_OBJECT_CLASS (clutter_colorize_effect_parent_class)->dispose (gobject);
@@ -309,15 +253,60 @@ clutter_colorize_effect_class_init (ClutterColorizeEffectClass *klass)
                               &default_tint,
                               CLUTTER_PARAM_READWRITE);
 
-  g_object_class_install_properties (gobject_class,
-                                     PROP_LAST,
-                                     obj_props);
+  g_object_class_install_properties (gobject_class, PROP_LAST, obj_props);
+}
+
+static void
+update_tint_uniform (ClutterColorizeEffect *self)
+{
+  if (self->tint_uniform > -1)
+    {
+      float tint[3] = {
+        self->tint.red / 255.0,
+        self->tint.green / 255.0,
+        self->tint.blue / 255.0
+      };
+
+      cogl_pipeline_set_uniform_float (self->pipeline,
+                                       self->tint_uniform,
+                                       3, /* n_components */
+                                       1, /* count */
+                                       tint);
+    }
 }
 
 static void
 clutter_colorize_effect_init (ClutterColorizeEffect *self)
 {
+  ClutterColorizeEffectClass *klass = CLUTTER_COLORIZE_EFFECT_GET_CLASS (self);
+
+  if (G_UNLIKELY (klass->base_pipeline == NULL))
+    {
+      CoglSnippet *snippet;
+      CoglContext *ctx =
+        clutter_backend_get_cogl_context (clutter_get_default_backend ());
+
+      klass->base_pipeline = cogl_pipeline_new (ctx);
+
+      snippet = cogl_snippet_new (COGL_SNIPPET_HOOK_FRAGMENT,
+                                  colorize_glsl_declarations,
+                                  colorize_glsl_source);
+      cogl_pipeline_add_snippet (klass->base_pipeline, snippet);
+      cogl_object_unref (snippet);
+
+      cogl_pipeline_set_layer_null_texture (klass->base_pipeline,
+                                            0, /* layer number */
+                                            COGL_TEXTURE_TYPE_2D);
+    }
+
+  self->pipeline = cogl_pipeline_copy (klass->base_pipeline);
+
+  self->tint_uniform =
+    cogl_pipeline_get_uniform_location (self->pipeline, "tint");
+
   self->tint = default_tint;
+
+  update_tint_uniform (self);
 }
 
 /**
@@ -356,8 +345,9 @@ clutter_colorize_effect_set_tint (ClutterColorizeEffect *effect,
 
   effect->tint = *tint;
 
-  if (effect->actor != NULL)
-    clutter_actor_queue_redraw (effect->actor);
+  update_tint_uniform (effect);
+
+  clutter_effect_queue_repaint (CLUTTER_EFFECT (effect));
 
   g_object_notify_by_pspec (G_OBJECT (effect), obj_props[PROP_TINT]);
 }

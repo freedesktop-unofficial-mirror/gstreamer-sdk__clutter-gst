@@ -28,10 +28,10 @@
 <dt><span class="chapter"><a href="ch01.html">Abstract classes and interfaces</a></span></dt>
 <dd><dl>
 <dt>
-<span class="refentrytitle"><a href="ClutterActor.html">ClutterActor</a></span><span class="refpurpose"> — Base abstract class for all visual stage actors.</span>
+<span class="refentrytitle"><a href="ClutterActor.html">ClutterActor</a></span><span class="refpurpose"> — The basic element of the scene graph</span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="ClutterContainer.html">ClutterContainer</a></span><span class="refpurpose"> — An interface for implementing container actors</span>
+<span class="refentrytitle"><a href="ClutterContainer.html">ClutterContainer</a></span><span class="refpurpose"> — An interface for container actors</span>
 </dt>
 <dt>
 <span class="refentrytitle"><a href="ClutterChildMeta.html">ClutterChildMeta</a></span><span class="refpurpose"> — Wrapper for actors inside a container</span>
@@ -57,11 +57,14 @@
 <dt>
 <span class="refentrytitle"><a href="ClutterEffect.html">ClutterEffect</a></span><span class="refpurpose"> — Base class for actor effects</span>
 </dt>
+<dt>
+<span class="refentrytitle"><a href="ClutterContent.html">ClutterContent</a></span><span class="refpurpose"> — Delegate for painting the content of an actor</span>
+</dt>
 </dl></dd>
 <dt><span class="chapter"><a href="ch02.html">Base actors</a></span></dt>
 <dd><dl>
 <dt>
-<span class="refentrytitle"><a href="ClutterRectangle.html">ClutterRectangle</a></span><span class="refpurpose"> — An actor that displays a simple rectangle.</span>
+<span class="refentrytitle"><a href="ClutterStage.html">ClutterStage</a></span><span class="refpurpose"> — Top level visual element to which actors are placed.</span>
 </dt>
 <dt>
 <span class="refentrytitle"><a href="ClutterTexture.html">ClutterTexture</a></span><span class="refpurpose"> — An actor for displaying and manipulating images.</span>
@@ -76,19 +79,7 @@
 <span class="refentrytitle"><a href="ClutterCairoTexture.html">ClutterCairoTexture</a></span><span class="refpurpose"> — Texture with Cairo integration</span>
 </dt>
 </dl></dd>
-<dt><span class="chapter"><a href="ch03.html">Container actors</a></span></dt>
-<dd><dl>
-<dt>
-<span class="refentrytitle"><a href="ClutterGroup.html">ClutterGroup</a></span><span class="refpurpose"> — A fixed layout container</span>
-</dt>
-<dt>
-<span class="refentrytitle"><a href="ClutterStage.html">ClutterStage</a></span><span class="refpurpose"> — Top level visual element to which actors are placed.</span>
-</dt>
-<dt>
-<span class="refentrytitle"><a href="ClutterBox.html">ClutterBox</a></span><span class="refpurpose"> — A Generic layout container</span>
-</dt>
-</dl></dd>
-<dt><span class="chapter"><a href="ch04.html">Layout managers</a></span></dt>
+<dt><span class="chapter"><a href="ch03.html">Layout managers</a></span></dt>
 <dd><dl>
 <dt>
 <span class="refentrytitle"><a href="ClutterFixedLayout.html">ClutterFixedLayout</a></span><span class="refpurpose"> — A fixed layout manager</span>
@@ -107,7 +98,7 @@
   and columns</span>
 </dt>
 </dl></dd>
-<dt><span class="chapter"><a href="ch05.html">Actions</a></span></dt>
+<dt><span class="chapter"><a href="ch04.html">Actions</a></span></dt>
 <dd><dl>
 <dt>
 <span class="refentrytitle"><a href="ClutterClickAction.html">ClutterClickAction</a></span><span class="refpurpose"> — Action for clickable actors</span>
@@ -125,7 +116,7 @@
 <span class="refentrytitle"><a href="ClutterSwipeAction.html">ClutterSwipeAction</a></span><span class="refpurpose"> — Action for swipe gestures</span>
 </dt>
 </dl></dd>
-<dt><span class="chapter"><a href="ch06.html">Constraints</a></span></dt>
+<dt><span class="chapter"><a href="ch05.html">Constraints</a></span></dt>
 <dd><dl>
 <dt>
 <span class="refentrytitle"><a href="ClutterAlignConstraint.html">ClutterAlignConstraint</a></span><span class="refpurpose"> — A constraint aligning the position of an actor</span>
@@ -140,7 +131,7 @@
 <span class="refentrytitle"><a href="ClutterSnapConstraint.html">ClutterSnapConstraint</a></span><span class="refpurpose"> — A constraint snapping two actors together</span>
 </dt>
 </dl></dd>
-<dt><span class="chapter"><a href="ch07.html">Effects</a></span></dt>
+<dt><span class="chapter"><a href="ch06.html">Effects</a></span></dt>
 <dd><dl>
 <dt>
 <span class="refentrytitle"><a href="ClutterOffscreenEffect.html">ClutterOffscreenEffect</a></span><span class="refpurpose"> — Base class for effects using offscreen buffers</span>
@@ -156,6 +147,9 @@
 <span class="refentrytitle"><a href="ClutterBlurEffect.html">ClutterBlurEffect</a></span><span class="refpurpose"> — A blur effect</span>
 </dt>
 <dt>
+<span class="refentrytitle"><a href="ClutterBrightnessContrastEffect.html">ClutterBrightnessContrastEffect</a></span><span class="refpurpose"> — Increase/decrease brightness and/or contrast of actor.</span>
+</dt>
+<dt>
 <span class="refentrytitle"><a href="ClutterColorizeEffect.html">ClutterColorizeEffect</a></span><span class="refpurpose"> — A colorization effect</span>
 </dt>
 <dt>
@@ -163,6 +157,24 @@
 </dt>
 <dt>
 <span class="refentrytitle"><a href="ClutterPageTurnEffect.html">ClutterPageTurnEffect</a></span><span class="refpurpose"> — A page turning effect</span>
+</dt>
+</dl></dd>
+<dt><span class="chapter"><a href="ch07.html">Content</a></span></dt>
+<dd><dl>
+<dt>
+<span class="refentrytitle"><a href="ClutterCanvas.html">ClutterCanvas</a></span><span class="refpurpose"> — Content for 2D painting</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="clutter-ClutterImage.html">ClutterImage</a></span><span class="refpurpose"> — Image data content</span>
+</dt>
+</dl></dd>
+<dt><span class="chapter"><a href="ch08.html">Paint Objects</a></span></dt>
+<dd><dl>
+<dt>
+<span class="refentrytitle"><a href="clutter-ClutterPaintNode.html">ClutterPaintNode</a></span><span class="refpurpose"> — Paint objects</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="clutter-Paint-Nodes.html">Paint Nodes</a></span><span class="refpurpose"> — ClutterPaintNode implementations</span>
 </dt>
 </dl></dd>
 </dl>

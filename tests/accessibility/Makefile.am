@@ -1,7 +1,7 @@
 include $(top_srcdir)/build/autotools/Makefile.am.silent
 
 common_ldadd = \
-	$(top_builddir)/clutter/libclutter-@CLUTTER_SONAME_INFIX@-@CLUTTER_API_VERSION@.la
+	$(top_builddir)/clutter/libclutter-@CLUTTER_API_VERSION@.la
 
 common_sources = \
 	cally-examples-util.c	\
@@ -13,7 +13,7 @@ INCLUDES = \
 	-I$(top_builddir)/clutter \
 	-I$(top_srcdir)/tests/accessibility
 
-AM_CPPFLAGS = -DPREFIXDIR=\"$(libdir)\"
+AM_CPPFLAGS = -DPREFIXDIR=\"$(libdir)\" -DCLUTTER_DISABLE_DEPRECATION_WARNINGS -DGLIB_DISABLE_DEPRECATION_WARNINGS
 AM_CFLAGS = $(CLUTTER_CFLAGS) $(MAINTAINER_CFLAGS)
 LDADD = $(common_ldadd) $(CLUTTER_LIBS)
 

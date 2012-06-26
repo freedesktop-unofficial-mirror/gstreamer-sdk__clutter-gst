@@ -79,9 +79,10 @@ on_motion_idle (gpointer user_data)
                               x + TEX_SIZE / 2 - 1,
 			      y + TEX_SIZE / 2 - 1);
   clutter_actor_show (data->box);
+
   /* Redraw so that the layouting will be done and the box will be
      drawn in the right position */
-  clutter_redraw (CLUTTER_STAGE (data->stage));
+  clutter_stage_ensure_redraw (CLUTTER_STAGE (data->stage));
 
   pixels = clutter_stage_read_pixels (CLUTTER_STAGE (data->stage),
 				      x, y,
@@ -136,7 +137,9 @@ test_stage_read_pixels_main (int argc, char **argv)
     return 1;
 
   data.idle_source = 0;
-  data.stage = clutter_stage_get_default ();
+  data.stage = clutter_stage_new ();
+  clutter_stage_set_title (CLUTTER_STAGE (data.stage), "Read Pixels");
+  g_signal_connect (data.stage, "destroy", G_CALLBACK (clutter_main_quit), NULL);
 
   data.tex = make_tex ();
   data.box = make_box ();
@@ -156,4 +159,10 @@ test_stage_read_pixels_main (int argc, char **argv)
   clutter_main ();
 
   return 0;
+}
+
+G_MODULE_EXPORT const char *
+test_stage_read_pixels_describe (void)
+{
+  return "Read back pixels from a Stage.";
 }

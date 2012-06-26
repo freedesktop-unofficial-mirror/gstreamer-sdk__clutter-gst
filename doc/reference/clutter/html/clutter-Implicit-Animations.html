@@ -6,19 +6,19 @@
 <meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
 <link rel="home" href="index.html" title="Clutter Reference Manual">
 <link rel="up" href="ch10.html" title="High Level API">
-<link rel="prev" href="clutter-Value-intervals.html" title="Value intervals">
-<link rel="next" href="ClutterAnimatable.html" title="ClutterAnimatable">
+<link rel="prev" href="ch10.html" title="High Level API">
+<link rel="next" href="ClutterAnimator.html" title="ClutterAnimator">
 <meta name="generator" content="GTK-Doc V1.18.1 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
 <tr valign="middle">
-<td><a accesskey="p" href="clutter-Value-intervals.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="p" href="ch10.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
 <td><a accesskey="u" href="ch10.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
 <td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
 <th width="100%" align="center">Clutter Reference Manual</th>
-<td><a accesskey="n" href="ClutterAnimatable.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+<td><a accesskey="n" href="ClutterAnimator.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
 </tr>
 <tr><td colspan="5" class="shortcuts">
 <a href="#clutter-Implicit-Animations.synopsis" class="shortcut">Top</a>
@@ -277,7 +277,7 @@ state and the specified final state.
 <p>
 </p>
 <div class="example">
-<a name="example-clutter-animation"></a><p class="title"><b>Example 13. Tweening using <a class="link" href="clutter-Implicit-Animations.html#clutter-actor-animate" title="clutter_actor_animate ()"><code class="function">clutter_actor_animate()</code></a></b></p>
+<a name="example-clutter-animation"></a><p class="title"><b>Example 11. Tweening using <a class="link" href="clutter-Implicit-Animations.html#clutter-actor-animate" title="clutter_actor_animate ()"><code class="function">clutter_actor_animate()</code></a></b></p>
 <div class="example-contents">
   <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
     <tbody>
@@ -545,7 +545,13 @@ state and the specified final state.
 261
 262
 263
-264</pre></td>
+264
+265
+266
+267
+268
+269
+270</pre></td>
         <td class="listing_code"><pre class="programlisting"><span class="preproc">#include</span><span class="normal"> </span><span class="string">&lt;stdlib.h&gt;</span>
 <span class="preproc">#include</span><span class="normal"> </span><span class="string">&lt;gmodule.h&gt;</span>
 <span class="preproc">#include</span><span class="normal"> </span><span class="string">&lt;clutter/clutter.h&gt;</span>
@@ -630,7 +636,7 @@ state and the specified final state.
 <span class="normal">                 </span><span class="usertype">ClutterButtonEvent</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">event</span><span class="symbol">,</span>
 <span class="normal">                 </span><span class="usertype">ClutterActor</span><span class="normal">       </span><span class="symbol">*</span><span class="normal">rectangle</span><span class="symbol">)</span>
 <span class="cbracket">{</span>
-<span class="normal">  </span><span class="keyword">if</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">event</span><span class="symbol">-&gt;</span><span class="normal">button </span><span class="symbol">==</span><span class="normal"> </span><span class="number">3</span><span class="symbol">)</span>
+<span class="normal">  </span><span class="keyword">if</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">event</span><span class="symbol">-&gt;</span><span class="normal">button </span><span class="symbol">==</span><span class="normal"> <a href="clutter-Events.html#CLUTTER-BUTTON-SECONDARY:CAPS">CLUTTER_BUTTON_SECONDARY</a></span><span class="symbol">)</span>
 <span class="normal">    </span><span class="cbracket">{</span>
 <span class="normal">      </span><span class="usertype">gchar</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">text</span><span class="symbol">;</span>
 
@@ -648,7 +654,7 @@ state and the specified final state.
 <span class="normal">      </span><span class="function"><a href="ClutterText.html#clutter-text-set-text">clutter_text_set_text</a></span><span class="normal"> </span><span class="symbol">(</span><span class="function">CLUTTER_TEXT</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">easing_mode_label</span><span class="symbol">),</span><span class="normal"> text</span><span class="symbol">);</span>
 <span class="normal">      </span><span class="function">g_free</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">text</span><span class="symbol">);</span>
 <span class="normal">    </span><span class="cbracket">}</span>
-<span class="normal">  </span><span class="keyword">else</span><span class="normal"> </span><span class="keyword">if</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">event</span><span class="symbol">-&gt;</span><span class="normal">button </span><span class="symbol">==</span><span class="normal"> </span><span class="number">1</span><span class="symbol">)</span>
+<span class="normal">  </span><span class="keyword">else</span><span class="normal"> </span><span class="keyword">if</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">event</span><span class="symbol">-&gt;</span><span class="normal">button </span><span class="symbol">==</span><span class="normal"> <a href="clutter-Events.html#CLUTTER-BUTTON-PRIMARY:CAPS">CLUTTER_BUTTON_PRIMARY</a></span><span class="symbol">)</span>
 <span class="normal">    </span><span class="cbracket">{</span>
 <span class="normal">      </span><span class="usertype">ClutterAnimation</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">animation</span><span class="symbol">;</span>
 <span class="normal">      </span><span class="usertype">ClutterAnimationMode</span><span class="normal"> cur_mode</span><span class="symbol">;</span>
@@ -775,7 +781,7 @@ state and the specified final state.
 
 <span class="normal">  stage </span><span class="symbol">=</span><span class="normal"> </span><span class="function"><a href="ClutterStage.html#clutter-stage-new">clutter_stage_new</a></span><span class="normal"> </span><span class="symbol">();</span>
 <span class="normal">  </span><span class="function"><a href="ClutterStage.html#clutter-stage-set-title">clutter_stage_set_title</a></span><span class="normal"> </span><span class="symbol">(</span><span class="function">CLUTTER_STAGE</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">stage</span><span class="symbol">),</span><span class="normal"> </span><span class="string">"Easing Modes"</span><span class="symbol">);</span>
-<span class="normal">  </span><span class="function"><a href="ClutterStage.html#clutter-stage-set-color">clutter_stage_set_color</a></span><span class="normal"> </span><span class="symbol">(</span><span class="function">CLUTTER_STAGE</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">stage</span><span class="symbol">),</span><span class="normal"> CLUTTER_COLOR_LightSkyBlue</span><span class="symbol">);</span>
+<span class="normal">  </span><span class="function"><a href="ClutterActor.html#clutter-actor-set-background-color">clutter_actor_set_background_color</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">stage</span><span class="symbol">,</span><span class="normal"> CLUTTER_COLOR_LightSkyBlue</span><span class="symbol">);</span>
 <span class="normal">  </span><span class="function">g_signal_connect</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">stage</span><span class="symbol">,</span><span class="normal"> </span><span class="string">"destroy"</span><span class="symbol">,</span><span class="normal"> </span><span class="function">G_CALLBACK</span><span class="normal"> </span><span class="symbol">(</span><span class="normal"><a href="clutter-General.html#clutter-main-quit">clutter_main_quit</a></span><span class="symbol">),</span><span class="normal"> <a href="/home/ebassi/gnome3/install/share/gtk-doc/html/liboil/liboil-liboiljunk.html#NULL--CAPS">NULL</a></span><span class="symbol">);</span>
 <span class="normal">  main_stage </span><span class="symbol">=</span><span class="normal"> stage</span><span class="symbol">;</span>
 
@@ -809,6 +815,12 @@ state and the specified final state.
 <span class="normal">  </span><span class="function"><a href="clutter-General.html#clutter-main">clutter_main</a></span><span class="normal"> </span><span class="symbol">();</span>
 
 <span class="normal">  </span><span class="keyword">return</span><span class="normal"> EXIT_SUCCESS</span><span class="symbol">;</span>
+<span class="cbracket">}</span>
+
+<span class="normal">G_MODULE_EXPORT </span><span class="usertype">const</span><span class="normal"> </span><span class="type">char</span><span class="normal"> </span><span class="symbol">*</span>
+<span class="function">test_easing_describe</span><span class="normal"> </span><span class="symbol">(</span><span class="type">void</span><span class="symbol">)</span>
+<span class="cbracket">{</span>
+<span class="normal">  </span><span class="keyword">return</span><span class="normal"> </span><span class="string">"Visualize all easing modes provided by Clutter"</span><span class="symbol">;</span>
 <span class="cbracket">}</span></pre></td>
       </tr>
     </tbody>
@@ -1376,6 +1388,9 @@ Retrieves whether <em class="parameter"><code>animation</code></em> is looping.
 <p>
 Sets the <a class="link" href="ClutterTimeline.html" title="ClutterTimeline"><span class="type">ClutterTimeline</span></a> used by <em class="parameter"><code>animation</code></em>.
 </p>
+<p>
+This function will take a reference on the passed <em class="parameter"><code>timeline</code></em>.
+</p>
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
 <tbody>
@@ -1387,7 +1402,7 @@ Sets the <a class="link" href="ClutterTimeline.html" title="ClutterTimeline"><sp
 <tr>
 <td><p><span class="term"><em class="parameter"><code>timeline</code></em> :</span></p></td>
 <td>a <a class="link" href="ClutterTimeline.html" title="ClutterTimeline"><span class="type">ClutterTimeline</span></a>, or <a href="/home/ebassi/gnome3/install/share/gtk-doc/html/liboil/liboil-liboiljunk.html#NULL--CAPS"><code class="literal">NULL</code></a> to unset the
-current <a class="link" href="ClutterTimeline.html" title="ClutterTimeline"><span class="type">ClutterTimeline</span></a>
+current <a class="link" href="ClutterTimeline.html" title="ClutterTimeline"><span class="type">ClutterTimeline</span></a>. <span class="annotation">[<acronym title="NULL is ok, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span>
 </td>
 </tr>
 </tbody>
@@ -1423,6 +1438,11 @@ Retrieves the <a class="link" href="ClutterTimeline.html" title="ClutterTimeline
 <a name="clutter-animation-set-alpha"></a><h3>clutter_animation_set_alpha ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                clutter_animation_set_alpha         (<em class="parameter"><code><a class="link" href="clutter-Implicit-Animations.html#ClutterAnimation"><span class="type">ClutterAnimation</span></a> *animation</code></em>,
                                                          <em class="parameter"><code><a class="link" href="ClutterAlpha.html" title="ClutterAlpha"><span class="type">ClutterAlpha</span></a> *alpha</code></em>);</pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">clutter_animation_set_alpha</code> has been deprecated since version 1.10 and should not be used in newly-written code. Use <a class="link" href="clutter-Implicit-Animations.html#clutter-animation-get-timeline" title="clutter_animation_get_timeline ()"><code class="function">clutter_animation_get_timeline()</code></a> and
+  <a class="link" href="ClutterTimeline.html#clutter-timeline-set-progress-mode" title="clutter_timeline_set_progress_mode ()"><code class="function">clutter_timeline_set_progress_mode()</code></a> instead.</p>
+</div>
 <p>
 Sets <em class="parameter"><code>alpha</code></em> as the <a class="link" href="ClutterAlpha.html" title="ClutterAlpha"><span class="type">ClutterAlpha</span></a> used by <em class="parameter"><code>animation</code></em>.
 </p>
@@ -1451,6 +1471,11 @@ of the <a class="link" href="ClutterAlpha.html" title="ClutterAlpha"><span class
 <div class="refsect2">
 <a name="clutter-animation-get-alpha"></a><h3>clutter_animation_get_alpha ()</h3>
 <pre class="programlisting"><a class="link" href="ClutterAlpha.html" title="ClutterAlpha"><span class="returnvalue">ClutterAlpha</span></a> *      clutter_animation_get_alpha         (<em class="parameter"><code><a class="link" href="clutter-Implicit-Animations.html#ClutterAnimation"><span class="type">ClutterAnimation</span></a> *animation</code></em>);</pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">clutter_animation_get_alpha</code> has been deprecated since version 1.10 and should not be used in newly-written code. Use <a class="link" href="clutter-Implicit-Animations.html#clutter-animation-get-timeline" title="clutter_animation_get_timeline ()"><code class="function">clutter_animation_get_timeline()</code></a> and
+  <a class="link" href="ClutterTimeline.html#clutter-timeline-get-progress-mode" title="clutter_timeline_get_progress_mode ()"><code class="function">clutter_timeline_get_progress_mode()</code></a> instead.</p>
+</div>
 <p>
 Retrieves the <a class="link" href="ClutterAlpha.html" title="ClutterAlpha"><span class="type">ClutterAlpha</span></a> used by <em class="parameter"><code>animation</code></em>.
 </p>
@@ -2125,6 +2150,10 @@ owned by the <a class="link" href="ClutterActor.html" title="ClutterActor"><span
                                                          <em class="parameter"><code><a class="link" href="ClutterAlpha.html" title="ClutterAlpha"><span class="type">ClutterAlpha</span></a> *alpha</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *first_property_name</code></em>,
                                                          <em class="parameter"><code>...</code></em>);</pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">clutter_actor_animate_with_alpha</code> has been deprecated since version 1.10 and should not be used in newly-written code. Use <a class="link" href="clutter-Implicit-Animations.html#clutter-actor-animate-with-timeline" title="clutter_actor_animate_with_timeline ()"><code class="function">clutter_actor_animate_with_timeline()</code></a> instead</p>
+</div>
 <p>
 Animates the given list of properties of <em class="parameter"><code>actor</code></em> between the current
 value for each property and a new final value. The animation has a
@@ -2322,6 +2351,10 @@ owned by the <a class="link" href="ClutterActor.html" title="ClutterActor"><span
                                                          <em class="parameter"><code><span class="type">gint</span> n_properties</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> * const properties[]</code></em>,
                                                          <em class="parameter"><code>const <span class="type">GValue</span> *values</code></em>);</pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">clutter_actor_animate_with_alphav</code> has been deprecated since version 1.10 and should not be used in newly-written code. Use <a class="link" href="clutter-Implicit-Animations.html#clutter-actor-animate-with-timelinev" title="clutter_actor_animate_with_timelinev ()"><code class="function">clutter_actor_animate_with_timelinev()</code></a> instead</p>
+</div>
 <p>
 Animates the given list of properties of <em class="parameter"><code>actor</code></em> between the current
 value for each property and a new final value. The animation has a
@@ -2440,6 +2473,11 @@ The <a class="link" href="clutter-Implicit-Animations.html#ClutterAnimation-comp
 <div class="refsect2">
 <a name="ClutterAnimation--alpha"></a><h3>The <code class="literal">"alpha"</code> property</h3>
 <pre class="programlisting">  "alpha"                    <a class="link" href="ClutterAlpha.html" title="ClutterAlpha"><span class="type">ClutterAlpha</span></a>*         : Read / Write</pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">ClutterAnimation:alpha</code> has been deprecated since version 1.10 and should not be used in newly-written code. Use the <a class="link" href="clutter-Implicit-Animations.html#ClutterAnimation--timeline" title='The "timeline" property'><span class="type">"timeline"</span></a> property and
+  the <a class="link" href="ClutterTimeline.html#ClutterTimeline--progress-mode" title='The "progress-mode" property'><span class="type">"progress-mode"</span></a> property instead.</p>
+</div>
 <p>
 The <a class="link" href="ClutterAlpha.html" title="ClutterAlpha"><span class="type">ClutterAlpha</span></a> used by the animation.
 </p>

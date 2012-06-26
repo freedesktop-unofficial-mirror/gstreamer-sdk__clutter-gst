@@ -30,11 +30,6 @@
  * #ClutterStage is a top level 'window' on which child actors are placed
  * and manipulated.
  *
- * Clutter creates a default stage upon initialization, which can be retrieved
- * using clutter_stage_get_default(). Clutter always provides the default
- * stage, unless the backend is unable to create one. The stage returned
- * by clutter_stage_get_default() is guaranteed to always be the same.
- *
  * Backends might provide support for multiple stages. The support for this
  * feature can be checked at run-time using the clutter_feature_available()
  * function and the %CLUTTER_FEATURE_STAGE_MULTIPLE flag. If the backend used
@@ -53,9 +48,14 @@
 #include "config.h"
 #endif
 
+#include <math.h>
 #include <cairo.h>
 
+#define CLUTTER_DISABLE_DEPRECATION_WARNINGS
+
 #include "clutter-stage.h"
+#include "deprecated/clutter-stage.h"
+#include "deprecated/clutter-container.h"
 
 #include "clutter-actor-private.h"
 #include "clutter-backend-private.h"
@@ -81,14 +81,11 @@
 
 #include "cogl/cogl.h"
 
-#include <math.h>
+static void clutter_container_iface_init (ClutterContainerIface *iface);
 
-#ifdef USE_GDKPIXBUF
-#include <gdk-pixbuf/gdk-pixbuf.h>
-#endif
-
-
-G_DEFINE_TYPE (ClutterStage, clutter_stage, CLUTTER_TYPE_GROUP);
+G_DEFINE_TYPE_WITH_CODE (ClutterStage, clutter_stage, CLUTTER_TYPE_GROUP,
+                         G_IMPLEMENT_INTERFACE (CLUTTER_TYPE_CONTAINER,
+                                                clutter_container_iface_init))
 
 #define CLUTTER_STAGE_GET_PRIVATE(obj) \
 (G_TYPE_INSTANCE_GET_PRIVATE ((obj), CLUTTER_TYPE_STAGE, ClutterStagePrivate))
@@ -124,32 +121,32 @@ struct _ClutterStagePrivate
   /* the stage implementation */
   ClutterStageWindow *impl;
 
-  ClutterColor        color;
-  ClutterPerspective  perspective;
-  CoglMatrix          projection;
-  CoglMatrix          inverse_projection;
-  CoglMatrix          view;
-  float               viewport[4];
-  ClutterFog          fog;
+  ClutterPerspective perspective;
+  CoglMatrix projection;
+  CoglMatrix inverse_projection;
+  CoglMatrix view;
+  float viewport[4];
 
-  gchar              *title;
-  ClutterActor       *key_focused_actor;
+  ClutterFog fog;
 
-  GQueue             *event_queue;
+  gchar *title;
+  ClutterActor *key_focused_actor;
 
-  ClutterStageHint    stage_hints;
+  GQueue *event_queue;
 
-  gint                picks_per_frame;
+  ClutterStageHint stage_hints;
 
-  GArray             *paint_volume_stack;
+  gint picks_per_frame;
 
-  ClutterPlane        current_clip_planes[4];
+  GArray *paint_volume_stack;
 
-  GList              *pending_queue_redraws;
+  ClutterPlane current_clip_planes[4];
 
-  ClutterPickMode     pick_buffer_mode;
+  GList *pending_queue_redraws;
 
-  CoglFramebuffer    *active_framebuffer;
+  ClutterPickMode pick_buffer_mode;
+
+  CoglFramebuffer *active_framebuffer;
 
   GHashTable *devices;
 
@@ -161,6 +158,8 @@ struct _ClutterStagePrivate
 #ifdef CLUTTER_ENABLE_DEBUG
   gulong redraw_count;
 #endif /* CLUTTER_ENABLE_DEBUG */
+
+  ClutterStageState current_state;
 
   guint relayout_pending       : 1;
   guint redraw_pending         : 1;
@@ -216,7 +215,68 @@ static const ClutterColor default_stage_color = { 255, 255, 255, 255 };
 static void _clutter_stage_maybe_finish_queue_redraws (ClutterStage *stage);
 
 static void
-_clutter_stage_maybe_finish_queue_redraws (ClutterStage *stage);
+clutter_stage_real_add (ClutterContainer *container,
+                        ClutterActor     *child)
+{
+  clutter_actor_add_child (CLUTTER_ACTOR (container), child);
+}
+
+static void
+clutter_stage_real_remove (ClutterContainer *container,
+                           ClutterActor     *child)
+{
+  clutter_actor_remove_child (CLUTTER_ACTOR (container), child);
+}
+
+static void
+clutter_stage_real_foreach (ClutterContainer *container,
+                            ClutterCallback   callback,
+                            gpointer          user_data)
+{
+  ClutterActorIter iter;
+  ClutterActor *child;
+
+  clutter_actor_iter_init (&iter, CLUTTER_ACTOR (container));
+
+  while (clutter_actor_iter_next (&iter, &child))
+    callback (child, user_data);
+}
+
+static void
+clutter_stage_real_raise (ClutterContainer *container,
+                          ClutterActor     *child,
+                          ClutterActor     *sibling)
+{
+  clutter_actor_set_child_above_sibling (CLUTTER_ACTOR (container),
+                                         child,
+                                         sibling);
+}
+
+static void
+clutter_stage_real_lower (ClutterContainer *container,
+                          ClutterActor     *child,
+                          ClutterActor     *sibling)
+{
+  clutter_actor_set_child_below_sibling (CLUTTER_ACTOR (container),
+                                         child,
+                                         sibling);
+}
+
+static void
+clutter_stage_real_sort_depth_order (ClutterContainer *container)
+{
+}
+
+static void
+clutter_container_iface_init (ClutterContainerIface *iface)
+{
+  iface->add = clutter_stage_real_add;
+  iface->remove = clutter_stage_real_remove;
+  iface->foreach = clutter_stage_real_foreach;
+  iface->raise = clutter_stage_real_raise;
+  iface->lower = clutter_stage_real_lower;
+  iface->sort_depth_order = clutter_stage_real_sort_depth_order;
+}
 
 static void
 clutter_stage_get_preferred_width (ClutterActor *self,
@@ -225,7 +285,7 @@ clutter_stage_get_preferred_width (ClutterActor *self,
                                    gfloat       *natural_width_p)
 {
   ClutterStagePrivate *priv = CLUTTER_STAGE (self)->priv;
-  ClutterGeometry geom = { 0, };
+  cairo_rectangle_int_t geom;
 
   if (priv->impl == NULL)
     return;
@@ -246,7 +306,7 @@ clutter_stage_get_preferred_height (ClutterActor *self,
                                     gfloat       *natural_height_p)
 {
   ClutterStagePrivate *priv = CLUTTER_STAGE (self)->priv;
-  ClutterGeometry geom = { 0, };
+  cairo_rectangle_int_t geom;
 
   if (priv->impl == NULL)
     return;
@@ -281,43 +341,65 @@ queue_full_redraw (ClutterStage *stage)
   _clutter_stage_window_add_redraw_clip (stage_window, NULL);
 }
 
+static gboolean
+stage_is_default (ClutterStage *stage)
+{
+  ClutterStageManager *stage_manager;
+  ClutterStageWindow *impl;
+
+  stage_manager = clutter_stage_manager_get_default ();
+  if (stage != clutter_stage_manager_get_default_stage (stage_manager))
+    return FALSE;
+
+  impl = _clutter_stage_get_window (stage);
+  if (impl != _clutter_stage_get_default_window ())
+    return FALSE;
+
+  return TRUE;
+}
+
 static void
 clutter_stage_allocate (ClutterActor           *self,
                         const ClutterActorBox  *box,
                         ClutterAllocationFlags  flags)
 {
   ClutterStagePrivate *priv = CLUTTER_STAGE (self)->priv;
-  ClutterGeometry prev_geom;
-  ClutterGeometry geom = { 0, };
+  ClutterGeometry prev_geom, geom;
+  cairo_rectangle_int_t window_size;
   gboolean origin_changed;
   gint width, height;
 
-  origin_changed = (flags & CLUTTER_ABSOLUTE_ORIGIN_CHANGED) ? TRUE : FALSE;
+  origin_changed = (flags & CLUTTER_ABSOLUTE_ORIGIN_CHANGED)
+                 ? TRUE
+                 : FALSE;
 
   if (priv->impl == NULL)
     return;
 
+  /* our old allocation */
   clutter_actor_get_allocation_geometry (self, &prev_geom);
 
+  /* the current allocation */
   width = clutter_actor_box_get_width (box);
   height = clutter_actor_box_get_height (box);
-  _clutter_stage_window_get_geometry (priv->impl, &geom);
 
-  /* if the stage is fixed size (for instance, it's using a frame-buffer)
+  /* the current Stage implementation size */
+  _clutter_stage_window_get_geometry (priv->impl, &window_size);
+
+  /* if the stage is fixed size (for instance, it's using a EGL framebuffer)
    * then we simply ignore any allocation request and override the
-   * allocation chain.
+   * allocation chain - because we cannot forcibly change the size of the
+   * stage window.
    */
   if ((!clutter_feature_available (CLUTTER_FEATURE_STAGE_STATIC)))
     {
-      ClutterActorClass *klass;
-
       CLUTTER_NOTE (LAYOUT,
                     "Following allocation to %dx%d (origin %s)",
                     width, height,
                     origin_changed ? "changed" : "not changed");
 
-      klass = CLUTTER_ACTOR_CLASS (clutter_stage_parent_class);
-      klass->allocate (self, box, flags);
+      clutter_actor_set_allocation (self, box,
+                                    flags | CLUTTER_DELEGATE_LAYOUT);
 
       /* Ensure the window is sized correctly */
       if (!priv->is_fullscreen)
@@ -347,19 +429,22 @@ clutter_stage_allocate (ClutterActor           *self,
               priv->min_size_changed = FALSE;
             }
 
-          if ((geom.width != width) || (geom.height != height))
-            _clutter_stage_window_resize (priv->impl, width, height);
+          if (window_size.width != width ||
+              window_size.height != height)
+            {
+              _clutter_stage_window_resize (priv->impl, width, height);
+            }
         }
     }
   else
     {
       ClutterActorBox override = { 0, };
-      ClutterActorClass *klass;
 
+      /* override the passed allocation */
       override.x1 = 0;
       override.y1 = 0;
-      override.x2 = geom.width;
-      override.y2 = geom.height;
+      override.x2 = window_size.width;
+      override.y2 = window_size.height;
 
       CLUTTER_NOTE (LAYOUT,
                     "Overrigin original allocation of %dx%d "
@@ -370,27 +455,34 @@ clutter_stage_allocate (ClutterActor           *self,
                     origin_changed ? "changed" : "not changed");
 
       /* and store the overridden allocation */
-      klass = CLUTTER_ACTOR_CLASS (clutter_stage_parent_class);
-      klass->allocate (self, &override, flags);
+      clutter_actor_set_allocation (self, &override,
+                                    flags | CLUTTER_DELEGATE_LAYOUT);
     }
 
   /* XXX: Until Cogl becomes fully responsible for backend windows
    * Clutter need to manually keep it informed of the current window
    * size. We do this after the allocation above so that the stage
    * window has a chance to update the window size based on the
-   * allocation. */
-  _clutter_stage_window_get_geometry (priv->impl, &geom);
-  cogl_onscreen_clutter_backend_set_size (geom.width, geom.height);
+   * allocation.
+   */
+  _clutter_stage_window_get_geometry (priv->impl, &window_size);
+  cogl_onscreen_clutter_backend_set_size (window_size.width,
+                                          window_size.height);
 
+  /* reset the viewport if the allocation effectively changed */
   clutter_actor_get_allocation_geometry (self, &geom);
-  if (geom.width != prev_geom.width || geom.height != prev_geom.height)
+  if (geom.width != prev_geom.width ||
+      geom.height != prev_geom.height)
     {
       _clutter_stage_set_viewport (CLUTTER_STAGE (self),
-                                   0, 0, geom.width, geom.height);
+                                   0, 0,
+                                   geom.width,
+                                   geom.height);
 
       /* Note: we don't assume that set_viewport will queue a full redraw
        * since it may bail-out early if something preemptively set the
-       * viewport before the stage was really allocated its new size. */
+       * viewport before the stage was really allocated its new size.
+       */
       queue_full_redraw (CLUTTER_STAGE (self));
     }
 }
@@ -412,8 +504,8 @@ _cogl_util_get_eye_planes_for_screen_poly (float *polygon,
   Vector4 *tmp_poly;
   ClutterPlane *plane;
   int i;
-  CoglVector3 b;
-  CoglVector3 c;
+  float b[3];
+  float c[3];
   int count;
 
   tmp_poly = g_alloca (sizeof (Vector4) * n_vertices * 2);
@@ -480,23 +572,23 @@ _cogl_util_get_eye_planes_for_screen_poly (float *polygon,
   for (i = 0; i < count; i++)
     {
       plane = &planes[i];
-      plane->v0 = *(CoglVector3 *)&tmp_poly[i];
-      b = *(CoglVector3 *)&tmp_poly[n_vertices + i];
-      c = *(CoglVector3 *)&tmp_poly[n_vertices + i + 1];
-      cogl_vector3_subtract (&b, &b, &plane->v0);
-      cogl_vector3_subtract (&c, &c, &plane->v0);
-      cogl_vector3_cross_product (&plane->n, &b, &c);
-      cogl_vector3_normalize (&plane->n);
+      memcpy (plane->v0, tmp_poly + i, sizeof (float) * 3);
+      memcpy (b, tmp_poly + n_vertices + i, sizeof (float) * 3);
+      memcpy (c, tmp_poly + n_vertices + i + 1, sizeof (float) * 3);
+      cogl_vector3_subtract (b, b, plane->v0);
+      cogl_vector3_subtract (c, c, plane->v0);
+      cogl_vector3_cross_product (plane->n, b, c);
+      cogl_vector3_normalize (plane->n);
     }
 
   plane = &planes[n_vertices - 1];
-  plane->v0 = *(CoglVector3 *)&tmp_poly[0];
-  b = *(CoglVector3 *)&tmp_poly[2 * n_vertices - 1];
-  c = *(CoglVector3 *)&tmp_poly[n_vertices];
-  cogl_vector3_subtract (&b, &b, &plane->v0);
-  cogl_vector3_subtract (&c, &c, &plane->v0);
-  cogl_vector3_cross_product (&plane->n, &b, &c);
-  cogl_vector3_normalize (&plane->n);
+  memcpy (plane->v0, tmp_poly + 0, sizeof (float) * 3);
+  memcpy (b, tmp_poly + (2 * n_vertices - 1), sizeof (float) * 3);
+  memcpy (c, tmp_poly + n_vertices, sizeof (float) * 3);
+  cogl_vector3_subtract (b, b, plane->v0);
+  cogl_vector3_subtract (c, c, plane->v0);
+  cogl_vector3_cross_product (plane->n, b, c);
+  cogl_vector3_normalize (plane->n);
 }
 
 static void
@@ -525,11 +617,12 @@ _clutter_stage_update_active_framebuffer (ClutterStage *stage)
  * be able to cull them.
  */
 void
-_clutter_stage_do_paint (ClutterStage *stage, const ClutterGeometry *clip)
+_clutter_stage_do_paint (ClutterStage                *stage,
+                         const cairo_rectangle_int_t *clip)
 {
   ClutterStagePrivate *priv = stage->priv;
   float clip_poly[8];
-  ClutterGeometry geom;
+  cairo_rectangle_int_t geom;
 
   _clutter_stage_window_get_geometry (priv->impl, &geom);
 
@@ -579,8 +672,12 @@ clutter_stage_paint (ClutterActor *self)
 {
   ClutterStagePrivate *priv = CLUTTER_STAGE (self)->priv;
   CoglBufferBit clear_flags;
+  ClutterColor bg_color;
   CoglColor stage_color;
+  ClutterActorIter iter;
+  ClutterActor *child;
   guint8 real_alpha;
+
   CLUTTER_STATIC_TIMER (stage_clear_timer,
                         "Painting actors", /* parent */
                         "Stage clear",
@@ -590,61 +687,49 @@ clutter_stage_paint (ClutterActor *self)
   CLUTTER_NOTE (PAINT, "Initializing stage paint");
 
   /* composite the opacity to the stage color */
+  clutter_actor_get_background_color (self, &bg_color);
   real_alpha = clutter_actor_get_opacity (self)
-             * priv->color.alpha
+             * bg_color.alpha
              / 255;
-
-  /* we use the real alpha to clear the stage if :use-alpha is
-   * set; the effect depends entirely on how the Clutter backend
-   */
-  cogl_color_init_from_4ub (&stage_color,
-                            priv->color.red,
-                            priv->color.green,
-                            priv->color.blue,
-                            priv->use_alpha ? real_alpha
-                                           : 255);
-  cogl_color_premultiply (&stage_color);
 
   clear_flags = COGL_BUFFER_BIT_DEPTH;
   if (!STAGE_NO_CLEAR_ON_PAINT (self))
     clear_flags |= COGL_BUFFER_BIT_COLOR;
 
+  cogl_disable_fog ();
+
   CLUTTER_TIMER_START (_clutter_uprof_context, stage_clear_timer);
-
+  /* we use the real alpha to clear the stage if :use-alpha is
+   * set; the effect depends entirely on the Clutter backend
+   */
+  cogl_color_init_from_4ub (&stage_color,
+                            bg_color.red,
+                            bg_color.green,
+                            bg_color.blue,
+                            priv->use_alpha ? real_alpha : 255);
+  cogl_color_premultiply (&stage_color);
   cogl_clear (&stage_color, clear_flags);
-
   CLUTTER_TIMER_STOP (_clutter_uprof_context, stage_clear_timer);
 
-  if (priv->use_fog)
-    {
-      /* we only expose the linear progression of the fog in
-       * the ClutterStage API, and that ignores the fog density.
-       * thus, we pass 1.0 as the density parameter
-       */
-      cogl_set_fog (&stage_color,
-                    COGL_FOG_MODE_LINEAR,
-                    1.0,
-                    priv->fog.z_near,
-                    priv->fog.z_far);
-    }
-  else
-    cogl_disable_fog ();
-
-  /* this will take care of painting every child */
-  CLUTTER_ACTOR_CLASS (clutter_stage_parent_class)->paint (self);
+  clutter_actor_iter_init (&iter, self);
+  while (clutter_actor_iter_next (&iter, &child))
+    clutter_actor_paint (child);
 }
 
 static void
 clutter_stage_pick (ClutterActor       *self,
 		    const ClutterColor *color)
 {
+  ClutterActorIter iter;
+  ClutterActor *child;
+
   /* Note: we don't chain up to our parent as we don't want any geometry
    * emitted for the stage itself. The stage's pick id is effectively handled
    * by the call to cogl_clear done in clutter-main.c:_clutter_do_pick_async()
    */
-  clutter_container_foreach (CLUTTER_CONTAINER (self),
-                             CLUTTER_CALLBACK (clutter_actor_paint),
-                             NULL);
+  clutter_actor_iter_init (&iter, self);
+  while (clutter_actor_iter_next (&iter, &child))
+    clutter_actor_paint (child);
 }
 
 static gboolean
@@ -705,6 +790,22 @@ clutter_stage_unrealize (ClutterActor *self)
 }
 
 static void
+clutter_stage_show_all (ClutterActor *self)
+{
+  ClutterActorIter iter;
+  ClutterActor *child;
+
+  /* we don't do a recursive show_all(), to maintain the old
+   * invariants from ClutterGroup
+   */
+  clutter_actor_iter_init (&iter, self);
+  while (clutter_actor_iter_next (&iter, &child))
+    clutter_actor_show (child);
+
+  clutter_actor_show (self);
+}
+
+static void
 clutter_stage_show (ClutterActor *self)
 {
   ClutterStagePrivate *priv = CLUTTER_STAGE (self)->priv;
@@ -717,6 +818,22 @@ clutter_stage_show (ClutterActor *self)
 
   g_assert (priv->impl != NULL);
   _clutter_stage_window_show (priv->impl, TRUE);
+}
+
+static void
+clutter_stage_hide_all (ClutterActor *self)
+{
+  ClutterActorIter iter;
+  ClutterActor *child;
+
+  clutter_actor_hide (self);
+
+  /* we don't do a recursive hide_all(), to maintain the old invariants
+   * from ClutterGroup
+   */
+  clutter_actor_iter_init (&iter, self);
+  while (clutter_actor_iter_next (&iter, &child))
+    clutter_actor_hide (child);
 }
 
 static void
@@ -743,6 +860,8 @@ clutter_stage_emit_key_focus_event (ClutterStage *stage,
     g_signal_emit_by_name (priv->key_focused_actor, "key-focus-in");
   else
     g_signal_emit_by_name (priv->key_focused_actor, "key-focus-out");
+
+  g_object_notify (G_OBJECT (stage), "key-focus");
 }
 
 static void
@@ -761,7 +880,7 @@ static void
 clutter_stage_real_fullscreen (ClutterStage *stage)
 {
   ClutterStagePrivate *priv = stage->priv;
-  ClutterGeometry geom;
+  cairo_rectangle_int_t geom;
   ClutterActorBox box;
 
   /* we need to force an allocation here because the size
@@ -778,6 +897,14 @@ clutter_stage_real_fullscreen (ClutterStage *stage)
   box.x2 = geom.width;
   box.y2 = geom.height;
 
+  /* we need to blow the caching on the Stage size, given that
+   * we're about to force an allocation, because if anything
+   * ends up querying the size of the stage during the allocate()
+   * call, like constraints or signal handlers, we'll get into an
+   * inconsistent state: the stage will report the old cached size,
+   * but the allocation will be updated anyway.
+   */
+  clutter_actor_set_size (CLUTTER_ACTOR (stage), -1.0, -1.0);
   clutter_actor_allocate (CLUTTER_ACTOR (stage),
                           &box,
                           CLUTTER_ALLOCATION_NONE);
@@ -1003,16 +1130,32 @@ clutter_stage_do_redraw (ClutterStage *stage)
   ClutterActor *actor = CLUTTER_ACTOR (stage);
   ClutterStagePrivate *priv = stage->priv;
 
-  CLUTTER_TIMESTAMP (SCHEDULER, "Redraw started for %s[%p]",
-                     _clutter_actor_get_debug_name (actor),
-                     stage);
+  CLUTTER_STATIC_COUNTER (redraw_counter,
+                          "clutter_stage_do_redraw counter",
+                          "Increments for each Stage redraw",
+                          0 /* no application private data */);
+  CLUTTER_STATIC_TIMER (redraw_timer,
+                        "Master Clock", /* parent */
+                        "Redrawing",
+                        "The time spent redrawing everything",
+                        0 /* no application private data */);
+
+  if (CLUTTER_ACTOR_IN_DESTRUCTION (stage))
+    return;
+
+  if (priv->impl == NULL)
+    return;
+
+  CLUTTER_NOTE (PAINT, "Redraw started for stage '%s'[%p]",
+                _clutter_actor_get_debug_name (actor),
+                stage);
 
   _clutter_stage_set_pick_buffer_valid (stage, FALSE, -1);
   priv->picks_per_frame = 0;
 
   _clutter_backend_ensure_context (backend, stage);
 
-  if (clutter_get_show_fps ())
+  if (_clutter_context_get_show_fps ())
     {
       if (priv->fps_timer == NULL)
         priv->fps_timer = g_timer_new ();
@@ -1020,9 +1163,14 @@ clutter_stage_do_redraw (ClutterStage *stage)
 
   _clutter_stage_maybe_setup_viewport (stage);
 
-  _clutter_backend_redraw (backend, stage);
+  CLUTTER_COUNTER_INC (_clutter_uprof_context, redraw_counter);
+  CLUTTER_TIMER_START (_clutter_uprof_context, redraw_timer);
 
-  if (clutter_get_show_fps ())
+  _clutter_stage_window_redraw (priv->impl);
+
+  CLUTTER_TIMER_STOP (_clutter_uprof_context, redraw_timer);
+
+  if (_clutter_context_get_show_fps ())
     {
       priv->timer_n_frames += 1;
 
@@ -1037,9 +1185,9 @@ clutter_stage_do_redraw (ClutterStage *stage)
         }
     }
 
-  CLUTTER_TIMESTAMP (SCHEDULER, "Redraw finished for %s[%p]",
-                     _clutter_actor_get_debug_name (actor),
-                     stage);
+  CLUTTER_NOTE (PAINT, "Redraw finished for stage '%s'[%p]",
+                _clutter_actor_get_debug_name (actor),
+                stage);
 }
 
 /**
@@ -1114,11 +1262,10 @@ clutter_stage_real_queue_redraw (ClutterActor *actor,
 {
   ClutterStage *stage = CLUTTER_STAGE (actor);
   ClutterStageWindow *stage_window;
-  ClutterGeometry stage_clip;
   ClutterPaintVolume *redraw_clip;
   ClutterActorBox bounding_box;
   ClutterActorBox intersection_box;
-  ClutterGeometry geom;
+  cairo_rectangle_int_t geom, stage_clip;
 
   if (CLUTTER_ACTOR_IN_DESTRUCTION (actor))
     return;
@@ -1139,14 +1286,12 @@ clutter_stage_real_queue_redraw (ClutterActor *actor,
   /* Convert the clip volume into stage coordinates and then into an
    * axis aligned stage coordinates bounding box...
    */
-
-  if (!_clutter_actor_get_queue_redraw_clip (leaf))
+  redraw_clip = _clutter_actor_get_queue_redraw_clip (leaf);
+  if (redraw_clip == NULL)
     {
       _clutter_stage_window_add_redraw_clip (stage_window, NULL);
       return;
     }
-
-  redraw_clip = _clutter_actor_get_queue_redraw_clip (leaf);
 
   _clutter_paint_volume_get_stage_paint_box (redraw_clip,
                                              stage,
@@ -1219,14 +1364,8 @@ clutter_stage_get_redraw_clip_bounds (ClutterStage          *stage,
 
   if (!_clutter_stage_window_get_redraw_clip_bounds (priv->impl, clip))
     {
-      ClutterGeometry geometry;
-
       /* Set clip to the full extents of the stage */
-      _clutter_stage_window_get_geometry (priv->impl, &geometry);
-      clip->x = 0;
-      clip->y = 0;
-      clip->width = geometry.width;
-      clip->height = geometry.height;
+      _clutter_stage_window_get_geometry (priv->impl, clip);
     }
 }
 
@@ -1237,7 +1376,7 @@ read_pixels_to_file (char *filename_stem,
                      int   width,
                      int   height)
 {
-  GLubyte *data;
+  guint8 *data;
   cairo_surface_t *surface;
   static int read_count = 0;
   char *filename = g_strdup_printf ("%s-%05d.png",
@@ -1273,7 +1412,6 @@ _clutter_stage_do_pick (ClutterStage   *stage,
   ClutterMainContext *context;
   guchar pixel[4] = { 0xff, 0xff, 0xff, 0xff };
   CoglColor stage_pick_id;
-  guint32 id_;
   gboolean dither_enabled_save;
   CoglFramebuffer *fb;
   ClutterActor *actor;
@@ -1336,19 +1474,7 @@ _clutter_stage_do_pick (ClutterStage   *stage,
       CLUTTER_NOTE (PICK, "Reusing pick buffer from previous render to fetch "
                     "actor at %i,%i", x, y);
 
-      /* FIXME: This is a lazy copy and paste of the logic at the end of this
-       * function used when we actually do a pick render. It should be
-       * consolidated somehow.
-       */
-      if (pixel[0] == 0xff && pixel[1] == 0xff && pixel[2] == 0xff)
-        {
-          actor = CLUTTER_ACTOR (stage);
-          goto result;
-        }
-
-      id_ = _clutter_pixel_to_id (pixel);
-      actor = _clutter_get_actor_by_id (stage, id_);
-      goto result;
+      goto check_pixel;
     }
 
   priv->picks_per_frame++;
@@ -1438,16 +1564,17 @@ _clutter_stage_do_pick (ClutterStage   *stage,
   /* Restore whether GL_DITHER was enabled */
   cogl_framebuffer_set_dither_enabled (fb, dither_enabled_save);
 
+check_pixel:
   if (pixel[0] == 0xff && pixel[1] == 0xff && pixel[2] == 0xff)
     {
       actor = CLUTTER_ACTOR (stage);
-      goto result;
     }
+  else
+    {
+      guint32 id_ = _clutter_pixel_to_id (pixel);
 
-  id_ = _clutter_pixel_to_id (pixel);
-  actor = _clutter_get_actor_by_id (stage, id_);
-
-result:
+      actor = _clutter_get_actor_by_id (stage, id_);
+    }
 
   CLUTTER_TIMER_STOP (_clutter_uprof_context, pick_timer);
 
@@ -1465,7 +1592,7 @@ static gboolean
 clutter_stage_real_delete_event (ClutterStage *stage,
                                  ClutterEvent *event)
 {
-  if (clutter_stage_is_default (stage))
+  if (stage_is_default (stage))
     clutter_main_quit ();
   else
     clutter_actor_destroy (CLUTTER_ACTOR (stage));
@@ -1486,6 +1613,39 @@ clutter_stage_real_apply_transform (ClutterActor *stage,
 }
 
 static void
+clutter_stage_constructed (GObject *gobject)
+{
+  ClutterStage *self = CLUTTER_STAGE (gobject);
+  ClutterStageManager *stage_manager;
+
+  stage_manager = clutter_stage_manager_get_default ();
+
+  /* this will take care to sinking the floating reference */
+  _clutter_stage_manager_add_stage (stage_manager, self);
+
+  /* if this stage has been created on a backend that does not
+   * support multiple stages then it becomes the default stage
+   * as well; any other attempt at creating a ClutterStage will
+   * fail.
+   */
+  if (!clutter_feature_available (CLUTTER_FEATURE_STAGE_MULTIPLE))
+    {
+      if (G_UNLIKELY (clutter_stage_manager_get_default_stage (stage_manager) != NULL))
+        {
+          g_error ("Unable to create another stage: the backend of "
+                   "type '%s' does not support multiple stages. Use "
+                   "clutter_stage_manager_get_default_stage() instead "
+                   "to access the stage singleton.",
+                   G_OBJECT_TYPE_NAME (clutter_get_default_backend ()));
+        }
+
+      _clutter_stage_manager_set_default_stage (stage_manager, self);
+    }
+
+  G_OBJECT_CLASS (clutter_stage_parent_class)->constructed (gobject);
+}
+
+static void
 clutter_stage_set_property (GObject      *object,
 			    guint         prop_id,
 			    const GValue *value,
@@ -1496,7 +1656,8 @@ clutter_stage_set_property (GObject      *object,
   switch (prop_id)
     {
     case PROP_COLOR:
-      clutter_stage_set_color (stage, clutter_value_get_color (value));
+      clutter_actor_set_background_color (CLUTTER_ACTOR (stage),
+                                          clutter_value_get_color (value));
       break;
 
     case PROP_OFFSCREEN:
@@ -1564,7 +1725,13 @@ clutter_stage_get_property (GObject    *gobject,
   switch (prop_id)
     {
     case PROP_COLOR:
-      clutter_value_set_color (value, &priv->color);
+      {
+        ClutterColor bg_color;
+
+        clutter_actor_get_background_color (CLUTTER_ACTOR (gobject),
+                                            &bg_color);
+        clutter_value_set_color (value, &bg_color);
+      }
       break;
 
     case PROP_OFFSCREEN:
@@ -1635,6 +1802,10 @@ clutter_stage_dispose (GObject *object)
 
   clutter_actor_hide (CLUTTER_ACTOR (object));
 
+  /* remove_stage() will unref() the stage instance, so we need to
+   * add a reference here to keep it temporarily alive
+   */
+  g_object_ref (object);
   stage_manager = clutter_stage_manager_get_default ();
   _clutter_stage_manager_remove_stage (stage_manager, stage);
 
@@ -1650,6 +1821,8 @@ clutter_stage_dispose (GObject *object)
       g_object_unref (priv->impl);
       priv->impl = NULL;
     }
+
+  clutter_actor_remove_all_children (CLUTTER_ACTOR (object));
 
   G_OBJECT_CLASS (clutter_stage_parent_class)->dispose (object);
 }
@@ -1684,6 +1857,7 @@ clutter_stage_class_init (ClutterStageClass *klass)
   ClutterActorClass *actor_class = CLUTTER_ACTOR_CLASS (klass);
   GParamSpec *pspec;
 
+  gobject_class->constructed = clutter_stage_constructed;
   gobject_class->set_property = clutter_stage_set_property;
   gobject_class->get_property = clutter_stage_get_property;
   gobject_class->dispose = clutter_stage_dispose;
@@ -1698,7 +1872,9 @@ clutter_stage_class_init (ClutterStageClass *klass)
   actor_class->realize = clutter_stage_realize;
   actor_class->unrealize = clutter_stage_unrealize;
   actor_class->show = clutter_stage_show;
+  actor_class->show_all = clutter_stage_show_all;
   actor_class->hide = clutter_stage_hide;
+  actor_class->hide_all = clutter_stage_hide_all;
   actor_class->queue_relayout = clutter_stage_real_queue_relayout;
   actor_class->queue_redraw = clutter_stage_real_queue_redraw;
   actor_class->apply_transform = clutter_stage_real_apply_transform;
@@ -1729,15 +1905,13 @@ clutter_stage_class_init (ClutterStageClass *klass)
    *
    * Whether the stage should be rendered in an offscreen buffer.
    *
-   * <warning><para>Not every backend supports redirecting the
-   * stage to an offscreen buffer. This property might not work
-   * and it might be deprecated at any later date.</para></warning>
+   * Deprecated: 1.10: This property does not do anything.
    */
   pspec = g_param_spec_boolean ("offscreen",
                                 P_("Offscreen"),
                                 P_("Whether the main stage should be rendered offscreen"),
                                 FALSE,
-                                CLUTTER_PARAM_READWRITE);
+                                CLUTTER_PARAM_READWRITE | G_PARAM_DEPRECATED);
   g_object_class_install_property (gobject_class,
                                    PROP_OFFSCREEN,
                                    pspec);
@@ -1772,13 +1946,17 @@ clutter_stage_class_init (ClutterStageClass *klass)
   /**
    * ClutterStage:color:
    *
-   * The color of the main stage.
+   * The background color of the main stage.
+   *
+   * Deprecated: 1.10: Use the #ClutterActor:background-color property of
+   *   #ClutterActor instead.
    */
   pspec = clutter_param_spec_color ("color",
                                     P_("Color"),
                                     P_("The color of the stage"),
                                     &default_stage_color,
-                                    CLUTTER_PARAM_READWRITE);
+                                    CLUTTER_PARAM_READWRITE |
+                                    G_PARAM_DEPRECATED);
   g_object_class_install_property (gobject_class, PROP_COLOR, pspec);
 
   /**
@@ -1820,12 +1998,14 @@ clutter_stage_class_init (ClutterStageClass *klass)
    * actors farther from the viewpoint.
    *
    * Since: 0.6
+   *
+   * Deprecated: 1.10: This property does not do anything.
    */
   pspec = g_param_spec_boolean ("use-fog",
                                 P_("Use Fog"),
                                 P_("Whether to enable depth cueing"),
                                 FALSE,
-                                CLUTTER_PARAM_READWRITE);
+                                CLUTTER_PARAM_READWRITE | G_PARAM_DEPRECATED);
   g_object_class_install_property (gobject_class, PROP_USE_FOG, pspec);
 
   /**
@@ -1835,12 +2015,14 @@ clutter_stage_class_init (ClutterStageClass *klass)
    * is set to %TRUE
    *
    * Since: 1.0
+   *
+   * Deprecated: 1.10: This property does not do anything.
    */
   pspec = g_param_spec_boxed ("fog",
                               P_("Fog"),
                               P_("Settings for the depth cueing"),
                               CLUTTER_TYPE_FOG,
-                              CLUTTER_PARAM_READWRITE);
+                              CLUTTER_PARAM_READWRITE | G_PARAM_DEPRECATED);
   g_object_class_install_property (gobject_class, PROP_FOG, pspec);
 
   /**
@@ -1909,7 +2091,7 @@ clutter_stage_class_init (ClutterStageClass *klass)
   g_object_class_install_property (gobject_class, PROP_ACCEPT_FOCUS, pspec);
 
   /**
-   * ClutterStage::fullscreen
+   * ClutterStage::fullscreen:
    * @stage: the stage which was fullscreened
    *
    * The ::fullscreen signal is emitted when the stage is made fullscreen.
@@ -1925,7 +2107,7 @@ clutter_stage_class_init (ClutterStageClass *klass)
 		  _clutter_marshal_VOID__VOID,
 		  G_TYPE_NONE, 0);
   /**
-   * ClutterStage::unfullscreen
+   * ClutterStage::unfullscreen:
    * @stage: the stage which has left a fullscreen state.
    *
    * The ::unfullscreen signal is emitted when the stage leaves a fullscreen
@@ -1942,7 +2124,7 @@ clutter_stage_class_init (ClutterStageClass *klass)
 		  _clutter_marshal_VOID__VOID,
 		  G_TYPE_NONE, 0);
   /**
-   * ClutterStage::activate
+   * ClutterStage::activate:
    * @stage: the stage which was activated
    *
    * The ::activate signal is emitted when the stage receives key focus
@@ -1959,7 +2141,7 @@ clutter_stage_class_init (ClutterStageClass *klass)
 		  _clutter_marshal_VOID__VOID,
 		  G_TYPE_NONE, 0);
   /**
-   * ClutterStage::deactivate
+   * ClutterStage::deactivate:
    * @stage: the stage which was deactivated
    *
    * The ::activate signal is emitted when the stage loses key focus
@@ -2024,9 +2206,11 @@ clutter_stage_notify_min_size (ClutterStage *self)
 static void
 clutter_stage_init (ClutterStage *self)
 {
+  cairo_rectangle_int_t geom = { 0, };
   ClutterStagePrivate *priv;
+  ClutterStageWindow *impl;
   ClutterBackend *backend;
-  ClutterGeometry geom;
+  GError *error;
 
   /* a stage is a top-level object */
   CLUTTER_SET_PRIVATE_FLAGS (self, CLUTTER_IS_TOPLEVEL);
@@ -2035,25 +2219,35 @@ clutter_stage_init (ClutterStage *self)
 
   CLUTTER_NOTE (BACKEND, "Creating stage from the default backend");
   backend = clutter_get_default_backend ();
-  priv->impl = _clutter_backend_create_stage (backend, self, NULL);
-  if (!priv->impl)
-    {
-      g_warning ("Unable to create a new stage, falling back to the "
-                 "default stage.");
-      priv->impl = _clutter_stage_get_default_window ();
 
-      /* at this point we must have a default stage, or we're screwed */
-      g_assert (priv->impl != NULL);
+  error = NULL;
+  impl = _clutter_backend_create_stage (backend, self, &error);
+
+  if (G_LIKELY (impl != NULL))
+    {
+      _clutter_stage_set_window (self, impl);
+      _clutter_stage_window_get_geometry (priv->impl, &geom);
+    }
+  else
+    {
+      if (error != NULL)
+        {
+          g_critical ("Unable to create a new stage implementation: %s",
+                      error->message);
+          g_error_free (error);
+        }
+      else
+        g_critical ("Unable to create a new stage implementation.");
     }
 
   priv->event_queue = g_queue_new ();
 
-  priv->is_fullscreen          = FALSE;
-  priv->is_user_resizable      = FALSE;
-  priv->is_cursor_visible      = TRUE;
-  priv->use_fog                = FALSE;
+  priv->is_fullscreen = FALSE;
+  priv->is_user_resizable = FALSE;
+  priv->is_cursor_visible = TRUE;
+  priv->use_fog = FALSE;
   priv->throttle_motion_events = TRUE;
-  priv->min_size_changed       = FALSE;
+  priv->min_size_changed = FALSE;
 
   /* XXX - we need to keep the invariant that calling
    * clutter_set_motion_event_enabled() before the stage creation
@@ -2063,12 +2257,11 @@ clutter_stage_init (ClutterStage *self)
    */
   priv->motion_events_enabled = _clutter_context_get_motion_events_enabled ();
 
-  priv->color = default_stage_color;
-
-  _clutter_stage_window_get_geometry (priv->impl, &geom);
+  clutter_actor_set_background_color (CLUTTER_ACTOR (self),
+                                      &default_stage_color);
 
   priv->perspective.fovy   = 60.0; /* 60 Degrees */
-  priv->perspective.aspect = (float)geom.width / (float)geom.height;
+  priv->perspective.aspect = (float) geom.width / (float) geom.height;
   priv->perspective.z_near = 0.1;
   priv->perspective.z_far  = 100.0;
 
@@ -2090,7 +2283,7 @@ clutter_stage_init (ClutterStage *self)
                                       geom.height);
 
 
-  /* depth cueing */
+  /* FIXME - remove for 2.0 */
   priv->fog.z_near = 1.0;
   priv->fog.z_far  = 2.0;
 
@@ -2121,16 +2314,29 @@ clutter_stage_init (ClutterStage *self)
 /**
  * clutter_stage_get_default:
  *
- * Returns the main stage. The default #ClutterStage is a singleton,
- * so the stage will be created the first time this function is
- * called (typically, inside clutter_init()); all the subsequent
- * calls to clutter_stage_get_default() will return the same instance.
+ * Retrieves a #ClutterStage singleton.
  *
- * Clutter guarantess the existence of the default stage.
+ * This function is not as useful as it sounds, and will most likely
+ * by deprecated in the future. Application code should only create
+ * a #ClutterStage instance using clutter_stage_new(), and manage the
+ * lifetime of the stage manually.
+ *
+ * The default stage singleton has a platform-specific behaviour: on
+ * platforms without the %CLUTTER_FEATURE_STAGE_MULTIPLE feature flag
+ * set, the first #ClutterStage instance will also be set to be the
+ * default stage instance, and this function will always return a
+ * pointer to it.
+ *
+ * On platforms with the %CLUTTER_FEATURE_STAGE_MULTIPLE feature flag
+ * set, the default stage will be created by the first call to this
+ * function, and every following call will return the same pointer to
+ * it.
  *
  * Return value: (transfer none) (type Clutter.Stage): the main
- *   #ClutterStage.  You should never destroy or unref the returned
+ *   #ClutterStage. You should never destroy or unref the returned
  *   actor.
+ *
+ * Deprecated: 1.10: Use clutter_stage_new() instead.
  */
 ClutterActor *
 clutter_stage_get_default (void)
@@ -2161,21 +2367,14 @@ clutter_stage_get_default (void)
  * @color: A #ClutterColor
  *
  * Sets the stage color.
+ *
+ * Deprecated: 1.10: Use clutter_actor_set_background_color() instead.
  */
 void
 clutter_stage_set_color (ClutterStage       *stage,
 			 const ClutterColor *color)
 {
-  ClutterStagePrivate *priv;
-
-  g_return_if_fail (CLUTTER_IS_STAGE (stage));
-  g_return_if_fail (color != NULL);
-
-  priv = stage->priv;
-
-  priv->color = *color;
-
-  clutter_actor_queue_redraw (CLUTTER_ACTOR (stage));
+  clutter_actor_set_background_color (CLUTTER_ACTOR (stage), color);
 
   g_object_notify (G_OBJECT (stage), "color");
 }
@@ -2186,19 +2385,14 @@ clutter_stage_set_color (ClutterStage       *stage,
  * @color: (out caller-allocates): return location for a #ClutterColor
  *
  * Retrieves the stage color.
+ *
+ * Deprecated: 1.10: Use clutter_actor_get_background_color() instead.
  */
 void
 clutter_stage_get_color (ClutterStage *stage,
 			 ClutterColor *color)
 {
-  ClutterStagePrivate *priv;
-
-  g_return_if_fail (CLUTTER_IS_STAGE (stage));
-  g_return_if_fail (color != NULL);
-
-  priv = stage->priv;
-
-  *color = priv->color;
+  clutter_actor_get_background_color (CLUTTER_ACTOR (stage), color);
 }
 
 static void
@@ -2769,7 +2963,7 @@ clutter_stage_event (ClutterStage *stage,
 }
 
 /**
- * clutter_stage_set_title
+ * clutter_stage_set_title:
  * @stage: A #ClutterStage
  * @title: A utf8 string for the stage windows title.
  *
@@ -2799,7 +2993,7 @@ clutter_stage_set_title (ClutterStage       *stage,
 }
 
 /**
- * clutter_stage_get_title
+ * clutter_stage_get_title:
  * @stage: A #ClutterStage
  *
  * Gets the stage title.
@@ -2819,20 +3013,10 @@ clutter_stage_get_title (ClutterStage       *stage)
 }
 
 static void
-on_key_focused_weak_notify (gpointer data,
-			    GObject *where_the_object_was)
+on_key_focus_destroy (ClutterActor *actor,
+                      ClutterStage *stage)
 {
-  ClutterStagePrivate *priv;
-  ClutterStage        *stage = CLUTTER_STAGE (data);
-
-  g_return_if_fail (CLUTTER_IS_STAGE (stage));
-
-  priv = stage->priv;
-  priv->key_focused_actor = NULL;
-
-  /* focused actor has dissapeared - fall back to stage
-   * FIXME: need some kind of signal dance/block here.
-  */
+  /* unset the key focus */
   clutter_stage_set_key_focus (stage, NULL);
 }
 
@@ -2858,10 +3042,13 @@ clutter_stage_set_key_focus (ClutterStage *stage,
 
   priv = stage->priv;
 
+  /* avoid emitting signals and notifications if we're setting the same
+   * actor as the key focus
+   */
   if (priv->key_focused_actor == actor)
     return;
 
-  if (priv->key_focused_actor)
+  if (priv->key_focused_actor != NULL)
     {
       ClutterActor *old_focused_actor;
 
@@ -2871,11 +3058,9 @@ clutter_stage_set_key_focus (ClutterStage *stage,
        * might hide the previously focused actor in the signal handler and we'd
        * get re-entrant call and get glib critical from g_object_weak_unref
        */
-
-      g_object_weak_unref (G_OBJECT (priv->key_focused_actor),
-			   on_key_focused_weak_notify,
-			   stage);
-
+      g_signal_handlers_disconnect_by_func (priv->key_focused_actor,
+                                            G_CALLBACK (on_key_focus_destroy),
+                                            stage);
       priv->key_focused_actor = NULL;
 
       g_signal_emit_by_name (old_focused_actor, "key-focus-out");
@@ -2888,14 +3073,13 @@ clutter_stage_set_key_focus (ClutterStage *stage,
    * intended. The order of events would be:
    *   1st focus-out, 2nd focus-out (on stage), 2nd focus-in, 1st focus-in
    */
-
-  if (actor)
+  if (actor != NULL)
     {
       priv->key_focused_actor = actor;
 
-      g_object_weak_ref (G_OBJECT (actor),
-			 on_key_focused_weak_notify,
-			 stage);
+      g_signal_connect (actor,
+                        "destroy", G_CALLBACK (on_key_focus_destroy),
+                        stage);
       g_signal_emit_by_name (priv->key_focused_actor, "key-focus-in");
     }
   else
@@ -2934,6 +3118,8 @@ clutter_stage_get_key_focus (ClutterStage *stage)
  * Return value: %TRUE if the depth cueing effect is enabled
  *
  * Since: 0.6
+ *
+ * Deprecated: 1.10: This function will always return %FALSE
  */
 gboolean
 clutter_stage_get_use_fog (ClutterStage *stage)
@@ -2958,28 +3144,13 @@ clutter_stage_get_use_fog (ClutterStage *stage)
  * clutter_stage_set_fog() function.
  *
  * Since: 0.6
+ *
+ * Deprecated: 1.10: Calling this function produces no visible effect
  */
 void
 clutter_stage_set_use_fog (ClutterStage *stage,
                            gboolean      fog)
 {
-  ClutterStagePrivate *priv;
-
-  g_return_if_fail (CLUTTER_IS_STAGE (stage));
-
-  priv = stage->priv;
-
-  if (priv->use_fog != fog)
-    {
-      priv->use_fog = fog;
-
-      CLUTTER_NOTE (MISC, "%s depth-cueing inside stage",
-                    priv->use_fog ? "enabling" : "disabling");
-
-      clutter_actor_queue_redraw (CLUTTER_ACTOR (stage));
-
-      g_object_notify (G_OBJECT (stage), "use-fog");
-    }
 }
 
 /**
@@ -3037,22 +3208,13 @@ clutter_stage_set_use_fog (ClutterStage *stage,
  * depend on fragment shaders.</note>
  *
  * Since: 0.6
+ *
+ * Deprecated: 1.10: Fog settings are ignored.
  */
 void
 clutter_stage_set_fog (ClutterStage *stage,
                        ClutterFog   *fog)
 {
-  ClutterStagePrivate *priv;
-
-  g_return_if_fail (CLUTTER_IS_STAGE (stage));
-  g_return_if_fail (fog != NULL);
-
-  priv = stage->priv;
-
-  priv->fog = *fog;
-
-  if (priv->use_fog)
-    clutter_actor_queue_redraw (CLUTTER_ACTOR (stage));
 }
 
 /**
@@ -3063,6 +3225,9 @@ clutter_stage_set_fog (ClutterStage *stage,
  * Retrieves the current depth cueing settings from the stage.
  *
  * Since: 0.6
+ *
+ * Deprecated: 1.10: This function will always return the default
+ *   values of #ClutterFog
  */
 void
 clutter_stage_get_fog (ClutterStage *stage,
@@ -3137,16 +3302,6 @@ G_DEFINE_BOXED_TYPE (ClutterFog, clutter_fog, clutter_fog_copy, clutter_fog_free
 ClutterActor *
 clutter_stage_new (void)
 {
-  if (!clutter_feature_available (CLUTTER_FEATURE_STAGE_MULTIPLE))
-    {
-      g_warning ("Unable to create a new stage: the %s backend does not "
-                 "support multiple stages.",
-                 CLUTTER_FLAVOUR);
-      return NULL;
-    }
-
-  /* The stage manager will grab the floating reference when the stage
-     is added to it in the constructor */
   return g_object_new (CLUTTER_TYPE_STAGE, NULL);
 }
 
@@ -3418,10 +3573,9 @@ clutter_stage_ensure_redraw (ClutterStage *stage)
  * <note>Applications should call clutter_actor_queue_redraw() and not
  * this function.</note>
  *
- * <note>This function is just a wrapper for clutter_actor_queue_redraw()
- * and should probably go away.</note>
- *
  * Since: 0.8
+ *
+ * Deprecated: 1.10: Use clutter_actor_queue_redraw() instead.
  */
 void
 clutter_stage_queue_redraw (ClutterStage *stage)
@@ -3441,24 +3595,17 @@ clutter_stage_queue_redraw (ClutterStage *stage)
  * Return value: %TRUE if the passed stage is the default one
  *
  * Since: 0.8
+ *
+ * Deprecated: 1.10: Track the stage pointer inside your application
+ *   code, or use clutter_actor_get_stage() to retrieve the stage for
+ *   a given actor.
  */
 gboolean
 clutter_stage_is_default (ClutterStage *stage)
 {
-  ClutterStageManager *stage_manager;
-  ClutterStageWindow *impl;
-
   g_return_val_if_fail (CLUTTER_IS_STAGE (stage), FALSE);
 
-  stage_manager = clutter_stage_manager_get_default ();
-  if (stage != clutter_stage_manager_get_default_stage (stage_manager))
-    return FALSE;
-
-  impl = _clutter_stage_get_window (stage);
-  if (impl != _clutter_stage_get_default_window ())
-    return FALSE;
-
-  return TRUE;
+  return stage_is_default (stage);
 }
 
 void
@@ -3468,7 +3615,7 @@ _clutter_stage_set_window (ClutterStage       *stage,
   g_return_if_fail (CLUTTER_IS_STAGE (stage));
   g_return_if_fail (CLUTTER_IS_STAGE_WINDOW (stage_window));
 
-  if (stage->priv->impl)
+  if (stage->priv->impl != NULL)
     g_object_unref (stage->priv->impl);
 
   stage->priv->impl = stage_window;
@@ -3485,9 +3632,14 @@ _clutter_stage_get_window (ClutterStage *stage)
 ClutterStageWindow *
 _clutter_stage_get_default_window (void)
 {
-  ClutterActor *stage = clutter_stage_get_default ();
+  ClutterStageManager *manager = clutter_stage_manager_get_default ();
+  ClutterStage *stage;
 
-  return _clutter_stage_get_window (CLUTTER_STAGE (stage));
+  stage = clutter_stage_manager_get_default_stage (manager);
+  if (stage == NULL)
+    return NULL;
+
+  return _clutter_stage_get_window (stage);
 }
 
 /**
@@ -4195,4 +4347,88 @@ _clutter_stage_remove_drag_actor (ClutterStage       *stage,
 
   if (g_hash_table_size (drag_actors) == 0)
     g_object_set_data (G_OBJECT (stage), "__clutter_stage_drag_actors", NULL);
+}
+
+/*< private >
+ * _clutter_stage_get_state:
+ * @stage: a #ClutterStage
+ *
+ * Retrieves the current #ClutterStageState flags associated to the @stage.
+ *
+ * Return value: a bitwise OR of #ClutterStageState flags
+ */
+ClutterStageState
+_clutter_stage_get_state (ClutterStage *stage)
+{
+  return stage->priv->current_state;
+}
+
+/*< private >
+ * _clutter_stage_is_activated:
+ * @stage: a #ClutterStage
+ *
+ * Checks whether the @stage state includes %CLUTTER_STAGE_STATE_ACTIVATED.
+ *
+ * Return value: %TRUE if the @stage is active
+ */
+gboolean
+_clutter_stage_is_activated (ClutterStage *stage)
+{
+  return (stage->priv->current_state & CLUTTER_STAGE_STATE_ACTIVATED) != 0;
+}
+
+/*< private >
+ * _clutter_stage_is_fullscreen:
+ * @stage: a #ClutterStage
+ *
+ * Checks whether the @stage state includes %CLUTTER_STAGE_STATE_FULLSCREEN.
+ *
+ * Return value: %TRUE if the @stage is fullscreen
+ */
+gboolean
+_clutter_stage_is_fullscreen (ClutterStage *stage)
+{
+  return (stage->priv->current_state & CLUTTER_STAGE_STATE_FULLSCREEN) != 0;
+}
+
+/*< private >
+ * _clutter_stage_update_state:
+ * @stage: a #ClutterStage
+ * @unset_flags: flags to unset
+ * @set_flags: flags to set
+ *
+ * Updates the state of @stage, by unsetting the @unset_flags and setting
+ * the @set_flags.
+ *
+ * If the stage state has been changed, this function will queue a
+ * #ClutterEvent of type %CLUTTER_STAGE_STATE.
+ *
+ * Return value: %TRUE if the state was updated, and %FALSE otherwise
+ */
+gboolean
+_clutter_stage_update_state (ClutterStage      *stage,
+                             ClutterStageState  unset_flags,
+                             ClutterStageState  set_flags)
+{
+  ClutterStageState new_state;
+  ClutterEvent *event;
+
+  new_state = stage->priv->current_state;
+  new_state |= set_flags;
+  new_state &= ~unset_flags;
+
+  if (new_state == stage->priv->current_state)
+    return FALSE;
+
+  event = clutter_event_new (CLUTTER_STAGE_STATE);
+  clutter_event_set_stage (event, stage);
+
+  event->stage_state.new_state = new_state;
+  event->stage_state.changed_mask = new_state ^ stage->priv->current_state;
+
+  stage->priv->current_state = new_state;
+
+  _clutter_event_push (event, FALSE);
+
+  return TRUE;
 }

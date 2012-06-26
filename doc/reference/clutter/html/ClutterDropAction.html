@@ -5,7 +5,7 @@
 <title>ClutterDropAction</title>
 <meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
 <link rel="home" href="index.html" title="Clutter Reference Manual">
-<link rel="up" href="ch05.html" title="Actions">
+<link rel="up" href="ch04.html" title="Actions">
 <link rel="prev" href="ClutterDragAction.html" title="ClutterDragAction">
 <link rel="next" href="ClutterGestureAction.html" title="ClutterGestureAction">
 <meta name="generator" content="GTK-Doc V1.18.1 (XML mode)">
@@ -15,7 +15,7 @@
 <table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
 <tr valign="middle">
 <td><a accesskey="p" href="ClutterDragAction.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
-<td><a accesskey="u" href="ch05.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="u" href="ch04.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
 <td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
 <th width="100%" align="center">Clutter Reference Manual</th>
 <td><a accesskey="n" href="ClutterGestureAction.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
@@ -109,7 +109,7 @@ device button is released.
 <p>
 </p>
 <div class="example">
-<a name="drop-action-example"></a><p class="title"><b>Example 9. Drop targets</b></p>
+<a name="drop-action-example"></a><p class="title"><b>Example 7. Drop targets</b></p>
 <div class="example-contents">
   <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
     <tbody>
@@ -358,7 +358,13 @@ device button is released.
 242
 243
 244
-245</pre></td>
+245
+246
+247
+248
+249
+250
+251</pre></td>
         <td class="listing_code"><pre class="programlisting"><span class="preproc">#include</span><span class="normal"> </span><span class="string">&lt;stdlib.h&gt;</span>
 <span class="preproc">#include</span><span class="normal"> </span><span class="string">&lt;clutter/clutter.h&gt;</span>
 
@@ -603,6 +609,12 @@ device button is released.
 <span class="normal">  </span><span class="function"><a href="clutter-General.html#clutter-main">clutter_main</a></span><span class="normal"> </span><span class="symbol">();</span>
 
 <span class="normal">  </span><span class="keyword">return</span><span class="normal"> EXIT_SUCCESS</span><span class="symbol">;</span>
+<span class="cbracket">}</span>
+
+<span class="normal">G_MODULE_EXPORT </span><span class="usertype">const</span><span class="normal"> </span><span class="type">char</span><span class="normal"> </span><span class="symbol">*</span>
+<span class="function">test_drop_describe</span><span class="normal"> </span><span class="symbol">(</span><span class="type">void</span><span class="symbol">)</span>
+<span class="cbracket">{</span>
+<span class="normal">  </span><span class="keyword">return</span><span class="normal"> </span><span class="string">"Drop action support"</span><span class="symbol">;</span>
 <span class="cbracket">}</span></pre></td>
       </tr>
     </tbody>
@@ -705,8 +717,8 @@ Use <a class="link" href="ClutterActor.html#clutter-actor-add-action" title="clu
 <a name="ClutterDropAction-can-drop"></a><h3>The <code class="literal">"can-drop"</code> signal</h3>
 <pre class="programlisting"><span class="returnvalue">gboolean</span>            user_function                      (<a class="link" href="ClutterDropAction.html" title="ClutterDropAction"><span class="type">ClutterDropAction</span></a> *action,
                                                         <a class="link" href="ClutterActor.html" title="ClutterActor"><span class="type">ClutterActor</span></a>      *actor,
-                                                        <span class="type">gfloat</span>             Returns,
-                                                        <span class="type">gfloat</span>             arg3,
+                                                        <span class="type">gfloat</span>             event_x,
+                                                        <span class="type">gfloat</span>             event_y,
                                                         <span class="type">gpointer</span>           user_data)      : <code class="literal">Run Last</code></pre>
 <p>
 The ::can-drop signal is emitted when the dragged actor is dropped
@@ -731,6 +743,14 @@ this signal.
 </td>
 </tr>
 <tr>
+<td><p><span class="term"><em class="parameter"><code>event_x</code></em> :</span></p></td>
+<td>the X coordinate (in stage space) of the drop event</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>event_y</code></em> :</span></p></td>
+<td>the Y coordinate (in stage space) of the drop event</td>
+</tr>
+<tr>
 <td><p><span class="term"><em class="parameter"><code>user_data</code></em> :</span></p></td>
 <td>user data set when the signal handler was connected.</td>
 </tr>
@@ -748,8 +768,8 @@ this signal.
 <a name="ClutterDropAction-drop"></a><h3>The <code class="literal">"drop"</code> signal</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                user_function                      (<a class="link" href="ClutterDropAction.html" title="ClutterDropAction"><span class="type">ClutterDropAction</span></a> *action,
                                                         <a class="link" href="ClutterActor.html" title="ClutterActor"><span class="type">ClutterActor</span></a>      *actor,
-                                                        <span class="type">gfloat</span>             arg2,
-                                                        <span class="type">gfloat</span>             arg3,
+                                                        <span class="type">gfloat</span>             event_x,
+                                                        <span class="type">gfloat</span>             event_y,
                                                         <span class="type">gpointer</span>           user_data)      : <code class="literal">Run Last</code></pre>
 <p>
 The ::drop signal is emitted when the dragged actor is dropped
@@ -767,6 +787,14 @@ on <em class="parameter"><code>actor</code></em>. This signal is only emitted if
 <td><p><span class="term"><em class="parameter"><code>actor</code></em> :</span></p></td>
 <td>the <a class="link" href="ClutterActor.html" title="ClutterActor"><span class="type">ClutterActor</span></a> attached to the <em class="parameter"><code>action</code></em>
 </td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>event_x</code></em> :</span></p></td>
+<td>the X coordinate (in stage space) of the drop event</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>event_y</code></em> :</span></p></td>
+<td>the Y coordinate (in stage space) of the drop event</td>
 </tr>
 <tr>
 <td><p><span class="term"><em class="parameter"><code>user_data</code></em> :</span></p></td>

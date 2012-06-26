@@ -53,7 +53,11 @@ struct              <a class="link" href="ClutterText.html#ClutterTextClass" tit
                                                          <em class="parameter"><code>const <a class="link" href="clutter-Colors.html#ClutterColor" title="ClutterColor"><span class="type">ClutterColor</span></a> *color</code></em>);
 <a class="link" href="ClutterActor.html" title="ClutterActor"><span class="returnvalue">ClutterActor</span></a> *      <a class="link" href="ClutterText.html#clutter-text-new-with-text" title="clutter_text_new_with_text ()">clutter_text_new_with_text</a>          (<em class="parameter"><code>const <span class="type">gchar</span> *font_name</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *text</code></em>);
+<a class="link" href="ClutterActor.html" title="ClutterActor"><span class="returnvalue">ClutterActor</span></a> *      <a class="link" href="ClutterText.html#clutter-text-new-with-buffer" title="clutter_text_new_with_buffer ()">clutter_text_new_with_buffer</a>        (<em class="parameter"><code><a class="link" href="ClutterTextBuffer.html" title="ClutterTextBuffer"><span class="type">ClutterTextBuffer</span></a> *buffer</code></em>);
 
+<span class="returnvalue">void</span>                <a class="link" href="ClutterText.html#clutter-text-set-buffer" title="clutter_text_set_buffer ()">clutter_text_set_buffer</a>             (<em class="parameter"><code><a class="link" href="ClutterText.html" title="ClutterText"><span class="type">ClutterText</span></a> *self</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ClutterTextBuffer.html" title="ClutterTextBuffer"><span class="type">ClutterTextBuffer</span></a> *buffer</code></em>);
+<a class="link" href="ClutterTextBuffer.html" title="ClutterTextBuffer"><span class="returnvalue">ClutterTextBuffer</span></a> * <a class="link" href="ClutterText.html#clutter-text-get-buffer" title="clutter_text_get_buffer ()">clutter_text_get_buffer</a>             (<em class="parameter"><code><a class="link" href="ClutterText.html" title="ClutterText"><span class="type">ClutterText</span></a> *self</code></em>);
 <span class="returnvalue">void</span>                <a class="link" href="ClutterText.html#clutter-text-set-text" title="clutter_text_set_text ()">clutter_text_set_text</a>               (<em class="parameter"><code><a class="link" href="ClutterText.html" title="ClutterText"><span class="type">ClutterText</span></a> *self</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *text</code></em>);
 <span class="returnvalue">void</span>                <a class="link" href="ClutterText.html#clutter-text-set-markup" title="clutter_text_set_markup ()">clutter_text_set_markup</a>             (<em class="parameter"><code><a class="link" href="ClutterText.html" title="ClutterText"><span class="type">ClutterText</span></a> *self</code></em>,
@@ -157,6 +161,9 @@ const <span class="returnvalue">gchar</span> *       <a class="link" href="Clutt
 <span class="returnvalue">guint</span>               <a class="link" href="ClutterText.html#clutter-text-get-cursor-size" title="clutter_text_get_cursor_size ()">clutter_text_get_cursor_size</a>        (<em class="parameter"><code><a class="link" href="ClutterText.html" title="ClutterText"><span class="type">ClutterText</span></a> *self</code></em>);
 
 <span class="returnvalue">gboolean</span>            <a class="link" href="ClutterText.html#clutter-text-activate" title="clutter_text_activate ()">clutter_text_activate</a>               (<em class="parameter"><code><a class="link" href="ClutterText.html" title="ClutterText"><span class="type">ClutterText</span></a> *self</code></em>);
+<span class="returnvalue">gint</span>                <a class="link" href="ClutterText.html#clutter-text-coords-to-position" title="clutter_text_coords_to_position ()">clutter_text_coords_to_position</a>     (<em class="parameter"><code><a class="link" href="ClutterText.html" title="ClutterText"><span class="type">ClutterText</span></a> *self</code></em>,
+                                                         <em class="parameter"><code><span class="type">gfloat</span> x</code></em>,
+                                                         <em class="parameter"><code><span class="type">gfloat</span> y</code></em>);
 <span class="returnvalue">gboolean</span>            <a class="link" href="ClutterText.html#clutter-text-position-to-coords" title="clutter_text_position_to_coords ()">clutter_text_position_to_coords</a>     (<em class="parameter"><code><a class="link" href="ClutterText.html" title="ClutterText"><span class="type">ClutterText</span></a> *self</code></em>,
                                                          <em class="parameter"><code><span class="type">gint</span> position</code></em>,
                                                          <em class="parameter"><code><span class="type">gfloat</span> *x</code></em>,
@@ -184,13 +191,14 @@ const <span class="returnvalue">gchar</span> *       <a class="link" href="Clutt
 <a name="ClutterText.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
 <p>
 ClutterText implements
- <a class="link" href="ClutterScriptable.html" title="ClutterScriptable">ClutterScriptable</a>,  <a class="link" href="ClutterAnimatable.html" title="ClutterAnimatable">ClutterAnimatable</a> and  AtkImplementorIface.</p>
+ <a class="link" href="ClutterContainer.html" title="ClutterContainer">ClutterContainer</a>,  <a class="link" href="ClutterScriptable.html" title="ClutterScriptable">ClutterScriptable</a>,  <a class="link" href="ClutterAnimatable.html" title="ClutterAnimatable">ClutterAnimatable</a> and  AtkImplementorIface.</p>
 </div>
 <div class="refsect1">
 <a name="ClutterText.properties"></a><h2>Properties</h2>
 <pre class="synopsis">
   "<a class="link" href="ClutterText.html#ClutterText--activatable" title='The "activatable" property'>activatable</a>"              <span class="type">gboolean</span>              : Read / Write
   "<a class="link" href="ClutterText.html#ClutterText--attributes" title='The "attributes" property'>attributes</a>"               <span class="type">PangoAttrList</span>*        : Read / Write
+  "<a class="link" href="ClutterText.html#ClutterText--buffer" title='The "buffer" property'>buffer</a>"                   <a class="link" href="ClutterTextBuffer.html" title="ClutterTextBuffer"><span class="type">ClutterTextBuffer</span></a>*    : Read / Write
   "<a class="link" href="ClutterText.html#ClutterText--color" title='The "color" property'>color</a>"                    <a class="link" href="clutter-Colors.html#ClutterColor" title="ClutterColor"><span class="type">ClutterColor</span></a>*         : Read / Write
   "<a class="link" href="ClutterText.html#ClutterText--cursor-color" title='The "cursor-color" property'>cursor-color</a>"             <a class="link" href="clutter-Colors.html#ClutterColor" title="ClutterColor"><span class="type">ClutterColor</span></a>*         : Read / Write
   "<a class="link" href="ClutterText.html#ClutterText--cursor-color-set" title='The "cursor-color-set" property'>cursor-color-set</a>"         <span class="type">gboolean</span>              : Read
@@ -381,6 +389,80 @@ This function is equivalent to calling <a class="link" href="ClutterText.html#cl
 </div>
 <hr>
 <div class="refsect2">
+<a name="clutter-text-new-with-buffer"></a><h3>clutter_text_new_with_buffer ()</h3>
+<pre class="programlisting"><a class="link" href="ClutterActor.html" title="ClutterActor"><span class="returnvalue">ClutterActor</span></a> *      clutter_text_new_with_buffer        (<em class="parameter"><code><a class="link" href="ClutterTextBuffer.html" title="ClutterTextBuffer"><span class="type">ClutterTextBuffer</span></a> *buffer</code></em>);</pre>
+<p>
+Creates a new entry with the specified text buffer.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>buffer</code></em> :</span></p></td>
+<td>The buffer to use for the new <a class="link" href="ClutterText.html" title="ClutterText"><span class="type">ClutterText</span></a>.</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a new <a class="link" href="ClutterText.html" title="ClutterText"><span class="type">ClutterText</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 1.10</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="clutter-text-set-buffer"></a><h3>clutter_text_set_buffer ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                clutter_text_set_buffer             (<em class="parameter"><code><a class="link" href="ClutterText.html" title="ClutterText"><span class="type">ClutterText</span></a> *self</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ClutterTextBuffer.html" title="ClutterTextBuffer"><span class="type">ClutterTextBuffer</span></a> *buffer</code></em>);</pre>
+<p>
+Set the <a class="link" href="ClutterTextBuffer.html" title="ClutterTextBuffer"><span class="type">ClutterTextBuffer</span></a> object which holds the text for
+this widget.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>self</code></em> :</span></p></td>
+<td>a <a class="link" href="ClutterText.html" title="ClutterText"><span class="type">ClutterText</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>buffer</code></em> :</span></p></td>
+<td>a <a class="link" href="ClutterTextBuffer.html" title="ClutterTextBuffer"><span class="type">ClutterTextBuffer</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 1.10</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="clutter-text-get-buffer"></a><h3>clutter_text_get_buffer ()</h3>
+<pre class="programlisting"><a class="link" href="ClutterTextBuffer.html" title="ClutterTextBuffer"><span class="returnvalue">ClutterTextBuffer</span></a> * clutter_text_get_buffer             (<em class="parameter"><code><a class="link" href="ClutterText.html" title="ClutterText"><span class="type">ClutterText</span></a> *self</code></em>);</pre>
+<p>
+Get the <a class="link" href="ClutterTextBuffer.html" title="ClutterTextBuffer"><span class="type">ClutterTextBuffer</span></a> object which holds the text for
+this widget.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>self</code></em> :</span></p></td>
+<td>a <a class="link" href="ClutterText.html" title="ClutterText"><span class="type">ClutterText</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>A <span class="type">GtkEntryBuffer</span> object. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 1.10</p>
+</div>
+<hr>
+<div class="refsect2">
 <a name="clutter-text-set-text"></a><h3>clutter_text_set_text ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                clutter_text_set_text               (<em class="parameter"><code><a class="link" href="ClutterText.html" title="ClutterText"><span class="type">ClutterText</span></a> *self</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *text</code></em>);</pre>
@@ -403,8 +485,9 @@ maintain the <a class="link" href="ClutterText.html#ClutterText--use-markup" tit
 </tr>
 <tr>
 <td><p><span class="term"><em class="parameter"><code>text</code></em> :</span></p></td>
-<td>the text to set. Passing <a href="/home/ebassi/gnome3/install/share/gtk-doc/html/liboil/liboil-liboiljunk.html#NULL--CAPS"><code class="literal">NULL</code></a> is the same as passing "" (the
-empty string)</td>
+<td>the text to set. Passing <a href="/home/ebassi/gnome3/install/share/gtk-doc/html/liboil/liboil-liboiljunk.html#NULL--CAPS"><code class="literal">NULL</code></a> is the same
+as passing "" (the empty string). <span class="annotation">[<acronym title="NULL is ok, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span>
+</td>
 </tr>
 </tbody>
 </table></div>
@@ -451,8 +534,9 @@ Pango markup, and it is logically equivalent to:
 </tr>
 <tr>
 <td><p><span class="term"><em class="parameter"><code>markup</code></em> :</span></p></td>
-<td>a string containing Pango markup. Passing <a href="/home/ebassi/gnome3/install/share/gtk-doc/html/liboil/liboil-liboiljunk.html#NULL--CAPS"><code class="literal">NULL</code></a> is the same
-as passing "" (the empty string)</td>
+<td>a string containing Pango markup.
+Passing <a href="/home/ebassi/gnome3/install/share/gtk-doc/html/liboil/liboil-liboiljunk.html#NULL--CAPS"><code class="literal">NULL</code></a> is the same as passing "" (the empty string). <span class="annotation">[<acronym title="NULL is ok, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span>
+</td>
 </tr>
 </tbody>
 </table></div>
@@ -591,7 +675,8 @@ passed to this function.
 </tr>
 <tr>
 <td><p><span class="term"><em class="parameter"><code>attrs</code></em> :</span></p></td>
-<td>a <span class="type">PangoAttrList</span> or <a href="/home/ebassi/gnome3/install/share/gtk-doc/html/liboil/liboil-liboiljunk.html#NULL--CAPS"><code class="literal">NULL</code></a> to unset the attributes</td>
+<td>a <span class="type">PangoAttrList</span> or <a href="/home/ebassi/gnome3/install/share/gtk-doc/html/liboil/liboil-liboiljunk.html#NULL--CAPS"><code class="literal">NULL</code></a> to unset the attributes. <span class="annotation">[<acronym title="NULL is ok, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span>
+</td>
 </tr>
 </tbody>
 </table></div>
@@ -1605,6 +1690,10 @@ Inserts <em class="parameter"><code>wc</code></em> at the current cursor positio
 Deletes <em class="parameter"><code>n_chars</code></em> inside a <a class="link" href="ClutterText.html" title="ClutterText"><span class="type">ClutterText</span></a> actor, starting from the
 current cursor position.
 </p>
+<p>
+Somewhat awkwardly, the cursor position is decremented by the same
+number of characters you've deleted.
+</p>
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
 <tbody>
@@ -1744,7 +1833,8 @@ text color.
 </tr>
 <tr>
 <td><p><span class="term"><em class="parameter"><code>color</code></em> :</span></p></td>
-<td>the color of the cursor, or <a href="/home/ebassi/gnome3/install/share/gtk-doc/html/liboil/liboil-liboiljunk.html#NULL--CAPS"><code class="literal">NULL</code></a> to unset it</td>
+<td>the color of the cursor, or <a href="/home/ebassi/gnome3/install/share/gtk-doc/html/liboil/liboil-liboiljunk.html#NULL--CAPS"><code class="literal">NULL</code></a> to unset it. <span class="annotation">[<acronym title="NULL is ok, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span>
+</td>
 </tr>
 </tbody>
 </table></div>
@@ -1798,7 +1888,8 @@ the same as the text color.
 </tr>
 <tr>
 <td><p><span class="term"><em class="parameter"><code>color</code></em> :</span></p></td>
-<td>the color of the selection, or <a href="/home/ebassi/gnome3/install/share/gtk-doc/html/liboil/liboil-liboiljunk.html#NULL--CAPS"><code class="literal">NULL</code></a> to unset it</td>
+<td>the color of the selection, or <a href="/home/ebassi/gnome3/install/share/gtk-doc/html/liboil/liboil-liboiljunk.html#NULL--CAPS"><code class="literal">NULL</code></a> to unset it. <span class="annotation">[<acronym title="NULL is ok, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span>
+</td>
 </tr>
 </tbody>
 </table></div>
@@ -1852,7 +1943,8 @@ selection color, which then falls back to cursor, and then text color.
 </tr>
 <tr>
 <td><p><span class="term"><em class="parameter"><code>color</code></em> :</span></p></td>
-<td>the selected text color, or <a href="/home/ebassi/gnome3/install/share/gtk-doc/html/liboil/liboil-liboiljunk.html#NULL--CAPS"><code class="literal">NULL</code></a> to unset it</td>
+<td>the selected text color, or <a href="/home/ebassi/gnome3/install/share/gtk-doc/html/liboil/liboil-liboiljunk.html#NULL--CAPS"><code class="literal">NULL</code></a> to unset it. <span class="annotation">[<acronym title="NULL is ok, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span>
+</td>
 </tr>
 </tbody>
 </table></div>
@@ -2078,6 +2170,38 @@ and <code class="literal">FALSE</code> otherwise</td>
 </div>
 <hr>
 <div class="refsect2">
+<a name="clutter-text-coords-to-position"></a><h3>clutter_text_coords_to_position ()</h3>
+<pre class="programlisting"><span class="returnvalue">gint</span>                clutter_text_coords_to_position     (<em class="parameter"><code><a class="link" href="ClutterText.html" title="ClutterText"><span class="type">ClutterText</span></a> *self</code></em>,
+                                                         <em class="parameter"><code><span class="type">gfloat</span> x</code></em>,
+                                                         <em class="parameter"><code><span class="type">gfloat</span> y</code></em>);</pre>
+<p>
+Retrieves the position of the character at the given coordinates.
+</p>
+<p>
+Return: the position of the character
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>self</code></em> :</span></p></td>
+<td>a <a class="link" href="ClutterText.html" title="ClutterText"><span class="type">ClutterText</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>x</code></em> :</span></p></td>
+<td>the X coordinate, relative to the actor</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>y</code></em> :</span></p></td>
+<td>the Y coordinate, relative to the actor</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 1.10</p>
+</div>
+<hr>
+<div class="refsect2">
 <a name="clutter-text-position-to-coords"></a><h3>clutter_text_position_to_coords ()</h3>
 <pre class="programlisting"><span class="returnvalue">gboolean</span>            clutter_text_position_to_coords     (<em class="parameter"><code><a class="link" href="ClutterText.html" title="ClutterText"><span class="type">ClutterText</span></a> *self</code></em>,
                                                          <em class="parameter"><code><span class="type">gint</span> position</code></em>,
@@ -2199,7 +2323,7 @@ representing the text.
 </tr>
 </tbody>
 </table></div>
-<p class="since">Since 1.7</p>
+<p class="since">Since 1.8</p>
 </div>
 </div>
 <div class="refsect1">
@@ -2222,6 +2346,18 @@ A list of <span class="type">PangoStyleAttribute</span>s to be applied to the
 contents of the <a class="link" href="ClutterText.html" title="ClutterText"><span class="type">ClutterText</span></a> actor.
 </p>
 <p class="since">Since 1.0</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ClutterText--buffer"></a><h3>The <code class="literal">"buffer"</code> property</h3>
+<pre class="programlisting">  "buffer"                   <a class="link" href="ClutterTextBuffer.html" title="ClutterTextBuffer"><span class="type">ClutterTextBuffer</span></a>*    : Read / Write</pre>
+<p>
+The buffer which stores the text for this <a class="link" href="ClutterText.html" title="ClutterText"><span class="type">ClutterText</span></a>.
+</p>
+<p>
+If set to <a href="/home/ebassi/gnome3/install/share/gtk-doc/html/liboil/liboil-liboiljunk.html#NULL--CAPS"><code class="literal">NULL</code></a>, a default buffer will be created.
+</p>
+<p class="since">Since 1.8</p>
 </div>
 <hr>
 <div class="refsect2">

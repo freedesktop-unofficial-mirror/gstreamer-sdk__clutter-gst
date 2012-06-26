@@ -5,20 +5,20 @@
 <title>ClutterStage</title>
 <meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
 <link rel="home" href="index.html" title="Clutter Reference Manual">
-<link rel="up" href="ch03.html" title="Container actors">
-<link rel="prev" href="ClutterGroup.html" title="ClutterGroup">
-<link rel="next" href="ClutterBox.html" title="ClutterBox">
+<link rel="up" href="ch02.html" title="Base actors">
+<link rel="prev" href="ch02.html" title="Base actors">
+<link rel="next" href="ClutterTexture.html" title="ClutterTexture">
 <meta name="generator" content="GTK-Doc V1.18.1 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
 <tr valign="middle">
-<td><a accesskey="p" href="ClutterGroup.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
-<td><a accesskey="u" href="ch03.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="ch02.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="ch02.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
 <td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
 <th width="100%" align="center">Clutter Reference Manual</th>
-<td><a accesskey="n" href="ClutterBox.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+<td><a accesskey="n" href="ClutterTexture.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
 </tr>
 <tr><td colspan="5" class="shortcuts">
 <a href="#ClutterStage.synopsis" class="shortcut">Top</a>
@@ -71,6 +71,9 @@ enum                <a class="link" href="ClutterStage.html#ClutterPickMode" tit
 <span class="returnvalue">void</span>                <a class="link" href="ClutterStage.html#clutter-stage-ensure-viewport" title="clutter_stage_ensure_viewport ()">clutter_stage_ensure_viewport</a>       (<em class="parameter"><code><a class="link" href="ClutterStage.html" title="ClutterStage"><span class="type">ClutterStage</span></a> *stage</code></em>);
 <span class="returnvalue">void</span>                <a class="link" href="ClutterStage.html#clutter-stage-ensure-redraw" title="clutter_stage_ensure_redraw ()">clutter_stage_ensure_redraw</a>         (<em class="parameter"><code><a class="link" href="ClutterStage.html" title="ClutterStage"><span class="type">ClutterStage</span></a> *stage</code></em>);
 <span class="returnvalue">void</span>                <a class="link" href="ClutterStage.html#clutter-stage-queue-redraw" title="clutter_stage_queue_redraw ()">clutter_stage_queue_redraw</a>          (<em class="parameter"><code><a class="link" href="ClutterStage.html" title="ClutterStage"><span class="type">ClutterStage</span></a> *stage</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="ClutterStage.html#clutter-actor-queue-redraw-with-clip" title="clutter_actor_queue_redraw_with_clip ()">clutter_actor_queue_redraw_with_clip</a>
+                                                        (<em class="parameter"><code><a class="link" href="ClutterActor.html" title="ClutterActor"><span class="type">ClutterActor</span></a> *self</code></em>,
+                                                         <em class="parameter"><code>const <a href="/home/ebassi/gnome3/install/share/gtk-doc/html/cairo/cairo-Types.html#cairo-rectangle-int-t"><span class="type">cairo_rectangle_int_t</span></a> *clip</code></em>);
 <span class="returnvalue">gboolean</span>            <a class="link" href="ClutterStage.html#clutter-stage-event" title="clutter_stage_event ()">clutter_stage_event</a>                 (<em class="parameter"><code><a class="link" href="ClutterStage.html" title="ClutterStage"><span class="type">ClutterStage</span></a> *stage</code></em>,
                                                          <em class="parameter"><code><a class="link" href="clutter-Events.html#ClutterEvent" title="union ClutterEvent"><span class="type">ClutterEvent</span></a> *event</code></em>);
 <span class="returnvalue">void</span>                <a class="link" href="ClutterStage.html#clutter-stage-set-key-focus" title="clutter_stage_set_key_focus ()">clutter_stage_set_key_focus</a>         (<em class="parameter"><code><a class="link" href="ClutterStage.html" title="ClutterStage"><span class="type">ClutterStage</span></a> *stage</code></em>,
@@ -110,11 +113,11 @@ enum                <a class="link" href="ClutterStage.html#ClutterPickMode" tit
                                                         (<em class="parameter"><code><a class="link" href="ClutterStage.html" title="ClutterStage"><span class="type">ClutterStage</span></a> *stage</code></em>,
                                                          <em class="parameter"><code><span class="type">gboolean</span> enabled</code></em>);
 
-struct              <a class="link" href="ClutterStage.html#ClutterPerspective" title="struct ClutterPerspective">ClutterPerspective</a>;
+                    <a class="link" href="ClutterStage.html#ClutterPerspective" title="ClutterPerspective">ClutterPerspective</a>;
 <span class="returnvalue">void</span>                <a class="link" href="ClutterStage.html#clutter-stage-set-perspective" title="clutter_stage_set_perspective ()">clutter_stage_set_perspective</a>       (<em class="parameter"><code><a class="link" href="ClutterStage.html" title="ClutterStage"><span class="type">ClutterStage</span></a> *stage</code></em>,
-                                                         <em class="parameter"><code><a class="link" href="ClutterStage.html#ClutterPerspective" title="struct ClutterPerspective"><span class="type">ClutterPerspective</span></a> *perspective</code></em>);
+                                                         <em class="parameter"><code><a class="link" href="ClutterStage.html#ClutterPerspective" title="ClutterPerspective"><span class="type">ClutterPerspective</span></a> *perspective</code></em>);
 <span class="returnvalue">void</span>                <a class="link" href="ClutterStage.html#clutter-stage-get-perspective" title="clutter_stage_get_perspective ()">clutter_stage_get_perspective</a>       (<em class="parameter"><code><a class="link" href="ClutterStage.html" title="ClutterStage"><span class="type">ClutterStage</span></a> *stage</code></em>,
-                                                         <em class="parameter"><code><a class="link" href="ClutterStage.html#ClutterPerspective" title="struct ClutterPerspective"><span class="type">ClutterPerspective</span></a> *perspective</code></em>);
+                                                         <em class="parameter"><code><a class="link" href="ClutterStage.html#ClutterPerspective" title="ClutterPerspective"><span class="type">ClutterPerspective</span></a> *perspective</code></em>);
 
 <span class="returnvalue">void</span>                <a class="link" href="ClutterStage.html#clutter-stage-set-title" title="clutter_stage_set_title ()">clutter_stage_set_title</a>             (<em class="parameter"><code><a class="link" href="ClutterStage.html" title="ClutterStage"><span class="type">ClutterStage</span></a> *stage</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *title</code></em>);
@@ -123,14 +126,14 @@ const <span class="returnvalue">gchar</span> *       <a class="link" href="Clutt
                                                          <em class="parameter"><code><span class="type">gboolean</span> resizable</code></em>);
 <span class="returnvalue">gboolean</span>            <a class="link" href="ClutterStage.html#clutter-stage-get-user-resizable" title="clutter_stage_get_user_resizable ()">clutter_stage_get_user_resizable</a>    (<em class="parameter"><code><a class="link" href="ClutterStage.html" title="ClutterStage"><span class="type">ClutterStage</span></a> *stage</code></em>);
 
-struct              <a class="link" href="ClutterStage.html#ClutterFog" title="struct ClutterFog">ClutterFog</a>;
+                    <a class="link" href="ClutterStage.html#ClutterFog" title="ClutterFog">ClutterFog</a>;
 <span class="returnvalue">void</span>                <a class="link" href="ClutterStage.html#clutter-stage-set-use-fog" title="clutter_stage_set_use_fog ()">clutter_stage_set_use_fog</a>           (<em class="parameter"><code><a class="link" href="ClutterStage.html" title="ClutterStage"><span class="type">ClutterStage</span></a> *stage</code></em>,
                                                          <em class="parameter"><code><span class="type">gboolean</span> fog</code></em>);
 <span class="returnvalue">gboolean</span>            <a class="link" href="ClutterStage.html#clutter-stage-get-use-fog" title="clutter_stage_get_use_fog ()">clutter_stage_get_use_fog</a>           (<em class="parameter"><code><a class="link" href="ClutterStage.html" title="ClutterStage"><span class="type">ClutterStage</span></a> *stage</code></em>);
 <span class="returnvalue">void</span>                <a class="link" href="ClutterStage.html#clutter-stage-set-fog" title="clutter_stage_set_fog ()">clutter_stage_set_fog</a>               (<em class="parameter"><code><a class="link" href="ClutterStage.html" title="ClutterStage"><span class="type">ClutterStage</span></a> *stage</code></em>,
-                                                         <em class="parameter"><code><a class="link" href="ClutterStage.html#ClutterFog" title="struct ClutterFog"><span class="type">ClutterFog</span></a> *fog</code></em>);
+                                                         <em class="parameter"><code><a class="link" href="ClutterStage.html#ClutterFog" title="ClutterFog"><span class="type">ClutterFog</span></a> *fog</code></em>);
 <span class="returnvalue">void</span>                <a class="link" href="ClutterStage.html#clutter-stage-get-fog" title="clutter_stage_get_fog ()">clutter_stage_get_fog</a>               (<em class="parameter"><code><a class="link" href="ClutterStage.html" title="ClutterStage"><span class="type">ClutterStage</span></a> *stage</code></em>,
-                                                         <em class="parameter"><code><a class="link" href="ClutterStage.html#ClutterFog" title="struct ClutterFog"><span class="type">ClutterFog</span></a> *fog</code></em>);
+                                                         <em class="parameter"><code><a class="link" href="ClutterStage.html#ClutterFog" title="ClutterFog"><span class="type">ClutterFog</span></a> *fog</code></em>);
 </pre>
 </div>
 <div class="refsect1">
@@ -147,7 +150,7 @@ struct              <a class="link" href="ClutterStage.html#ClutterFog" title="s
 <a name="ClutterStage.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
 <p>
 ClutterStage implements
- <a class="link" href="ClutterScriptable.html" title="ClutterScriptable">ClutterScriptable</a>,  <a class="link" href="ClutterAnimatable.html" title="ClutterAnimatable">ClutterAnimatable</a>,  AtkImplementorIface and  <a class="link" href="ClutterContainer.html" title="ClutterContainer">ClutterContainer</a>.</p>
+ <a class="link" href="ClutterContainer.html" title="ClutterContainer">ClutterContainer</a>,  <a class="link" href="ClutterScriptable.html" title="ClutterScriptable">ClutterScriptable</a>,  <a class="link" href="ClutterAnimatable.html" title="ClutterAnimatable">ClutterAnimatable</a> and  AtkImplementorIface.</p>
 </div>
 <div class="refsect1">
 <a name="ClutterStage.properties"></a><h2>Properties</h2>
@@ -155,12 +158,12 @@ ClutterStage implements
   "<a class="link" href="ClutterStage.html#ClutterStage--accept-focus" title='The "accept-focus" property'>accept-focus</a>"             <span class="type">gboolean</span>              : Read / Write
   "<a class="link" href="ClutterStage.html#ClutterStage--color" title='The "color" property'>color</a>"                    <a class="link" href="clutter-Colors.html#ClutterColor" title="ClutterColor"><span class="type">ClutterColor</span></a>*         : Read / Write
   "<a class="link" href="ClutterStage.html#ClutterStage--cursor-visible" title='The "cursor-visible" property'>cursor-visible</a>"           <span class="type">gboolean</span>              : Read / Write
-  "<a class="link" href="ClutterStage.html#ClutterStage--fog" title='The "fog" property'>fog</a>"                      <a class="link" href="ClutterStage.html#ClutterFog" title="struct ClutterFog"><span class="type">ClutterFog</span></a>*           : Read / Write
+  "<a class="link" href="ClutterStage.html#ClutterStage--fog" title='The "fog" property'>fog</a>"                      <a class="link" href="ClutterStage.html#ClutterFog" title="ClutterFog"><span class="type">ClutterFog</span></a>*           : Read / Write
   "<a class="link" href="ClutterStage.html#ClutterStage--fullscreen-set" title='The "fullscreen-set" property'>fullscreen-set</a>"           <span class="type">gboolean</span>              : Read
   "<a class="link" href="ClutterStage.html#ClutterStage--key-focus" title='The "key-focus" property'>key-focus</a>"                <a class="link" href="ClutterActor.html" title="ClutterActor"><span class="type">ClutterActor</span></a>*         : Read / Write
   "<a class="link" href="ClutterStage.html#ClutterStage--no-clear-hint" title='The "no-clear-hint" property'>no-clear-hint</a>"            <span class="type">gboolean</span>              : Read / Write
   "<a class="link" href="ClutterStage.html#ClutterStage--offscreen" title='The "offscreen" property'>offscreen</a>"                <span class="type">gboolean</span>              : Read / Write
-  "<a class="link" href="ClutterStage.html#ClutterStage--perspective" title='The "perspective" property'>perspective</a>"              <a class="link" href="ClutterStage.html#ClutterPerspective" title="struct ClutterPerspective"><span class="type">ClutterPerspective</span></a>*   : Read / Write
+  "<a class="link" href="ClutterStage.html#ClutterStage--perspective" title='The "perspective" property'>perspective</a>"              <a class="link" href="ClutterStage.html#ClutterPerspective" title="ClutterPerspective"><span class="type">ClutterPerspective</span></a>*   : Read / Write
   "<a class="link" href="ClutterStage.html#ClutterStage--title" title='The "title" property'>title</a>"                    <span class="type">gchar</span>*                : Read / Write
   "<a class="link" href="ClutterStage.html#ClutterStage--use-alpha" title='The "use-alpha" property'>use-alpha</a>"                <span class="type">gboolean</span>              : Read / Write
   "<a class="link" href="ClutterStage.html#ClutterStage--use-fog" title='The "use-fog" property'>use-fog</a>"                  <span class="type">gboolean</span>              : Read / Write
@@ -182,12 +185,6 @@ ClutterStage implements
 <p>
 <a class="link" href="ClutterStage.html" title="ClutterStage"><span class="type">ClutterStage</span></a> is a top level 'window' on which child actors are placed
 and manipulated.
-</p>
-<p>
-Clutter creates a default stage upon initialization, which can be retrieved
-using <a class="link" href="ClutterStage.html#clutter-stage-get-default" title="clutter_stage_get_default ()"><code class="function">clutter_stage_get_default()</code></a>. Clutter always provides the default
-stage, unless the backend is unable to create one. The stage returned
-by <a class="link" href="ClutterStage.html#clutter-stage-get-default" title="clutter_stage_get_default ()"><code class="function">clutter_stage_get_default()</code></a> is guaranteed to always be the same.
 </p>
 <p>
 Backends might provide support for multiple stages. The support for this
@@ -292,21 +289,38 @@ Macro that evaluates to the height of the default stage
 <div class="refsect2">
 <a name="clutter-stage-get-default"></a><h3>clutter_stage_get_default ()</h3>
 <pre class="programlisting"><a class="link" href="ClutterActor.html" title="ClutterActor"><span class="returnvalue">ClutterActor</span></a> *      clutter_stage_get_default           (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">clutter_stage_get_default</code> has been deprecated since version 1.10 and should not be used in newly-written code. Use <a class="link" href="ClutterStage.html#clutter-stage-new" title="clutter_stage_new ()"><code class="function">clutter_stage_new()</code></a> instead.</p>
+</div>
 <p>
-Returns the main stage. The default <a class="link" href="ClutterStage.html" title="ClutterStage"><span class="type">ClutterStage</span></a> is a singleton,
-so the stage will be created the first time this function is
-called (typically, inside <a class="link" href="clutter-General.html#clutter-init" title="clutter_init ()"><code class="function">clutter_init()</code></a>); all the subsequent
-calls to <a class="link" href="ClutterStage.html#clutter-stage-get-default" title="clutter_stage_get_default ()"><code class="function">clutter_stage_get_default()</code></a> will return the same instance.
+Retrieves a <a class="link" href="ClutterStage.html" title="ClutterStage"><span class="type">ClutterStage</span></a> singleton.
 </p>
 <p>
-Clutter guarantess the existence of the default stage.
+This function is not as useful as it sounds, and will most likely
+by deprecated in the future. Application code should only create
+a <a class="link" href="ClutterStage.html" title="ClutterStage"><span class="type">ClutterStage</span></a> instance using <a class="link" href="ClutterStage.html#clutter-stage-new" title="clutter_stage_new ()"><code class="function">clutter_stage_new()</code></a>, and manage the
+lifetime of the stage manually.
+</p>
+<p>
+The default stage singleton has a platform-specific behaviour: on
+platforms without the <a class="link" href="clutter-Features.html#CLUTTER-FEATURE-STAGE-MULTIPLE:CAPS"><code class="literal">CLUTTER_FEATURE_STAGE_MULTIPLE</code></a> feature flag
+set, the first <a class="link" href="ClutterStage.html" title="ClutterStage"><span class="type">ClutterStage</span></a> instance will also be set to be the
+default stage instance, and this function will always return a
+pointer to it.
+</p>
+<p>
+On platforms with the <a class="link" href="clutter-Features.html#CLUTTER-FEATURE-STAGE-MULTIPLE:CAPS"><code class="literal">CLUTTER_FEATURE_STAGE_MULTIPLE</code></a> feature flag
+set, the default stage will be created by the first call to this
+function, and every following call will return the same pointer to
+it.
 </p>
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
 <tbody><tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
 <td>the main
-<a class="link" href="ClutterStage.html" title="ClutterStage"><span class="type">ClutterStage</span></a>.  You should never destroy or unref the returned
+<a class="link" href="ClutterStage.html" title="ClutterStage"><span class="type">ClutterStage</span></a>. You should never destroy or unref the returned
 actor. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>][<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> Clutter.Stage]</span>
 </td>
 </tr></tbody>
@@ -344,6 +358,12 @@ programmatically close the returned stage.</td>
 <div class="refsect2">
 <a name="clutter-stage-is-default"></a><h3>clutter_stage_is_default ()</h3>
 <pre class="programlisting"><span class="returnvalue">gboolean</span>            clutter_stage_is_default            (<em class="parameter"><code><a class="link" href="ClutterStage.html" title="ClutterStage"><span class="type">ClutterStage</span></a> *stage</code></em>);</pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">clutter_stage_is_default</code> has been deprecated since version 1.10 and should not be used in newly-written code. Track the stage pointer inside your application
+  code, or use <a class="link" href="ClutterActor.html#clutter-actor-get-stage" title="clutter_actor_get_stage ()"><code class="function">clutter_actor_get_stage()</code></a> to retrieve the stage for
+  a given actor.</p>
+</div>
 <p>
 Checks if <em class="parameter"><code>stage</code></em> is the default stage, or an instance created using
 <a class="link" href="ClutterStage.html#clutter-stage-new" title="clutter_stage_new ()"><code class="function">clutter_stage_new()</code></a> but internally using the same implementation.
@@ -370,6 +390,10 @@ Checks if <em class="parameter"><code>stage</code></em> is the default stage, or
 <a name="clutter-stage-set-color"></a><h3>clutter_stage_set_color ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                clutter_stage_set_color             (<em class="parameter"><code><a class="link" href="ClutterStage.html" title="ClutterStage"><span class="type">ClutterStage</span></a> *stage</code></em>,
                                                          <em class="parameter"><code>const <a class="link" href="clutter-Colors.html#ClutterColor" title="ClutterColor"><span class="type">ClutterColor</span></a> *color</code></em>);</pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">clutter_stage_set_color</code> has been deprecated since version 1.10 and should not be used in newly-written code. Use <a class="link" href="ClutterActor.html#clutter-actor-set-background-color" title="clutter_actor_set_background_color ()"><code class="function">clutter_actor_set_background_color()</code></a> instead.</p>
+</div>
 <p>
 Sets the stage color.
 </p>
@@ -394,6 +418,10 @@ Sets the stage color.
 <a name="clutter-stage-get-color"></a><h3>clutter_stage_get_color ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                clutter_stage_get_color             (<em class="parameter"><code><a class="link" href="ClutterStage.html" title="ClutterStage"><span class="type">ClutterStage</span></a> *stage</code></em>,
                                                          <em class="parameter"><code><a class="link" href="clutter-Colors.html#ClutterColor" title="ClutterColor"><span class="type">ClutterColor</span></a> *color</code></em>);</pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">clutter_stage_get_color</code> has been deprecated since version 1.10 and should not be used in newly-written code. Use <a class="link" href="ClutterActor.html#clutter-actor-get-background-color" title="clutter_actor_get_background_color ()"><code class="function">clutter_actor_get_background_color()</code></a> instead.</p>
+</div>
 <p>
 Retrieves the stage color.
 </p>
@@ -657,6 +685,10 @@ another windowing system, like GTK+.
 <div class="refsect2">
 <a name="clutter-stage-queue-redraw"></a><h3>clutter_stage_queue_redraw ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                clutter_stage_queue_redraw          (<em class="parameter"><code><a class="link" href="ClutterStage.html" title="ClutterStage"><span class="type">ClutterStage</span></a> *stage</code></em>);</pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">clutter_stage_queue_redraw</code> has been deprecated since version 1.10 and should not be used in newly-written code. Use <a class="link" href="ClutterActor.html#clutter-actor-queue-redraw" title="clutter_actor_queue_redraw ()"><code class="function">clutter_actor_queue_redraw()</code></a> instead.</p>
+</div>
 <p>
 Queues a redraw for the passed stage.
 </p>
@@ -665,13 +697,6 @@ Queues a redraw for the passed stage.
 <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
 <h3 class="title">Note</h3>Applications should call <a class="link" href="ClutterActor.html#clutter-actor-queue-redraw" title="clutter_actor_queue_redraw ()"><code class="function">clutter_actor_queue_redraw()</code></a> and not
 this function.</div>
-<p>
-</p>
-<p>
-</p>
-<div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
-<h3 class="title">Note</h3>This function is just a wrapper for <a class="link" href="ClutterActor.html#clutter-actor-queue-redraw" title="clutter_actor_queue_redraw ()"><code class="function">clutter_actor_queue_redraw()</code></a>
-and should probably go away.</div>
 <p>
 </p>
 <div class="variablelist"><table border="0">
@@ -683,6 +708,37 @@ and should probably go away.</div>
 </tr></tbody>
 </table></div>
 <p class="since">Since 0.8</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="clutter-actor-queue-redraw-with-clip"></a><h3>clutter_actor_queue_redraw_with_clip ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                clutter_actor_queue_redraw_with_clip
+                                                        (<em class="parameter"><code><a class="link" href="ClutterActor.html" title="ClutterActor"><span class="type">ClutterActor</span></a> *self</code></em>,
+                                                         <em class="parameter"><code>const <a href="/home/ebassi/gnome3/install/share/gtk-doc/html/cairo/cairo-Types.html#cairo-rectangle-int-t"><span class="type">cairo_rectangle_int_t</span></a> *clip</code></em>);</pre>
+<p>
+Queues a redraw on <em class="parameter"><code>self</code></em> limited to a specific, actor-relative
+rectangular area.
+</p>
+<p>
+If <em class="parameter"><code>clip</code></em> is <a href="/home/ebassi/gnome3/install/share/gtk-doc/html/liboil/liboil-liboiljunk.html#NULL--CAPS"><code class="literal">NULL</code></a> this function is equivalent to
+<a class="link" href="ClutterActor.html#clutter-actor-queue-redraw" title="clutter_actor_queue_redraw ()"><code class="function">clutter_actor_queue_redraw()</code></a>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>self</code></em> :</span></p></td>
+<td>a <a class="link" href="ClutterActor.html" title="ClutterActor"><span class="type">ClutterActor</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>clip</code></em> :</span></p></td>
+<td>a rectangular clip region, or <a href="/home/ebassi/gnome3/install/share/gtk-doc/html/liboil/liboil-liboiljunk.html#NULL--CAPS"><code class="literal">NULL</code></a>. <span class="annotation">[<acronym title="NULL is ok, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 1.10</p>
 </div>
 <hr>
 <div class="refsect2">
@@ -1258,16 +1314,16 @@ otherwise</td>
 </div>
 <hr>
 <div class="refsect2">
-<a name="ClutterPerspective"></a><h3>struct ClutterPerspective</h3>
-<pre class="programlisting">struct ClutterPerspective {
+<a name="ClutterPerspective"></a><h3>ClutterPerspective</h3>
+<pre class="programlisting">typedef struct {
   gfloat fovy;
   gfloat aspect;
   gfloat z_near;
   gfloat z_far;
-};
+} ClutterPerspective;
 </pre>
 <p>
-Stage perspective definition. <a class="link" href="ClutterStage.html#ClutterPerspective" title="struct ClutterPerspective"><span class="type">ClutterPerspective</span></a> is only used by
+Stage perspective definition. <a class="link" href="ClutterStage.html#ClutterPerspective" title="ClutterPerspective"><span class="type">ClutterPerspective</span></a> is only used by
 the fixed point version of <a class="link" href="ClutterStage.html#clutter-stage-set-perspective" title="clutter_stage_set_perspective ()"><code class="function">clutter_stage_set_perspective()</code></a>.
 </p>
 <div class="variablelist"><table border="0">
@@ -1300,7 +1356,7 @@ plane (always positive)</td>
 <div class="refsect2">
 <a name="clutter-stage-set-perspective"></a><h3>clutter_stage_set_perspective ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                clutter_stage_set_perspective       (<em class="parameter"><code><a class="link" href="ClutterStage.html" title="ClutterStage"><span class="type">ClutterStage</span></a> *stage</code></em>,
-                                                         <em class="parameter"><code><a class="link" href="ClutterStage.html#ClutterPerspective" title="struct ClutterPerspective"><span class="type">ClutterPerspective</span></a> *perspective</code></em>);</pre>
+                                                         <em class="parameter"><code><a class="link" href="ClutterStage.html#ClutterPerspective" title="ClutterPerspective"><span class="type">ClutterPerspective</span></a> *perspective</code></em>);</pre>
 <p>
 Sets the stage perspective. Using this function is not recommended
 because it will disable Clutter's attempts to generate an
@@ -1316,7 +1372,7 @@ appropriate perspective based on the size of the stage.
 </tr>
 <tr>
 <td><p><span class="term"><em class="parameter"><code>perspective</code></em> :</span></p></td>
-<td>A <a class="link" href="ClutterStage.html#ClutterPerspective" title="struct ClutterPerspective"><span class="type">ClutterPerspective</span></a>
+<td>A <a class="link" href="ClutterStage.html#ClutterPerspective" title="ClutterPerspective"><span class="type">ClutterPerspective</span></a>
 </td>
 </tr>
 </tbody>
@@ -1326,7 +1382,7 @@ appropriate perspective based on the size of the stage.
 <div class="refsect2">
 <a name="clutter-stage-get-perspective"></a><h3>clutter_stage_get_perspective ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                clutter_stage_get_perspective       (<em class="parameter"><code><a class="link" href="ClutterStage.html" title="ClutterStage"><span class="type">ClutterStage</span></a> *stage</code></em>,
-                                                         <em class="parameter"><code><a class="link" href="ClutterStage.html#ClutterPerspective" title="struct ClutterPerspective"><span class="type">ClutterPerspective</span></a> *perspective</code></em>);</pre>
+                                                         <em class="parameter"><code><a class="link" href="ClutterStage.html#ClutterPerspective" title="ClutterPerspective"><span class="type">ClutterPerspective</span></a> *perspective</code></em>);</pre>
 <p>
 Retrieves the stage perspective.
 </p>
@@ -1341,7 +1397,7 @@ Retrieves the stage perspective.
 <tr>
 <td><p><span class="term"><em class="parameter"><code>perspective</code></em> :</span></p></td>
 <td>return location for a
-<a class="link" href="ClutterStage.html#ClutterPerspective" title="struct ClutterPerspective"><span class="type">ClutterPerspective</span></a>. <span class="annotation">[<acronym title="Out parameter, where caller must allocate storage."><span class="acronym">out caller-allocates</span></acronym>][<acronym title="NULL is ok, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span>
+<a class="link" href="ClutterStage.html#ClutterPerspective" title="ClutterPerspective"><span class="type">ClutterPerspective</span></a>. <span class="annotation">[<acronym title="Out parameter, where caller must allocate storage."><span class="acronym">out caller-allocates</span></acronym>][<acronym title="NULL is ok, both for passing and for returning."><span class="acronym">allow-none</span></acronym>]</span>
 </td>
 </tr>
 </tbody>
@@ -1447,12 +1503,17 @@ Retrieves the value set with <a class="link" href="ClutterStage.html#clutter-sta
 </div>
 <hr>
 <div class="refsect2">
-<a name="ClutterFog"></a><h3>struct ClutterFog</h3>
-<pre class="programlisting">struct ClutterFog {
+<a name="ClutterFog"></a><h3>ClutterFog</h3>
+<pre class="programlisting">typedef struct {
   gfloat z_near;
   gfloat z_far;
-};
+} ClutterFog;
 </pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">ClutterFog</code> has been deprecated since version 1.10 and should not be used in newly-written code. The fog-related API in <a class="link" href="ClutterStage.html" title="ClutterStage"><span class="type">ClutterStage</span></a> has been
+  deprecated as well.</p>
+</div>
 <p>
 Fog settings used to create the depth cueing effect.
 </p>
@@ -1478,6 +1539,10 @@ plane (always positive)</td>
 <a name="clutter-stage-set-use-fog"></a><h3>clutter_stage_set_use_fog ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                clutter_stage_set_use_fog           (<em class="parameter"><code><a class="link" href="ClutterStage.html" title="ClutterStage"><span class="type">ClutterStage</span></a> *stage</code></em>,
                                                          <em class="parameter"><code><span class="type">gboolean</span> fog</code></em>);</pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">clutter_stage_set_use_fog</code> has been deprecated since version 1.10 and should not be used in newly-written code. Calling this function produces no visible effect</p>
+</div>
 <p>
 Sets whether the depth cueing effect on the stage should be enabled
 or not.
@@ -1511,6 +1576,10 @@ The parameters of the GL fog used can be changed using the
 <div class="refsect2">
 <a name="clutter-stage-get-use-fog"></a><h3>clutter_stage_get_use_fog ()</h3>
 <pre class="programlisting"><span class="returnvalue">gboolean</span>            clutter_stage_get_use_fog           (<em class="parameter"><code><a class="link" href="ClutterStage.html" title="ClutterStage"><span class="type">ClutterStage</span></a> *stage</code></em>);</pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">clutter_stage_get_use_fog</code> has been deprecated since version 1.10 and should not be used in newly-written code. This function will always return <code class="literal">FALSE</code></p>
+</div>
 <p>
 Gets whether the depth cueing effect is enabled on <em class="parameter"><code>stage</code></em>.
 </p>
@@ -1535,7 +1604,11 @@ Gets whether the depth cueing effect is enabled on <em class="parameter"><code>s
 <div class="refsect2">
 <a name="clutter-stage-set-fog"></a><h3>clutter_stage_set_fog ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                clutter_stage_set_fog               (<em class="parameter"><code><a class="link" href="ClutterStage.html" title="ClutterStage"><span class="type">ClutterStage</span></a> *stage</code></em>,
-                                                         <em class="parameter"><code><a class="link" href="ClutterStage.html#ClutterFog" title="struct ClutterFog"><span class="type">ClutterFog</span></a> *fog</code></em>);</pre>
+                                                         <em class="parameter"><code><a class="link" href="ClutterStage.html#ClutterFog" title="ClutterFog"><span class="type">ClutterFog</span></a> *fog</code></em>);</pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">clutter_stage_set_fog</code> has been deprecated since version 1.10 and should not be used in newly-written code. Fog settings are ignored.</p>
+</div>
 <p>
 Sets the fog (also known as "depth cueing") settings for the <em class="parameter"><code>stage</code></em>.
 </p>
@@ -1644,7 +1717,7 @@ depend on fragment shaders.</div>
 </tr>
 <tr>
 <td><p><span class="term"><em class="parameter"><code>fog</code></em> :</span></p></td>
-<td>a <a class="link" href="ClutterStage.html#ClutterFog" title="struct ClutterFog"><span class="type">ClutterFog</span></a> structure</td>
+<td>a <a class="link" href="ClutterStage.html#ClutterFog" title="ClutterFog"><span class="type">ClutterFog</span></a> structure</td>
 </tr>
 </tbody>
 </table></div>
@@ -1654,7 +1727,12 @@ depend on fragment shaders.</div>
 <div class="refsect2">
 <a name="clutter-stage-get-fog"></a><h3>clutter_stage_get_fog ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                clutter_stage_get_fog               (<em class="parameter"><code><a class="link" href="ClutterStage.html" title="ClutterStage"><span class="type">ClutterStage</span></a> *stage</code></em>,
-                                                         <em class="parameter"><code><a class="link" href="ClutterStage.html#ClutterFog" title="struct ClutterFog"><span class="type">ClutterFog</span></a> *fog</code></em>);</pre>
+                                                         <em class="parameter"><code><a class="link" href="ClutterStage.html#ClutterFog" title="ClutterFog"><span class="type">ClutterFog</span></a> *fog</code></em>);</pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">clutter_stage_get_fog</code> has been deprecated since version 1.10 and should not be used in newly-written code. This function will always return the default
+  values of <a class="link" href="ClutterStage.html#ClutterFog" title="ClutterFog"><span class="type">ClutterFog</span></a></p>
+</div>
 <p>
 Retrieves the current depth cueing settings from the stage.
 </p>
@@ -1668,7 +1746,7 @@ Retrieves the current depth cueing settings from the stage.
 </tr>
 <tr>
 <td><p><span class="term"><em class="parameter"><code>fog</code></em> :</span></p></td>
-<td>return location for a <a class="link" href="ClutterStage.html#ClutterFog" title="struct ClutterFog"><span class="type">ClutterFog</span></a> structure. <span class="annotation">[<acronym title="Parameter for returning results. Default is transfer full."><span class="acronym">out</span></acronym>]</span>
+<td>return location for a <a class="link" href="ClutterStage.html#ClutterFog" title="ClutterFog"><span class="type">ClutterFog</span></a> structure. <span class="annotation">[<acronym title="Parameter for returning results. Default is transfer full."><span class="acronym">out</span></acronym>]</span>
 </td>
 </tr>
 </tbody>
@@ -1691,8 +1769,13 @@ Whether the <a class="link" href="ClutterStage.html" title="ClutterStage"><span 
 <div class="refsect2">
 <a name="ClutterStage--color"></a><h3>The <code class="literal">"color"</code> property</h3>
 <pre class="programlisting">  "color"                    <a class="link" href="clutter-Colors.html#ClutterColor" title="ClutterColor"><span class="type">ClutterColor</span></a>*         : Read / Write</pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">ClutterStage:color</code> has been deprecated since version 1.10 and should not be used in newly-written code. Use the <a class="link" href="ClutterActor.html#ClutterActor--background-color" title='The "background-color" property'><span class="type">"background-color"</span></a> property of
+  <a class="link" href="ClutterActor.html" title="ClutterActor"><span class="type">ClutterActor</span></a> instead.</p>
+</div>
 <p>
-The color of the main stage.
+The background color of the main stage.
 </p>
 </div>
 <hr>
@@ -1707,7 +1790,11 @@ Whether the mouse pointer should be visible
 <hr>
 <div class="refsect2">
 <a name="ClutterStage--fog"></a><h3>The <code class="literal">"fog"</code> property</h3>
-<pre class="programlisting">  "fog"                      <a class="link" href="ClutterStage.html#ClutterFog" title="struct ClutterFog"><span class="type">ClutterFog</span></a>*           : Read / Write</pre>
+<pre class="programlisting">  "fog"                      <a class="link" href="ClutterStage.html#ClutterFog" title="ClutterFog"><span class="type">ClutterFog</span></a>*           : Read / Write</pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">ClutterStage:fog</code> has been deprecated since version 1.10 and should not be used in newly-written code. This property does not do anything.</p>
+</div>
 <p>
 The settings for the GL "fog", used only if <a class="link" href="ClutterStage.html#ClutterStage--use-fog" title='The "use-fog" property'><span class="type">"use-fog"</span></a>
 is set to <code class="literal">TRUE</code>
@@ -1752,25 +1839,19 @@ See <a class="link" href="ClutterStage.html#clutter-stage-set-no-clear-hint" tit
 <div class="refsect2">
 <a name="ClutterStage--offscreen"></a><h3>The <code class="literal">"offscreen"</code> property</h3>
 <pre class="programlisting">  "offscreen"                <span class="type">gboolean</span>              : Read / Write</pre>
-<p>
-Whether the stage should be rendered in an offscreen buffer.
-</p>
-<p>
-</p>
 <div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
 <h3 class="title">Warning</h3>
-<p>Not every backend supports redirecting the
-stage to an offscreen buffer. This property might not work
-and it might be deprecated at any later date.</p>
+<p><code class="literal">ClutterStage:offscreen</code> has been deprecated since version 1.10 and should not be used in newly-written code. This property does not do anything.</p>
 </div>
 <p>
+Whether the stage should be rendered in an offscreen buffer.
 </p>
 <p>Default value: FALSE</p>
 </div>
 <hr>
 <div class="refsect2">
 <a name="ClutterStage--perspective"></a><h3>The <code class="literal">"perspective"</code> property</h3>
-<pre class="programlisting">  "perspective"              <a class="link" href="ClutterStage.html#ClutterPerspective" title="struct ClutterPerspective"><span class="type">ClutterPerspective</span></a>*   : Read / Write</pre>
+<pre class="programlisting">  "perspective"              <a class="link" href="ClutterStage.html#ClutterPerspective" title="ClutterPerspective"><span class="type">ClutterPerspective</span></a>*   : Read / Write</pre>
 <p>
 The parameters used for the perspective projection from 3D
 coordinates to 2D
@@ -1804,6 +1885,10 @@ with the underlying window(s)
 <div class="refsect2">
 <a name="ClutterStage--use-fog"></a><h3>The <code class="literal">"use-fog"</code> property</h3>
 <pre class="programlisting">  "use-fog"                  <span class="type">gboolean</span>              : Read / Write</pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">ClutterStage:use-fog</code> has been deprecated since version 1.10 and should not be used in newly-written code. This property does not do anything.</p>
+</div>
 <p>
 Whether the stage should use a linear GL "fog" in creating the
 depth-cueing effect, to enhance the perception of depth by fading

@@ -36,8 +36,11 @@
 /* Have the OSX backend */
 #undef HAVE_CLUTTER_OSX
 
-/* Have the Wayland backend */
+/* Have the Wayland client backend */
 #undef HAVE_CLUTTER_WAYLAND
+
+/* Have Wayland compositor support */
+#undef HAVE_CLUTTER_WAYLAND_COMPOSITOR
 
 /* Have the Win32 backend */
 #undef HAVE_CLUTTER_WIN32
@@ -49,17 +52,11 @@
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #undef HAVE_DLFCN_H
 
-/* Have libdrm support */
-#undef HAVE_DRM
-
 /* Have evdev support for input handling */
 #undef HAVE_EVDEV
 
 /* Define if the GNU gettext() function is already present or preinstalled. */
 #undef HAVE_GETTEXT
-
-/* Define to 1 if you have the <GL/glx.h> header file. */
-#undef HAVE_GL_GLX_H
 
 /* Define if you have the iconv() function and it works. */
 #undef HAVE_ICONV
@@ -123,6 +120,9 @@
 
 /* Define to 1 if XI2 is available */
 #undef HAVE_XINPUT_2
+
+/* Define to 1 if XInput 2.2 is available */
+#undef HAVE_XINPUT_2_2
 
 /* Define to use XKB extension */
 #undef HAVE_XKB

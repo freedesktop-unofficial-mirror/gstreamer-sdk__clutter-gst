@@ -1,7 +1,5 @@
 #include <stdlib.h>
 #include <gmodule.h>
-
-#undef CLUTTER_DISABLE_DEPRECATED
 #include <clutter/clutter.h>
 
 static const ClutterGravity gravities[] = {
@@ -51,9 +49,7 @@ G_MODULE_EXPORT int
 test_scale_main (int argc, char *argv[])
 {
   ClutterActor    *stage, *rect;
-  ClutterColor     stage_color = { 0x0, 0x0, 0x0, 0xff };
   ClutterColor     rect_color = { 0xff, 0xff, 0xff, 0x99 };
-  ClutterColor     white_color = { 0xff, 0xff, 0xff, 0xFF };
   ClutterTimeline *timeline;
   ClutterAlpha    *alpha;
   ClutterBehaviour *behave;
@@ -61,10 +57,11 @@ test_scale_main (int argc, char *argv[])
   if (clutter_init (&argc, &argv) != CLUTTER_INIT_SUCCESS)
     return 1;
 
-  stage = clutter_stage_get_default ();
-
-  clutter_stage_set_color (CLUTTER_STAGE (stage), &stage_color);
+  stage = clutter_stage_new ();
+  clutter_stage_set_title (CLUTTER_STAGE (stage), "Scaling");
+  clutter_actor_set_background_color (stage, CLUTTER_COLOR_Black);
   clutter_actor_set_size (stage, 300, 300);
+  g_signal_connect (stage, "destroy", G_CALLBACK (clutter_main_quit), NULL);
 
   rect = clutter_rectangle_new_with_color (&rect_color);
   clutter_actor_set_size (rect, 100, 100);
@@ -73,8 +70,7 @@ test_scale_main (int argc, char *argv[])
   clutter_container_add_actor (CLUTTER_CONTAINER (stage), rect);
 
   label = clutter_text_new_with_text ("Sans 20px", "");
-  clutter_text_set_color (CLUTTER_TEXT (label),
-                           &white_color);
+  clutter_text_set_color (CLUTTER_TEXT (label), CLUTTER_COLOR_White);
   clutter_actor_set_position (label,
                               clutter_actor_get_x (rect),
                               clutter_actor_get_y (rect)
@@ -101,7 +97,7 @@ test_scale_main (int argc, char *argv[])
 
   clutter_behaviour_apply (behave, rect);
 
-  clutter_timeline_set_loop (timeline, TRUE);
+  clutter_timeline_set_repeat_count (timeline, -1);
   g_signal_connect_swapped (timeline, "completed",
                             G_CALLBACK (set_next_gravity), rect);
   clutter_timeline_start (timeline);
@@ -114,4 +110,10 @@ test_scale_main (int argc, char *argv[])
   g_object_unref (behave);
 
   return EXIT_SUCCESS;
+}
+
+G_MODULE_EXPORT const char *
+test_scale_describe (void)
+{
+  return "Scaling animation and scaling center changes";
 }

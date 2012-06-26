@@ -28,11 +28,12 @@
 #ifndef __CLUTTER_EVENT_H__
 #define __CLUTTER_EVENT_H__
 
-#include <glib-object.h>
-#include <clutter/clutter-input-device.h>
 #include <clutter/clutter-types.h>
+#include <clutter/clutter-input-device.h>
 
-#define CLUTTER_TYPE_EVENT	(clutter_event_get_type ())
+G_BEGIN_DECLS
+
+#define CLUTTER_TYPE_EVENT	        (clutter_event_get_type ())
 
 /**
  * CLUTTER_PRIORITY_EVENTS:
@@ -41,7 +42,7 @@
  *
  * Since: 0.4
  */
-#define CLUTTER_PRIORITY_EVENTS (G_PRIORITY_DEFAULT)
+#define CLUTTER_PRIORITY_EVENTS         (G_PRIORITY_DEFAULT)
 
 /**
  * CLUTTER_CURRENT_TIME:
@@ -50,93 +51,60 @@
  *
  * Since: 0.4
  */
-#define CLUTTER_CURRENT_TIME    0L
-
-G_BEGIN_DECLS
+#define CLUTTER_CURRENT_TIME            (0L)
 
 /**
- * ClutterEventFlags:
- * @CLUTTER_EVENT_NONE: No flag set
- * @CLUTTER_EVENT_FLAG_SYNTHETIC: Synthetic event
+ * CLUTTER_EVENT_PROPAGATE:
  *
- * Flags for the #ClutterEvent
+ * Continues the propagation of an event; this macro should be
+ * used in event-related signals.
  *
- * Since: 0.6
+ * Since: 1.10
  */
-typedef enum { /*< flags prefix=CLUTTER_EVENT >*/
-  CLUTTER_EVENT_NONE           = 0,
-  CLUTTER_EVENT_FLAG_SYNTHETIC = 1 << 0
-} ClutterEventFlags;
+#define CLUTTER_EVENT_PROPAGATE         (FALSE)
 
 /**
- * ClutterEventType:
- * @CLUTTER_NOTHING: Empty event
- * @CLUTTER_KEY_PRESS: Key press event
- * @CLUTTER_KEY_RELEASE: Key release event
- * @CLUTTER_MOTION: Pointer motion event
- * @CLUTTER_ENTER: Actor enter event
- * @CLUTTER_LEAVE: Actor leave event
- * @CLUTTER_BUTTON_PRESS: Pointer button press event
- * @CLUTTER_BUTTON_RELEASE: Pointer button release event
- * @CLUTTER_SCROLL: Pointer scroll event
- * @CLUTTER_STAGE_STATE: Stage stage change event
- * @CLUTTER_DESTROY_NOTIFY: Destroy notification event
- * @CLUTTER_CLIENT_MESSAGE: Client message event
- * @CLUTTER_DELETE: Stage delete event
+ * CLUTTER_EVENT_STOP:
  *
- * Types of events.
+ * Stops the propagattion of an event; this macro should be used
+ * in event-related signals.
  *
- * Since: 0.4
+ * Since: 1.10
  */
-typedef enum { /*< prefix=CLUTTER >*/
-  CLUTTER_NOTHING = 0,
-  CLUTTER_KEY_PRESS,
-  CLUTTER_KEY_RELEASE,
-  CLUTTER_MOTION,
-  CLUTTER_ENTER,
-  CLUTTER_LEAVE,
-  CLUTTER_BUTTON_PRESS,
-  CLUTTER_BUTTON_RELEASE,
-  CLUTTER_SCROLL,
-  CLUTTER_STAGE_STATE,
-  CLUTTER_DESTROY_NOTIFY,
-  CLUTTER_CLIENT_MESSAGE,
-  CLUTTER_DELETE
-} ClutterEventType;
+#define CLUTTER_EVENT_STOP              (TRUE)
 
 /**
- * ClutterScrollDirection:
- * @CLUTTER_SCROLL_UP: Scroll up
- * @CLUTTER_SCROLL_DOWN: Scroll down
- * @CLUTTER_SCROLL_LEFT: Scroll left
- * @CLUTTER_SCROLL_RIGHT: Scroll right
+ * CLUTTER_BUTTON_PRIMARY:
  *
- * Direction of a pointer scroll event.
+ * The primary button of a pointer device.
  *
- * Since: 0.4
+ * This is typically the left mouse button in a right-handed
+ * mouse configuration.
+ *
+ * Since: 1.10
  */
-typedef enum { /*< prefix=CLUTTER_SCROLL >*/
-  CLUTTER_SCROLL_UP,
-  CLUTTER_SCROLL_DOWN,
-  CLUTTER_SCROLL_LEFT,
-  CLUTTER_SCROLL_RIGHT
-} ClutterScrollDirection;
+#define CLUTTER_BUTTON_PRIMARY          (1)
 
 /**
- * ClutterStageState:
- * @CLUTTER_STAGE_STATE_FULLSCREEN: Fullscreen mask
- * @CLUTTER_STAGE_STATE_OFFSCREEN: Offscreen mask
- * @CLUTTER_STAGE_STATE_ACTIVATED: Activated mask
+ * CLUTTER_BUTTON_MIDDLE:
  *
- * Stage state masks
+ * The middle button of a pointer device.
  *
- * Since: 0.4
+ * Since: 1.10
  */
-typedef enum {
-  CLUTTER_STAGE_STATE_FULLSCREEN       = (1<<1),
-  CLUTTER_STAGE_STATE_OFFSCREEN        = (1<<2),
-  CLUTTER_STAGE_STATE_ACTIVATED        = (1<<3)
-} ClutterStageState;
+#define CLUTTER_BUTTON_MIDDLE           (2)
+
+/**
+ * CLUTTER_BUTTON_SECONDARY:
+ *
+ * The secondary button of a pointer device.
+ *
+ * This is typically the right mouse button in a right-handed
+ * mouse configuration.
+ *
+ * Since: 1.10
+ */
+#define CLUTTER_BUTTON_SECONDARY        (3)
 
 typedef struct _ClutterAnyEvent         ClutterAnyEvent;
 typedef struct _ClutterButtonEvent      ClutterButtonEvent;
@@ -145,6 +113,9 @@ typedef struct _ClutterMotionEvent      ClutterMotionEvent;
 typedef struct _ClutterScrollEvent      ClutterScrollEvent;
 typedef struct _ClutterStageStateEvent  ClutterStageStateEvent;
 typedef struct _ClutterCrossingEvent    ClutterCrossingEvent;
+typedef struct _ClutterTouchEvent       ClutterTouchEvent;
+
+typedef struct _ClutterEventSequence    ClutterEventSequence;
 
 /**
  * ClutterAnyEvent:
@@ -362,6 +333,53 @@ struct _ClutterStageStateEvent
 };
 
 /**
+ * ClutterTouchEvent:
+ * @type: event type
+ * @time: event time
+ * @flags: event flags
+ * @stage: event source stage
+ * @source: event source actor (unused)
+ * @x: the X coordinate of the pointer, relative to the stage
+ * @y: the Y coordinate of the pointer, relative to the stage
+ * @sequence: the event sequence that this event belongs to
+ * @modifier_state: (type ClutterModifierType): a bit-mask representing the state
+ *   of modifier keys (e.g. Control, Shift, and Alt) and the pointer
+ *   buttons. See #ClutterModifierType
+ * @axes: reserved 
+ * @device: the device that originated the event
+ *
+ * Used for touch events.
+ *
+ * The @type field will be one of %CLUTTER_TOUCH_BEGIN, %CLUTTER_TOUCH_END,
+ * %CLUTTER_TOUCH_UPDATE, or %CLUTTER_TOUCH_CANCEL.
+ *
+ * Touch events are grouped into sequences; each touch sequence will begin
+ * with a %CLUTTER_TOUCH_BEGIN event, progress with %CLUTTER_TOUCH_UPDATE
+ * events, and end either with a %CLUTTER_TOUCH_END event or with a
+ * %CLUTTER_TOUCH_CANCEL event.
+ *
+ * With multi-touch capable devices there can be multiple event sequence
+ * running at the same time.
+ *
+ * Since: 1.10
+ */
+struct _ClutterTouchEvent
+{
+  ClutterEventType type;
+  guint32 time;
+  ClutterEventFlags flags;
+  ClutterStage *stage;
+  ClutterActor *source;
+
+  gfloat x;
+  gfloat y;
+  ClutterEventSequence *sequence;
+  ClutterModifierType modifier_state;
+  gdouble *axes; /* reserved */
+  ClutterInputDevice *device;
+};
+
+/**
  * ClutterEvent:
  *
  * Generic event wrapper.
@@ -380,6 +398,7 @@ union _ClutterEvent
   ClutterScrollEvent scroll;
   ClutterStageStateEvent stage_state;
   ClutterCrossingEvent crossing;
+  ClutterTouchEvent touch;
 };
 
 GType clutter_event_get_type (void) G_GNUC_CONST;
@@ -452,8 +471,21 @@ ClutterActor *          clutter_event_get_related               (const ClutterEv
 void                    clutter_event_set_scroll_direction      (ClutterEvent           *event,
                                                                  ClutterScrollDirection  direction);
 ClutterScrollDirection  clutter_event_get_scroll_direction      (const ClutterEvent     *event);
+CLUTTER_AVAILABLE_IN_1_10
+void                    clutter_event_set_scroll_delta          (ClutterEvent           *event,
+                                                                 gdouble                 dx,
+                                                                 gdouble                 dy);
+CLUTTER_AVAILABLE_IN_1_10
+void                    clutter_event_get_scroll_delta          (const ClutterEvent     *event,
+                                                                 gdouble                *dx,
+                                                                 gdouble                *dy);
+
+CLUTTER_AVAILABLE_IN_1_10
+ClutterEventSequence *  clutter_event_get_event_sequence        (const ClutterEvent     *event);
 
 guint32                 clutter_keysym_to_unicode               (guint                   keyval);
+CLUTTER_AVAILABLE_IN_1_10
+guint                   clutter_unicode_to_keysym               (guint32                 wc);
 
 guint32                 clutter_get_current_event_time          (void);
 const ClutterEvent *    clutter_get_current_event               (void);

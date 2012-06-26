@@ -232,7 +232,7 @@ clutter_model_real_get_column_type (ClutterModel *model,
 {
   ClutterModelPrivate *priv = model->priv;
 
-  if (column < 0 || column >= clutter_model_get_n_columns (model))
+  if (column >= clutter_model_get_n_columns (model))
     return G_TYPE_INVALID;
 
   return priv->column_types[column];
@@ -244,7 +244,7 @@ clutter_model_real_get_column_name (ClutterModel *model,
 {
   ClutterModelPrivate *priv = model->priv;
 
-  if (column < 0 || column >= clutter_model_get_n_columns (model))
+  if (column >= clutter_model_get_n_columns (model))
     return NULL;
 
   if (priv->column_names && priv->column_names[column])
@@ -490,7 +490,7 @@ clutter_model_init (ClutterModel *self)
  * type.
  */
 gboolean
-clutter_model_check_type (GType gtype)
+_clutter_model_check_type (GType gtype)
 {
   gint i = 0;
   static const GType type_list[] =
@@ -625,14 +625,14 @@ clutter_model_set_custom_property (ClutterScriptable *scriptable,
       columns = g_value_get_pointer (value);
       n_columns = g_slist_length (columns);
 
-      clutter_model_set_n_columns (model, n_columns, TRUE, TRUE);
+      _clutter_model_set_n_columns (model, n_columns, TRUE, TRUE);
 
       for (i = 0, l = columns; l != NULL; l = l->next, i++)
         {
           ColumnInfo *cinfo = l->data;
 
-          clutter_model_set_column_name (model, i, cinfo->name);
-          clutter_model_set_column_type (model, i, cinfo->type);
+          _clutter_model_set_column_name (model, i, cinfo->name);
+          _clutter_model_set_column_type (model, i, cinfo->type);
 
           g_free (cinfo->name);
           g_slice_free (ColumnInfo, cinfo);
@@ -652,39 +652,41 @@ clutter_model_set_custom_property (ClutterScriptable *scriptable,
       for (l = rows; l; l = l->next)
         {
           JsonNode *node = l->data;
-          guint *columns, i, n_values = 0;
-          GValueArray *values;
+          guint *columns = NULL, i, n_values = 0;
+          GValue *values = NULL;
 
           if (JSON_NODE_TYPE (node) == JSON_NODE_ARRAY)
             {
               JsonArray *array = json_node_get_array (node);
+
               if (json_array_get_length (array) != n_columns)
                 {
                   g_warning ("Row %d contains the wrong count of columns",
                              g_slist_position (rows, l) + 1);
-                  row++;
+                  row += 1;
                   continue;
                 }
 
+              /* array more requires all columns */
               n_values = n_columns;
+
               columns = g_new (guint, n_values);
-              values = g_value_array_new (n_values);
+              values = g_new0 (GValue, n_values);
 
               for (i = 0; i < n_values; i++)
                 {
                   GType column_type;
                   const gchar *column_name;
-                  GValue v = { 0, };
 
                   column_type = clutter_model_get_column_type (model, i);
                   column_name = clutter_model_get_column_name (model, i);
+
                   columns[i] = i;
-                  g_value_init (&v, column_type);
-                  _clutter_script_parse_node (script, &v, column_name,
+                  g_value_init (&values[i], column_type);
+
+                  _clutter_script_parse_node (script, &values[i], column_name,
                                               json_array_get_element (array, i),
                                               NULL);
-                  g_value_array_append (values, &v);
-                  g_value_unset (&v);
                 }
             }
           else if (JSON_NODE_TYPE (node) == JSON_NODE_OBJECT)
@@ -693,9 +695,11 @@ clutter_model_set_custom_property (ClutterScriptable *scriptable,
               GList *members, *m;
               guint column = 0;
 
+              /* object mode does not require all columns */
               n_values = json_object_get_size (object);
+
               columns = g_new (guint, n_values);
-              values = g_value_array_new (n_values);
+              values = g_new0 (GValue, n_values);
 
               members = json_object_get_members (object);
               for (m = members; m; m = m->next)
@@ -712,35 +716,38 @@ clutter_model_set_custom_property (ClutterScriptable *scriptable,
                           JsonNode *member;
                           GType col_type;
                           const gchar *col_name;
-                          GValue v = { 0, };
+
+                          member = json_object_get_member (object, mname);
 
                           col_type = clutter_model_get_column_type (model, i);
                           col_name = clutter_model_get_column_name (model, i);
+
                           columns[column] = i;
-                          g_value_init (&v, col_type);
-                          member = json_object_get_member (object, mname);
-                          _clutter_script_parse_node (script, &v,
+                          g_value_init (&values[column], col_type);
+
+                          _clutter_script_parse_node (script, &values[column],
                                                       col_name, member,
                                                       NULL);
-                          g_value_array_append (values, &v);
-                          g_value_unset (&v);
                           break;
                         }
                     }
-                  column++;
+
+                  column += 1;
                 }
             }
           else
             {
-              row++;
+              row += 1;
               continue;
             }
 
-          clutter_model_insertv (model, row, n_values, columns, values->values);
-          g_value_array_free (values);
+          clutter_model_insertv (model, row, n_values, columns, values);
+
+          g_free (values);
           g_free (columns);
           json_node_free (node);
-          row++;
+
+          row += 1;
         }
       g_slist_free (rows);
     }
@@ -851,7 +858,7 @@ clutter_model_filter_iter (ClutterModel     *model,
   return priv->filter_func (model, iter, priv->filter_data);
 }
 
-/*
+/*< private >
  * clutter_model_set_n_columns:
  * @model: a #ClutterModel
  * @n_columns: number of columns
@@ -865,10 +872,10 @@ clutter_model_filter_iter (ClutterModel     *model,
  * This function can only be called once.
  */
 void
-clutter_model_set_n_columns (ClutterModel *model,
-                             gint          n_columns,
-                             gboolean      set_types,
-                             gboolean      set_names)
+_clutter_model_set_n_columns (ClutterModel *model,
+                              gint          n_columns,
+                              gboolean      set_types,
+                              gboolean      set_names)
 {
   ClutterModelPrivate *priv = model->priv;
 
@@ -884,8 +891,8 @@ clutter_model_set_n_columns (ClutterModel *model,
     priv->column_names = g_new0 (gchar*, n_columns);
 }
 
-/*
- * clutter_model_set_column_type:
+/*< private >
+ * _clutter_model_set_column_type:
  * @model: a #ClutterModel
  * @column: column index
  * @gtype: type of the column
@@ -893,17 +900,17 @@ clutter_model_set_n_columns (ClutterModel *model,
  * Sets the type of @column inside @model
  */
 void
-clutter_model_set_column_type (ClutterModel *model,
-                               gint          column,
-                               GType         gtype)
+_clutter_model_set_column_type (ClutterModel *model,
+                                gint          column,
+                                GType         gtype)
 {
   ClutterModelPrivate *priv = model->priv;
 
   priv->column_types[column] = gtype;
 }
 
-/*
- * clutter_model_set_column_name:
+/*< private >
+ * _clutter_model_set_column_name:
  * @model: a #ClutterModel
  * @column: column index
  * @name: name of the column, or %NULL
@@ -911,9 +918,9 @@ clutter_model_set_column_type (ClutterModel *model,
  * Sets the name of @column inside @model
  */
 void
-clutter_model_set_column_name (ClutterModel *model,
-                               gint          column,
-                               const gchar  *name)
+_clutter_model_set_column_name (ClutterModel *model,
+                                gint          column,
+                                const gchar  *name)
 {
   ClutterModelPrivate *priv = model->priv;
 
@@ -950,17 +957,17 @@ clutter_model_set_types (ClutterModel *model,
   g_return_if_fail (priv->n_columns < 0 || priv->n_columns == n_columns);
   g_return_if_fail (priv->column_types == NULL);
 
-  clutter_model_set_n_columns (model, n_columns, TRUE, FALSE);
+  _clutter_model_set_n_columns (model, n_columns, TRUE, FALSE);
 
   for (i = 0; i < n_columns; i++)
     {
-      if (!clutter_model_check_type (types[i]))
+      if (!_clutter_model_check_type (types[i]))
         {
           g_warning ("%s: Invalid type %s\n", G_STRLOC, g_type_name (types[i]));
           return;
         }
 
-      clutter_model_set_column_type (model, i, types[i]);
+      _clutter_model_set_column_type (model, i, types[i]);
     }
 }
 
@@ -994,10 +1001,10 @@ clutter_model_set_names (ClutterModel        *model,
   g_return_if_fail (priv->n_columns < 0 || priv->n_columns == n_columns);
   g_return_if_fail (priv->column_names == NULL);
 
-  clutter_model_set_n_columns (model, n_columns, FALSE, TRUE);
+  _clutter_model_set_n_columns (model, n_columns, FALSE, TRUE);
 
   for (i = 0; i < n_columns; i++)
-    clutter_model_set_column_name (model, i, names[i]);
+    _clutter_model_set_column_name (model, i, names[i]);
 }
 
 /**
@@ -1390,7 +1397,7 @@ clutter_model_get_column_name (ClutterModel *model,
 
   g_return_val_if_fail (CLUTTER_IS_MODEL (model), NULL);
 
-  if (column < 0 || column >= clutter_model_get_n_columns (model))
+  if (column >= clutter_model_get_n_columns (model))
     {
       g_warning ("%s: Invalid column id value %d\n", G_STRLOC, column);
       return NULL;
@@ -1422,7 +1429,7 @@ clutter_model_get_column_type (ClutterModel *model,
 
   g_return_val_if_fail (CLUTTER_IS_MODEL (model), G_TYPE_INVALID);
 
-  if (column < 0 || column >= clutter_model_get_n_columns (model))
+  if (column >= clutter_model_get_n_columns (model))
     {
       g_warning ("%s: Invalid column id value %d\n", G_STRLOC, column);
       return G_TYPE_INVALID;
@@ -1785,8 +1792,8 @@ clutter_model_iter_real_get_row (ClutterModelIter *iter)
 
 /* private function */
 void
-clutter_model_iter_set_row (ClutterModelIter *iter,
-                            guint             row)
+_clutter_model_iter_set_row (ClutterModelIter *iter,
+                             guint             row)
 {
   iter->priv->row = row;
 }
@@ -1999,11 +2006,11 @@ clutter_model_iter_set_internal_valist (ClutterModelIter *iter,
   
   while (column != -1)
     {
-      GValue value = { 0, };
+      GValue value = G_VALUE_INIT;
       gchar *error = NULL;
       GType col_type;
 
-      if (column < 0 || column >= clutter_model_get_n_columns (model))
+      if (column >= clutter_model_get_n_columns (model))
         { 
           g_warning ("%s: Invalid column number %d added to iter "
                      "(remember to end you list of columns with a -1)",
@@ -2165,11 +2172,11 @@ clutter_model_iter_get_valist (ClutterModelIter *iter,
 
   while (column != -1)
     {
-      GValue value = { 0, };
+      GValue value = G_VALUE_INIT;
       gchar *error = NULL;
       GType col_type;
 
-      if (column < 0 || column >= clutter_model_get_n_columns (model))
+      if (column >= clutter_model_get_n_columns (model))
         { 
           g_warning ("%s: Invalid column number %d added to iter "
                      "(remember to end you list of columns with a -1)",

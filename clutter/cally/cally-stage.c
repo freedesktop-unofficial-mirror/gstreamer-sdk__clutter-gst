@@ -38,9 +38,6 @@
 #include "cally-stage.h"
 #include "cally-actor-private.h"
 
-static void cally_stage_class_init (CallyStageClass *klass);
-static void cally_stage_init       (CallyStage      *stage);
-
 /* AtkObject.h */
 static void                  cally_stage_real_initialize (AtkObject *obj,
                                                           gpointer   data);
@@ -67,6 +64,9 @@ G_DEFINE_TYPE_WITH_CODE (CallyStage,
 
 struct _CallyStagePrivate
 {
+  /* NULL means that the stage will receive the focus */
+  ClutterActor *key_focus;
+
   gboolean active;
 };
 
@@ -122,6 +122,48 @@ cally_stage_new (ClutterActor *actor)
 }
 
 static void
+cally_stage_notify_key_focus_cb (ClutterStage *stage,
+                                 GParamSpec   *pspec,
+                                 CallyStage   *self)
+{
+  ClutterActor *key_focus = NULL;
+  AtkObject *new = NULL;
+
+  if (self->priv->active == FALSE)
+    return;
+
+  key_focus = clutter_stage_get_key_focus (stage);
+
+  if (key_focus != self->priv->key_focus)
+    {
+      AtkObject *old = NULL;
+
+      if (self->priv->key_focus != NULL)
+        old = clutter_actor_get_accessible (self->priv->key_focus);
+      else
+        old = clutter_actor_get_accessible (CLUTTER_ACTOR (stage));
+
+      atk_object_notify_state_change (old,
+                                      ATK_STATE_FOCUSED,
+                                      FALSE);
+    }
+
+  /* we keep notifying the focus gain without checking previous
+   * key-focus to avoid some missing events due timing
+   */
+  self->priv->key_focus = key_focus;
+
+  if (key_focus != NULL)
+    new = clutter_actor_get_accessible (key_focus);
+  else
+    new = clutter_actor_get_accessible (CLUTTER_ACTOR (stage));
+
+  atk_object_notify_state_change (new,
+                                  ATK_STATE_FOCUSED,
+                                  TRUE);
+}
+
+static void
 cally_stage_real_initialize (AtkObject *obj,
                              gpointer  data)
 {
@@ -135,8 +177,10 @@ cally_stage_real_initialize (AtkObject *obj,
 
   g_signal_connect (stage, "activate", G_CALLBACK (cally_stage_activate_cb), obj);
   g_signal_connect (stage, "deactivate", G_CALLBACK (cally_stage_deactivate_cb), obj);
+  g_signal_connect (stage, "notify::key-focus",
+                    G_CALLBACK (cally_stage_notify_key_focus_cb), obj);
 
-  obj->role = ATK_ROLE_CANVAS;
+  atk_object_set_role (obj, ATK_ROLE_WINDOW);
 }
 
 static AtkStateSet*

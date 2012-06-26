@@ -72,9 +72,7 @@
         heavily on GObject concepts and idioms. If you are unfamiliar with
         GObject, please read
         <ulink url="http://developer.gnome.org/gobject/stable/">the GObject
-        Reference Manual</ulink> before proceeding. You might also find
-        <ulink url="http://diuf.unifr.ch/pai/wiki/doku.php/research:projects:gobject_tutorial">this
-        tutorial</ulink> a useful introduction.</para>
+        Reference Manual</ulink> before proceeding.</para>
       </tip>
 
       <para>The code for this solution is structured like standard GObject
@@ -770,13 +768,10 @@ clutter_actor_raise (actorB, actorA);
               </programlisting>
             </informalexample>
 
-            <para><function>clutter_actor_raise()</function>,
-            <function>clutter_actor_lower()</function> and related
+            <para><function>clutter_actor_set_child_above_sibling()</function>,
+            <function>clutter_actor_set_child_below_sibling()</function> and related
             <type>ClutterActor</type> functions set
-            depth ordering on actors; see also <type>ClutterContainer</type>'s
-            <function>clutter_container_raise_child()</function> and
-            <function>clutter_container_lower_child()</function>
-            functions.</para>
+            depth ordering on actors.</para>
           </listitem>
         </itemizedlist>
 

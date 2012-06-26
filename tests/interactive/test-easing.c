@@ -82,7 +82,7 @@ on_button_press (ClutterActor       *actor,
                  ClutterButtonEvent *event,
                  ClutterActor       *rectangle)
 {
-  if (event->button == 3)
+  if (event->button == CLUTTER_BUTTON_SECONDARY)
     {
       gchar *text;
 
@@ -100,7 +100,7 @@ on_button_press (ClutterActor       *actor,
       clutter_text_set_text (CLUTTER_TEXT (easing_mode_label), text);
       g_free (text);
     }
-  else if (event->button == 1)
+  else if (event->button == CLUTTER_BUTTON_PRIMARY)
     {
       ClutterAnimation *animation;
       ClutterAnimationMode cur_mode;
@@ -227,7 +227,7 @@ test_easing_main (int argc, char *argv[])
 
   stage = clutter_stage_new ();
   clutter_stage_set_title (CLUTTER_STAGE (stage), "Easing Modes");
-  clutter_stage_set_color (CLUTTER_STAGE (stage), CLUTTER_COLOR_LightSkyBlue);
+  clutter_actor_set_background_color (stage, CLUTTER_COLOR_LightSkyBlue);
   g_signal_connect (stage, "destroy", G_CALLBACK (clutter_main_quit), NULL);
   main_stage = stage;
 
@@ -261,4 +261,10 @@ test_easing_main (int argc, char *argv[])
   clutter_main ();
 
   return EXIT_SUCCESS;
+}
+
+G_MODULE_EXPORT const char *
+test_easing_describe (void)
+{
+  return "Visualize all easing modes provided by Clutter";
 }

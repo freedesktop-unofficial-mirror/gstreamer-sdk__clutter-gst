@@ -1,7 +1,10 @@
 #include <stdlib.h>
 #include <gmodule.h>
 #include <clutter/clutter.h>
+
+#ifdef CLUTTER_WINDOWING_X11
 #include <clutter/x11/clutter-x11.h>
+#endif
 
 typedef struct {
   ClutterActor *stage;
@@ -218,8 +221,10 @@ test_devices_main (int argc, char **argv)
   ClutterDeviceManager *manager;
   const GSList *stage_devices, *l;
 
+#ifdef CLUTTER_WINDOWING_X11
   /* force enabling X11 support */
   clutter_x11_enable_xinput ();
+#endif
 
   if (clutter_init (&argc, &argv) != CLUTTER_INIT_SUCCESS)
     return 1;
@@ -228,7 +233,7 @@ test_devices_main (int argc, char **argv)
   app->devices = g_hash_table_new (g_direct_hash, g_direct_equal) ;
 
   stage = clutter_stage_new ();
-  clutter_stage_set_color (CLUTTER_STAGE (stage), CLUTTER_COLOR_LightSkyBlue);
+  clutter_actor_set_background_color (stage, CLUTTER_COLOR_LightSkyBlue);
   clutter_stage_set_title (CLUTTER_STAGE (stage), "Devices");
   clutter_stage_hide_cursor (CLUTTER_STAGE (stage));
   g_signal_connect (stage,

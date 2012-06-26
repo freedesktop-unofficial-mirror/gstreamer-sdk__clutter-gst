@@ -339,7 +339,7 @@ clutter_state_key_new (State       *state,
 {
   ClutterStatePrivate *priv = state->clutter_state->priv;
   ClutterStateKey *state_key;
-  GValue value = { 0, };
+  GValue value = G_VALUE_INIT;
 
   state_key = g_slice_new0 (ClutterStateKey);
 
@@ -432,11 +432,14 @@ again_from_start:
       /* Go through each TargetState */
       if (target_state)
         {
-          GList *k;
-again_for_target_state:
-          for (k = target_state->keys; k != NULL; k = k->next)
+          GList *k = target_state->keys;
+
+	  /* Note the safe while() loop, because we modify the list inline */
+          while (k != NULL)
             {
               ClutterStateKey *key = k->data;
+
+	      k = k->next;
 
               /* Check if each key matches query */
               if (   (object == NULL        || (object == key->object))
@@ -456,13 +459,12 @@ again_for_target_state:
                         clutter_state_set_state (this, NULL);
 
                       /* remove any keys that exist that uses this state as a source */
-                      clutter_state_remove_key (this, s->data, NULL, NULL, NULL);
+		      clutter_state_remove_key_internal (this, s->data, NULL, NULL, NULL, is_inert);
 
                       g_hash_table_remove (this->priv->states, s->data);
                       goto again_from_start; /* we have just freed State *target_state, so
                                                 need to restart removal */
                     }
-                  goto again_for_target_state;
                 }
             }
         }
@@ -598,7 +600,7 @@ clutter_state_new_frame (ClutterTimeline *timeline,
                   if (key->is_animatable)
                     {
                       ClutterAnimatable *animatable;
-                      GValue value = { 0, };
+                      GValue value = G_VALUE_INIT;
                       gboolean res;
 
                       animatable = CLUTTER_ANIMATABLE (key->object);
@@ -733,7 +735,7 @@ clutter_state_change (ClutterState *state,
       for (k = new_state->keys; k != NULL; k = k->next)
         {
           ClutterStateKey *key = k->data;
-          GValue initial = { 0, };
+          GValue initial = G_VALUE_INIT;
 
           /* Reset the pre-pre-delay - this is only used for setting keys
            * during transitions.
@@ -983,7 +985,7 @@ clutter_state_set (ClutterState *state,
   while (object != NULL)
     {
       GParamSpec *pspec;
-      GValue value = { 0, };
+      GValue value = G_VALUE_INIT;
       gchar *error = NULL;
       gboolean is_delayed = FALSE;
 
@@ -1093,7 +1095,7 @@ clutter_state_set_key_internal (ClutterState    *state,
       else
         {
           /* Set the ClutterInterval associated with the state */
-          GValue initial = { 0, };
+          GValue initial = G_VALUE_INIT;
           gdouble progress = clutter_timeline_get_progress (priv->timeline);
 
           g_value_init (&initial,
@@ -1537,9 +1539,8 @@ clutter_state_get_animator (ClutterState *state,
                             const gchar  *source_state_name,
                             const gchar  *target_state_name)
 {
-  State         *target_state;
-  StateAnimator *animators;
-  gint i;
+  State *target_state;
+  guint i;
 
   g_return_val_if_fail (CLUTTER_IS_STATE (state), NULL);
 
@@ -1552,13 +1553,14 @@ clutter_state_get_animator (ClutterState *state,
   target_state = clutter_state_fetch_state (state, target_state_name, FALSE);
   if (target_state == NULL)
     return NULL;
-  
-  animators = (StateAnimator*)target_state->animators->data;
 
-  for (i = 0; animators[i].animator; i++)
+  for (i = 0; i < target_state->animators->len; i++)
     {
-      if (animators[i].source_state_name == source_state_name)
-        return animators[i].animator;
+      const StateAnimator *animator;
+
+      animator = &g_array_index (target_state->animators, StateAnimator, i);
+      if (animator->source_state_name == source_state_name)
+        return animator->animator;
     }
 
   return NULL;
@@ -1592,8 +1594,7 @@ clutter_state_set_animator (ClutterState    *state,
                             ClutterAnimator *animator)
 {
   State *target_state;
-  StateAnimator *animators;
-  gint i;
+  guint i;
 
   g_return_if_fail (CLUTTER_IS_STATE (state));
 
@@ -1604,15 +1605,17 @@ clutter_state_set_animator (ClutterState    *state,
   if (target_state == NULL)
     return;
   
-  animators = (StateAnimator *) target_state->animators->data;
-  for (i = 0; animators[i].animator; i++)
+  for (i = 0; target_state->animators->len; i++)
     {
-      if (animators[i].source_state_name == source_state_name)
+      StateAnimator *a;
+
+      a = &g_array_index (target_state->animators, StateAnimator, i);
+      if (a->source_state_name == source_state_name)
         {
-          g_object_unref (animators[i].animator);
+          g_object_unref (a->animator);
 
           if (animator != NULL)
-            animators[i].animator = g_object_ref (animator);
+            a->animator = g_object_ref (animator);
           else
             {
               /* remove the matched animator if passed NULL */

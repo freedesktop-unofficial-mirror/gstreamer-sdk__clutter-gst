@@ -41,7 +41,7 @@
 </tr></table></div>
 <div class="refsynopsisdiv">
 <a name="ClutterLayoutManager.synopsis"></a><h2>Synopsis</h2>
-<pre class="synopsis">struct              <a class="link" href="ClutterLayoutManager.html#ClutterLayoutManager-struct" title="struct ClutterLayoutManager">ClutterLayoutManager</a>;
+<pre class="synopsis">                    <a class="link" href="ClutterLayoutManager.html#ClutterLayoutManager-struct" title="ClutterLayoutManager">ClutterLayoutManager</a>;
 struct              <a class="link" href="ClutterLayoutManager.html#ClutterLayoutManagerClass" title="struct ClutterLayoutManagerClass">ClutterLayoutManagerClass</a>;
 <span class="returnvalue">void</span>                <a class="link" href="ClutterLayoutManager.html#clutter-layout-manager-get-preferred-width" title="clutter_layout_manager_get_preferred_width ()">clutter_layout_manager_get_preferred_width</a>
                                                         (<em class="parameter"><code><a class="link" href="ClutterLayoutManager.html" title="ClutterLayoutManager"><span class="type">ClutterLayoutManager</span></a> *manager</code></em>,
@@ -198,56 +198,10 @@ Clutter provides some simple <a class="link" href="ClutterLayoutManager.html" ti
   <code class="function"><code class="function">set_container()</code></code> virtual function. The layout manager
   should not hold a real reference (i.e. call <code class="function">g_object_ref()</code>) on the
   container actor, to avoid reference cycles.</p>
-<p>If the layout manager has properties affecting the layout
+<p>If a layout manager has properties affecting the layout
   policies then it should emit the <a class="link" href="ClutterLayoutManager.html#ClutterLayoutManager-layout-changed" title='The "layout-changed" signal'><span class="type">"layout-changed"</span></a>
   signal on itself by using the <a class="link" href="ClutterLayoutManager.html#clutter-layout-manager-layout-changed" title="clutter_layout_manager_layout_changed ()"><code class="function">clutter_layout_manager_layout_changed()</code></a>
   function whenever one of these properties changes.</p>
-<p>If the layout manager has layout properties, that is properties that
-  should exist only as the result of the presence of a specific (layout
-  manager, container actor, child actor) combination, and it wishes to store
-  those properties inside a <a class="link" href="ClutterLayoutMeta.html" title="ClutterLayoutMeta"><span class="type">ClutterLayoutMeta</span></a> then it should override the
-  <span class="structname">ClutterLayoutManager</span>::<code class="function">get_child_meta_type()</code>
-  virtual function to return the <span class="type">GType</span> of the <a class="link" href="ClutterLayoutMeta.html" title="ClutterLayoutMeta"><span class="type">ClutterLayoutMeta</span></a> sub-class
-  used to store the layout properties; optionally, the <a class="link" href="ClutterLayoutManager.html" title="ClutterLayoutManager"><span class="type">ClutterLayoutManager</span></a>
-  sub-class might also override the
-  <span class="structname">ClutterLayoutManager</span>::<code class="function">create_child_meta()</code> virtual
-  function to control how the <a class="link" href="ClutterLayoutMeta.html" title="ClutterLayoutMeta"><span class="type">ClutterLayoutMeta</span></a> instance is created,
-  otherwise the default implementation will be equivalent to:</p>
-<div class="informalexample">
-  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
-    <tbody>
-      <tr>
-        <td class="listing_lines" align="right"><pre>1
-2
-3
-4
-5
-6
-7
-8
-9
-10
-11</pre></td>
-        <td class="listing_code"><pre class="programlisting"><span class="usertype">ClutterLayoutManagerClass</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">klass</span><span class="symbol">;</span>
-<span class="usertype">GType</span><span class="normal"> meta_type</span><span class="symbol">;</span>
-
-<span class="normal">klass </span><span class="symbol">=</span><span class="normal"> </span><span class="function">CLUTTER_LAYOUT_MANAGER_GET_CLASS</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">manager</span><span class="symbol">);</span>
-<span class="normal">meta_type </span><span class="symbol">=</span><span class="normal"> klass</span><span class="symbol">-&gt;</span><span class="function">get_child_meta_type</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">manager</span><span class="symbol">);</span>
-
-<span class="keyword">return</span><span class="normal"> </span><span class="function">g_object_new</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">meta_type</span><span class="symbol">,</span>
-<span class="normal">                     </span><span class="string">"manager"</span><span class="symbol">,</span><span class="normal"> manager</span><span class="symbol">,</span>
-<span class="normal">                     </span><span class="string">"container"</span><span class="symbol">,</span><span class="normal"> container</span><span class="symbol">,</span>
-<span class="normal">                     </span><span class="string">"actor"</span><span class="symbol">,</span><span class="normal"> actor</span><span class="symbol">,</span>
-<span class="normal">                     <a href="/home/ebassi/gnome3/install/share/gtk-doc/html/liboil/liboil-liboiljunk.html#NULL--CAPS">NULL</a></span><span class="symbol">);</span></pre></td>
-      </tr>
-    </tbody>
-  </table>
-</div>
-
-<p>Where <code class="varname">manager</code> is the  <a class="link" href="ClutterLayoutManager.html" title="ClutterLayoutManager"><span class="type">ClutterLayoutManager</span></a>,
-  <code class="varname">container</code> is the <a class="link" href="ClutterContainer.html" title="ClutterContainer"><span class="type">ClutterContainer</span></a> using the
-  <a class="link" href="ClutterLayoutManager.html" title="ClutterLayoutManager"><span class="type">ClutterLayoutManager</span></a> and <code class="varname">actor</code> is the <a class="link" href="ClutterActor.html" title="ClutterActor"><span class="type">ClutterActor</span></a>
-  child of the <a class="link" href="ClutterContainer.html" title="ClutterContainer"><span class="type">ClutterContainer</span></a>.</p>
 </div>
 <p>
 </p>
@@ -310,7 +264,7 @@ Clutter provides some simple <a class="link" href="ClutterLayoutManager.html" ti
   and <code class="function"><code class="function">end_animation()</code></code> to set up ad hoc state, and then
   chain up to the parent's implementation.</p>
 <div class="example">
-<a name="example-ClutterLayoutManager-animation"></a><p class="title"><b>Example 2. Animation of a Layout Manager</b></p>
+<a name="example-ClutterLayoutManager-animation"></a><p class="title"><b>Example 1. Animation of a Layout Manager</b></p>
 <div class="example-contents">
 <p>The code below shows how a <a class="link" href="ClutterLayoutManager.html" title="ClutterLayoutManager"><span class="type">ClutterLayoutManager</span></a> sub-class should
     provide animating the allocation of its children from within the
@@ -332,13 +286,12 @@ my_layout_manager_allocate (ClutterLayoutManager   *manager,
                             ClutterAllocationFlags  flags)
 {
   MyLayoutManager *self = MY_LAYOUT_MANAGER (manager);
-  GList *children, *l;
+  ClutterActor *child;
 
-  children = clutter_container_get_children (container);
-
-  for (l = children; l != NULL; l = l-&gt;next)
+  for (child = clutter_actor_get_first_child (CLUTTER_ACTOR (container));
+       child != NULL;
+       child = clutter_actor_get_next_sibling (child))
     {
-      ClutterActor *child = l-&gt;data;
       ClutterLayoutMeta *meta;
       MyLayoutMeta *my_meta;
 
@@ -399,8 +352,6 @@ my_layout_manager_allocate (ClutterLayoutManager   *manager,
       /* allocate the child */
       clutter_actor_allocate (child, &amp;child_box, flags);
     }
-
-  g_list_free (children);
 }
     </pre>
 </div>
@@ -447,14 +398,145 @@ my_layout_manager_allocate (ClutterLayoutManager   *manager,
 <p>
 </p>
 <p>
+</p>
+<div class="refsect2">
+<a name="clutter-layout-properties"></a><h3>Layout Properties</h3>
+<p>If a layout manager has layout properties, that is properties that
+  should exist only as the result of the presence of a specific (layout
+  manager, container actor, child actor) combination, and it wishes to store
+  those properties inside a <a class="link" href="ClutterLayoutMeta.html" title="ClutterLayoutMeta"><span class="type">ClutterLayoutMeta</span></a>, then it should override the
+  <span class="structname">ClutterLayoutManager</span>::<code class="function">get_child_meta_type()</code>
+  virtual function to return the <span class="type">GType</span> of the <a class="link" href="ClutterLayoutMeta.html" title="ClutterLayoutMeta"><span class="type">ClutterLayoutMeta</span></a> sub-class
+  used to store the layout properties; optionally, the <a class="link" href="ClutterLayoutManager.html" title="ClutterLayoutManager"><span class="type">ClutterLayoutManager</span></a>
+  sub-class might also override the
+  <span class="structname">ClutterLayoutManager</span>::<code class="function">create_child_meta()</code> virtual
+  function to control how the <a class="link" href="ClutterLayoutMeta.html" title="ClutterLayoutMeta"><span class="type">ClutterLayoutMeta</span></a> instance is created,
+  otherwise the default implementation will be equivalent to:</p>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="usertype">ClutterLayoutManagerClass</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">klass</span><span class="symbol">;</span>
+<span class="usertype">GType</span><span class="normal"> meta_type</span><span class="symbol">;</span>
+
+<span class="normal">klass </span><span class="symbol">=</span><span class="normal"> </span><span class="function">CLUTTER_LAYOUT_MANAGER_GET_CLASS</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">manager</span><span class="symbol">);</span>
+<span class="normal">meta_type </span><span class="symbol">=</span><span class="normal"> klass</span><span class="symbol">-&gt;</span><span class="function">get_child_meta_type</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">manager</span><span class="symbol">);</span>
+
+<span class="keyword">return</span><span class="normal"> </span><span class="function">g_object_new</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">meta_type</span><span class="symbol">,</span>
+<span class="normal">                     </span><span class="string">"manager"</span><span class="symbol">,</span><span class="normal"> manager</span><span class="symbol">,</span>
+<span class="normal">                     </span><span class="string">"container"</span><span class="symbol">,</span><span class="normal"> container</span><span class="symbol">,</span>
+<span class="normal">                     </span><span class="string">"actor"</span><span class="symbol">,</span><span class="normal"> actor</span><span class="symbol">,</span>
+<span class="normal">                     <a href="/home/ebassi/gnome3/install/share/gtk-doc/html/liboil/liboil-liboiljunk.html#NULL--CAPS">NULL</a></span><span class="symbol">);</span></pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<p>Where <code class="varname">manager</code> is the  <a class="link" href="ClutterLayoutManager.html" title="ClutterLayoutManager"><span class="type">ClutterLayoutManager</span></a>,
+  <code class="varname">container</code> is the <a class="link" href="ClutterContainer.html" title="ClutterContainer"><span class="type">ClutterContainer</span></a> using the
+  <a class="link" href="ClutterLayoutManager.html" title="ClutterLayoutManager"><span class="type">ClutterLayoutManager</span></a> and <code class="varname">actor</code> is the <a class="link" href="ClutterActor.html" title="ClutterActor"><span class="type">ClutterActor</span></a>
+  child of the <a class="link" href="ClutterContainer.html" title="ClutterContainer"><span class="type">ClutterContainer</span></a>.</p>
+</div>
+<p>
+</p>
+<p>
+</p>
+<div class="refsect2">
+<a name="clutter-layout-script"></a><h3>Using ClutterLayoutManager with ClutterScript</h3>
+<p><a class="link" href="ClutterLayoutManager.html" title="ClutterLayoutManager"><span class="type">ClutterLayoutManager</span></a> instance can be created in the same way
+  as other objects in <a class="link" href="ClutterScript.html" title="ClutterScript"><span class="type">ClutterScript</span></a>; properties can be set using the
+  common syntax.</p>
+<p>Layout properties can be set on children of a container with
+  a <a class="link" href="ClutterLayoutManager.html" title="ClutterLayoutManager"><span class="type">ClutterLayoutManager</span></a> using the <span class="emphasis"><em>layout::</em></span>
+  modifier on the property name, for instance:</p>
+<div class="informalexample">
+  <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
+    <tbody>
+      <tr>
+        <td class="listing_lines" align="right"><pre>1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28</pre></td>
+        <td class="listing_code"><pre class="programlisting"><span class="cbracket">{</span>
+<span class="normal">  </span><span class="string">"type"</span><span class="normal"> </span><span class="symbol">:</span><span class="normal"> </span><span class="string">"ClutterBox"</span><span class="symbol">,</span>
+<span class="normal">  </span><span class="string">"layout-manager"</span><span class="normal"> </span><span class="symbol">:</span><span class="normal"> </span><span class="cbracket">{</span><span class="normal"> </span><span class="string">"type"</span><span class="normal"> </span><span class="symbol">:</span><span class="normal"> </span><span class="string">"ClutterTableLayout"</span><span class="normal"> </span><span class="cbracket">}</span><span class="symbol">,</span>
+<span class="normal">  </span><span class="string">"children"</span><span class="normal"> </span><span class="symbol">:</span><span class="normal"> </span><span class="symbol">[</span>
+<span class="normal">    </span><span class="cbracket">{</span>
+<span class="normal">      </span><span class="string">"type"</span><span class="normal"> </span><span class="symbol">:</span><span class="normal"> </span><span class="string">"ClutterTexture"</span><span class="symbol">,</span>
+<span class="normal">      </span><span class="string">"filename"</span><span class="normal"> </span><span class="symbol">:</span><span class="normal"> </span><span class="string">"image-00.png"</span><span class="symbol">,</span>
+
+<span class="normal">      </span><span class="string">"layout::row"</span><span class="normal"> </span><span class="symbol">:</span><span class="normal"> </span><span class="number">0</span><span class="symbol">,</span>
+<span class="normal">      </span><span class="string">"layout::column"</span><span class="normal"> </span><span class="symbol">:</span><span class="normal"> </span><span class="number">0</span><span class="symbol">,</span>
+<span class="normal">      </span><span class="string">"layout::x-align"</span><span class="normal"> </span><span class="symbol">:</span><span class="normal"> </span><span class="string">"left"</span><span class="symbol">,</span>
+<span class="normal">      </span><span class="string">"layout::y-align"</span><span class="normal"> </span><span class="symbol">:</span><span class="normal"> </span><span class="string">"center"</span><span class="symbol">,</span>
+<span class="normal">      </span><span class="string">"layout::x-expand"</span><span class="normal"> </span><span class="symbol">:</span><span class="normal"> true</span><span class="symbol">,</span>
+<span class="normal">      </span><span class="string">"layout::y-expand"</span><span class="normal"> </span><span class="symbol">:</span><span class="normal"> true</span>
+<span class="normal">    </span><span class="cbracket">}</span><span class="symbol">,</span>
+<span class="normal">    </span><span class="cbracket">{</span>
+<span class="normal">      </span><span class="string">"type"</span><span class="normal"> </span><span class="symbol">:</span><span class="normal"> </span><span class="string">"ClutterTexture"</span><span class="symbol">,</span>
+<span class="normal">      </span><span class="string">"filename"</span><span class="normal"> </span><span class="symbol">:</span><span class="normal"> </span><span class="string">"image-01.png"</span><span class="symbol">,</span>
+
+<span class="normal">      </span><span class="string">"layout::row"</span><span class="normal"> </span><span class="symbol">:</span><span class="normal"> </span><span class="number">0</span><span class="symbol">,</span>
+<span class="normal">      </span><span class="string">"layout::column"</span><span class="normal"> </span><span class="symbol">:</span><span class="normal"> </span><span class="number">1</span><span class="symbol">,</span>
+<span class="normal">      </span><span class="string">"layout::x-align"</span><span class="normal"> </span><span class="symbol">:</span><span class="normal"> </span><span class="string">"right"</span><span class="symbol">,</span>
+<span class="normal">      </span><span class="string">"layout::y-align"</span><span class="normal"> </span><span class="symbol">:</span><span class="normal"> </span><span class="string">"center"</span><span class="symbol">,</span>
+<span class="normal">      </span><span class="string">"layout::x-expand"</span><span class="normal"> </span><span class="symbol">:</span><span class="normal"> true</span><span class="symbol">,</span>
+<span class="normal">      </span><span class="string">"layout::y-expand"</span><span class="normal"> </span><span class="symbol">:</span><span class="normal"> true</span>
+<span class="normal">    </span><span class="cbracket">}</span>
+<span class="normal">  </span><span class="symbol">]</span>
+<span class="cbracket">}</span></pre></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+</div>
+<p>
+</p>
+<p>
 <a class="link" href="ClutterLayoutManager.html" title="ClutterLayoutManager"><span class="type">ClutterLayoutManager</span></a> is available since Clutter 1.2
 </p>
 </div>
 <div class="refsect1">
 <a name="ClutterLayoutManager.details"></a><h2>Details</h2>
 <div class="refsect2">
-<a name="ClutterLayoutManager-struct"></a><h3>struct ClutterLayoutManager</h3>
-<pre class="programlisting">struct ClutterLayoutManager;</pre>
+<a name="ClutterLayoutManager-struct"></a><h3>ClutterLayoutManager</h3>
+<pre class="programlisting">typedef struct _ClutterLayoutManager ClutterLayoutManager;</pre>
 <p>
 The <a class="link" href="ClutterLayoutManager.html" title="ClutterLayoutManager"><span class="type">ClutterLayoutManager</span></a> structure contains only private data
 and should be accessed using the provided API
@@ -465,7 +547,6 @@ and should be accessed using the provided API
 <div class="refsect2">
 <a name="ClutterLayoutManagerClass"></a><h3>struct ClutterLayoutManagerClass</h3>
 <pre class="programlisting">struct ClutterLayoutManagerClass {
-  /* vfuncs, not signals */
   void               (* get_preferred_width)    (ClutterLayoutManager   *manager,
                                                  ClutterContainer       *container,
                                                  gfloat                  for_height,
@@ -495,7 +576,6 @@ and should be accessed using the provided API
   gdouble            (* get_animation_progress) (ClutterLayoutManager   *manager);
   void               (* end_animation)          (ClutterLayoutManager   *manager);
 
-  /* signals */
   void               (* layout_changed)         (ClutterLayoutManager   *manager);
 };
 </pre>

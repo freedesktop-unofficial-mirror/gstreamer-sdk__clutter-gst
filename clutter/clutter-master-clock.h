@@ -28,23 +28,24 @@
 
 G_BEGIN_DECLS
 
-#define CLUTTER_TYPE_MASTER_CLOCK       (clutter_master_clock_get_type ())
+#define CLUTTER_TYPE_MASTER_CLOCK       (_clutter_master_clock_get_type ())
 #define CLUTTER_MASTER_CLOCK(obj)       (G_TYPE_CHECK_INSTANCE_CAST ((obj), CLUTTER_TYPE_MASTER_CLOCK, ClutterMasterClock))
 #define CLUTTER_IS_MASTER_CLOCK(obj)    (G_TYPE_CHECK_INSTANCE_TYPE ((obj), CLUTTER_TYPE_MASTER_CLOCK))
 
 typedef struct _ClutterMasterClock      ClutterMasterClock;
 
-GType clutter_master_clock_get_type (void) G_GNUC_CONST;
+GType _clutter_master_clock_get_type (void) G_GNUC_CONST;
 
-ClutterMasterClock *_clutter_master_clock_get_default           (void);
-void                _clutter_master_clock_add_timeline          (ClutterMasterClock *master_clock,
-                                                                 ClutterTimeline    *timeline);
-void                _clutter_master_clock_remove_timeline       (ClutterMasterClock *master_clock,
-                                                                 ClutterTimeline    *timeline);
-void                _clutter_master_clock_advance               (ClutterMasterClock *master_clock);
-void                _clutter_master_clock_start_running         (ClutterMasterClock *master_clock);
-void                _clutter_master_clock_ensure_next_iteration (ClutterMasterClock *master_clock);
+ClutterMasterClock *    _clutter_master_clock_get_default               (void);
+void                    _clutter_master_clock_add_timeline              (ClutterMasterClock *master_clock,
+                                                                         ClutterTimeline    *timeline);
+void                    _clutter_master_clock_remove_timeline           (ClutterMasterClock *master_clock,
+                                                                         ClutterTimeline    *timeline);
+void                    _clutter_master_clock_start_running             (ClutterMasterClock *master_clock);
+void                    _clutter_master_clock_ensure_next_iteration     (ClutterMasterClock *master_clock);
 
+void                    _clutter_timeline_do_tick                       (ClutterTimeline    *timeline,
+                                                                         gint64              tick_time);
 
 G_END_DECLS
 

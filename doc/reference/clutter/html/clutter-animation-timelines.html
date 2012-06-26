@@ -7,7 +7,7 @@
 <link rel="home" href="index.html" title="Clutter Reference Manual">
 <link rel="up" href="clutter-animations.html" title="Creating Animations with Clutter">
 <link rel="prev" href="clutter-animations.html" title="Creating Animations with Clutter">
-<link rel="next" href="clutter-animation-behaviours.html" title="Behaviours">
+<link rel="next" href="clutter-animation-implicit.html" title="Implicit Animations">
 <meta name="generator" content="GTK-Doc V1.18.1 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
@@ -17,14 +17,14 @@
 <td><a accesskey="u" href="clutter-animations.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
 <td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
 <th width="100%" align="center">Clutter Reference Manual</th>
-<td><a accesskey="n" href="clutter-animation-behaviours.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+<td><a accesskey="n" href="clutter-animation-implicit.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
 </tr></table>
 <div class="section">
 <div class="titlepage"><div><div><h2 class="title" style="clear: both">
 <a name="clutter-animation-timelines"></a>Timelines</h2></div></div></div>
-<p>Using <code class="function">g_timeout_add()</code> to control an animation is complicated
-    and does not work in concert with the rest of the operations Clutter
-    must perform for each redraw cycle.</p>
+<p>Using <a class="link" href="clutter-General.html#clutter-threads-add-timeout" title="clutter_threads_add_timeout ()"><code class="function">clutter_threads_add_timeout()</code></a> to control an animation is
+    complicated and does not work in concert with the rest of the operations
+    Clutter must perform for each redraw cycle.</p>
 <p>For this reason, Clutter provides <a class="link" href="ClutterTimeline.html" title="ClutterTimeline"><span class="type">ClutterTimeline</span></a>, a class that
     allows scheduling animations with a definite duration. Timelines are
     advanced during the redraw cycle so that animations are ready to be
@@ -34,7 +34,7 @@
     whole UI.</p>
 <p>A Timeline is created with:</p>
 <pre class="programlisting">
-clutter_timeline_new (duration_in_milliseconds);
+ClutterTimeline *timeline = clutter_timeline_new (duration_in_milliseconds);
     </pre>
 <p>The duration of the timeline then be modifed via the
     <a class="link" href="ClutterTimeline.html#ClutterTimeline--duration" title='The "duration" property'><span class="type">"duration"</span></a> property or by using
@@ -71,10 +71,10 @@ on_new_frame (ClutterTimeline *timeline,
     engine to be able to take the actual time elapsed between iterations
     into account.</p>
 <div class="example">
-<a name="clutter-timeline-example"></a><p class="title"><b>Example 27. Using a Timeline to drive an animation</b></p>
+<a name="clutter-timeline-example"></a><p class="title"><b>Example 19. Using a Timeline to drive an animation</b></p>
 <div class="example-contents">
 <p>Rewrite the example above with a <a class="link" href="ClutterTimeline.html" title="ClutterTimeline"><span class="type">ClutterTimeline</span></a> instead of
-      using <code class="function">g_timeout_add()</code></p>
+      using <a class="link" href="clutter-General.html#clutter-threads-add-timeout" title="clutter_threads_add_timeout ()"><code class="function">clutter_threads_add_timeout()</code></a></p>
 <pre class="programlisting">
 #include &lt;clutter/clutter.h&gt;
 
@@ -96,19 +96,21 @@ on_new_frame (ClutterTimeline *timeline,
 
   ClutterTimeline *timeline;
 
-  timeline = clutter_timeline_new (1000); /* one second */
-  clutter_timeline_set_loop (timeline, TRUE);
+  /* one second */
+  timeline = clutter_timeline_new (1000);
+
+  /* looping indefinitely */
+  clutter_timeline_set_repeat_count (timeline, -1);
+
+  /* get a notification each time a new frame should be drawn */
   g_signal_connect (timeline, "new-frame", G_CALLBACK (on_new_frame), actor);
+
+  /* start the timeline once control returns to the main loop */
   clutter_timeline_start (timeline);
       </pre>
 </div>
 </div>
-<br class="example-break"><div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
-<h3 class="title">Note</h3>
-<p>Multiple timelines can be sequenced in order by using a
-    <a class="link" href="ClutterScore.html" title="ClutterScore"><span class="type">ClutterScore</span></a>. See the <a class="link" href="ClutterScore.html" title="ClutterScore"><span class="type">ClutterScore</span></a> documentation for more details on
-    using this.</p>
-</div>
+<br class="example-break">
 </div>
 <div class="footer">
 <hr>

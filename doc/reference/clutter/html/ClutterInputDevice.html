@@ -60,6 +60,10 @@ const <span class="returnvalue">gchar</span> *       <a class="link" href="Clutt
                                                         (<em class="parameter"><code><a class="link" href="ClutterInputDevice.html" title="ClutterInputDevice"><span class="type">ClutterInputDevice</span></a> *device</code></em>);
 <span class="returnvalue">GList</span> *             <a class="link" href="ClutterInputDevice.html#clutter-input-device-get-slave-devices" title="clutter_input_device_get_slave_devices ()">clutter_input_device_get_slave_devices</a>
                                                         (<em class="parameter"><code><a class="link" href="ClutterInputDevice.html" title="ClutterInputDevice"><span class="type">ClutterInputDevice</span></a> *device</code></em>);
+<span class="returnvalue">gboolean</span>            <a class="link" href="ClutterInputDevice.html#clutter-input-device-keycode-to-evdev" title="clutter_input_device_keycode_to_evdev ()">clutter_input_device_keycode_to_evdev</a>
+                                                        (<em class="parameter"><code><a class="link" href="ClutterInputDevice.html" title="ClutterInputDevice"><span class="type">ClutterInputDevice</span></a> *device</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint</span> hardware_keycode</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint</span> *evdev_keycode</code></em>);
 
 <span class="returnvalue">guint</span>               <a class="link" href="ClutterInputDevice.html#clutter-input-device-get-n-keys" title="clutter_input_device_get_n_keys ()">clutter_input_device_get_n_keys</a>     (<em class="parameter"><code><a class="link" href="ClutterInputDevice.html" title="ClutterInputDevice"><span class="type">ClutterInputDevice</span></a> *device</code></em>);
 <span class="returnvalue">void</span>                <a class="link" href="ClutterInputDevice.html#clutter-input-device-set-key" title="clutter_input_device_set_key ()">clutter_input_device_set_key</a>        (<em class="parameter"><code><a class="link" href="ClutterInputDevice.html" title="ClutterInputDevice"><span class="type">ClutterInputDevice</span></a> *device</code></em>,
@@ -86,6 +90,12 @@ const <span class="returnvalue">gchar</span> *       <a class="link" href="Clutt
 <a class="link" href="ClutterActor.html" title="ClutterActor"><span class="returnvalue">ClutterActor</span></a> *      <a class="link" href="ClutterInputDevice.html#clutter-input-device-get-pointer-actor" title="clutter_input_device_get_pointer_actor ()">clutter_input_device_get_pointer_actor</a>
                                                         (<em class="parameter"><code><a class="link" href="ClutterInputDevice.html" title="ClutterInputDevice"><span class="type">ClutterInputDevice</span></a> *device</code></em>);
 <a class="link" href="ClutterStage.html" title="ClutterStage"><span class="returnvalue">ClutterStage</span></a> *      <a class="link" href="ClutterInputDevice.html#clutter-input-device-get-pointer-stage" title="clutter_input_device_get_pointer_stage ()">clutter_input_device_get_pointer_stage</a>
+                                                        (<em class="parameter"><code><a class="link" href="ClutterInputDevice.html" title="ClutterInputDevice"><span class="type">ClutterInputDevice</span></a> *device</code></em>);
+
+<span class="returnvalue">void</span>                <a class="link" href="ClutterInputDevice.html#clutter-input-device-grab" title="clutter_input_device_grab ()">clutter_input_device_grab</a>           (<em class="parameter"><code><a class="link" href="ClutterInputDevice.html" title="ClutterInputDevice"><span class="type">ClutterInputDevice</span></a> *device</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ClutterActor.html" title="ClutterActor"><span class="type">ClutterActor</span></a> *actor</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="ClutterInputDevice.html#clutter-input-device-ungrab" title="clutter_input_device_ungrab ()">clutter_input_device_ungrab</a>         (<em class="parameter"><code><a class="link" href="ClutterInputDevice.html" title="ClutterInputDevice"><span class="type">ClutterInputDevice</span></a> *device</code></em>);
+<a class="link" href="ClutterActor.html" title="ClutterActor"><span class="returnvalue">ClutterActor</span></a> *      <a class="link" href="ClutterInputDevice.html#clutter-input-device-get-grabbed-actor" title="clutter_input_device_get_grabbed_actor ()">clutter_input_device_get_grabbed_actor</a>
                                                         (<em class="parameter"><code><a class="link" href="ClutterInputDevice.html" title="ClutterInputDevice"><span class="type">ClutterInputDevice</span></a> *device</code></em>);
 
 <span class="returnvalue">void</span>                <a class="link" href="ClutterInputDevice.html#clutter-input-device-update-from-event" title="clutter_input_device_update_from_event ()">clutter_input_device_update_from_event</a>
@@ -553,6 +563,46 @@ owned by the device. Use <code class="function">g_list_free()</code> when done. 
 </div>
 <hr>
 <div class="refsect2">
+<a name="clutter-input-device-keycode-to-evdev"></a><h3>clutter_input_device_keycode_to_evdev ()</h3>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>            clutter_input_device_keycode_to_evdev
+                                                        (<em class="parameter"><code><a class="link" href="ClutterInputDevice.html" title="ClutterInputDevice"><span class="type">ClutterInputDevice</span></a> *device</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint</span> hardware_keycode</code></em>,
+                                                         <em class="parameter"><code><span class="type">guint</span> *evdev_keycode</code></em>);</pre>
+<p>
+Translates a hardware keycode from a <a class="link" href="clutter-Events.html#ClutterKeyEvent" title="struct ClutterKeyEvent"><span class="type">ClutterKeyEvent</span></a> to the
+equivalent evdev keycode. Note that depending on the input backend
+used by Clutter this function can fail if there is no obvious
+mapping between the key codes. The hardware keycode can be taken
+from the <a class="link" href="clutter-Events.html#ClutterKeyEvent.hardware-keycode"><span class="type">ClutterKeyEvent.hardware_keycode</span></a> member of <a class="link" href="clutter-Events.html#ClutterKeyEvent" title="struct ClutterKeyEvent"><span class="type">ClutterKeyEvent</span></a>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>device</code></em> :</span></p></td>
+<td>A <a class="link" href="ClutterInputDevice.html" title="ClutterInputDevice"><span class="type">ClutterInputDevice</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>hardware_keycode</code></em> :</span></p></td>
+<td>The hardware keycode from a <a class="link" href="clutter-Events.html#ClutterKeyEvent" title="struct ClutterKeyEvent"><span class="type">ClutterKeyEvent</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>evdev_keycode</code></em> :</span></p></td>
+<td>The return location for the evdev keycode</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>
+<code class="literal">TRUE</code> if the conversion succeeded, <code class="literal">FALSE</code> otherwise.</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 1.10</p>
+</div>
+<hr>
+<div class="refsect2">
 <a name="clutter-input-device-get-n-keys"></a><h3>clutter_input_device_get_n_keys ()</h3>
 <pre class="programlisting"><span class="returnvalue">guint</span>               clutter_input_device_get_n_keys     (<em class="parameter"><code><a class="link" href="ClutterInputDevice.html" title="ClutterInputDevice"><span class="type">ClutterInputDevice</span></a> *device</code></em>);</pre>
 <p>
@@ -858,6 +908,87 @@ Retrieves the <a class="link" href="ClutterStage.html" title="ClutterStage"><spa
 </tbody>
 </table></div>
 <p class="since">Since 1.2</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="clutter-input-device-grab"></a><h3>clutter_input_device_grab ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                clutter_input_device_grab           (<em class="parameter"><code><a class="link" href="ClutterInputDevice.html" title="ClutterInputDevice"><span class="type">ClutterInputDevice</span></a> *device</code></em>,
+                                                         <em class="parameter"><code><a class="link" href="ClutterActor.html" title="ClutterActor"><span class="type">ClutterActor</span></a> *actor</code></em>);</pre>
+<p>
+Acquires a grab on <em class="parameter"><code>actor</code></em> for the given <em class="parameter"><code>device</code></em>.
+</p>
+<p>
+Any event coming from <em class="parameter"><code>device</code></em> will be delivered to <em class="parameter"><code>actor</code></em>, bypassing
+the usual event delivery mechanism, until the grab is released by
+calling <a class="link" href="ClutterInputDevice.html#clutter-input-device-ungrab" title="clutter_input_device_ungrab ()"><code class="function">clutter_input_device_ungrab()</code></a>.
+</p>
+<p>
+The grab is client-side: even if the windowing system used by the Clutter
+backend has the concept of "device grabs", Clutter will not use them.
+</p>
+<p>
+Only <a class="link" href="ClutterInputDevice.html" title="ClutterInputDevice"><span class="type">ClutterInputDevice</span></a> of types <a class="link" href="ClutterInputDevice.html#CLUTTER-POINTER-DEVICE:CAPS"><code class="literal">CLUTTER_POINTER_DEVICE</code></a> and
+<a class="link" href="ClutterInputDevice.html#CLUTTER-KEYBOARD-DEVICE:CAPS"><code class="literal">CLUTTER_KEYBOARD_DEVICE</code></a> can hold a grab.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>device</code></em> :</span></p></td>
+<td>a <a class="link" href="ClutterInputDevice.html" title="ClutterInputDevice"><span class="type">ClutterInputDevice</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>actor</code></em> :</span></p></td>
+<td>a <a class="link" href="ClutterActor.html" title="ClutterActor"><span class="type">ClutterActor</span></a>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 1.10</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="clutter-input-device-ungrab"></a><h3>clutter_input_device_ungrab ()</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                clutter_input_device_ungrab         (<em class="parameter"><code><a class="link" href="ClutterInputDevice.html" title="ClutterInputDevice"><span class="type">ClutterInputDevice</span></a> *device</code></em>);</pre>
+<p>
+Releases the grab on the <em class="parameter"><code>device</code></em>, if one is in place.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody><tr>
+<td><p><span class="term"><em class="parameter"><code>device</code></em> :</span></p></td>
+<td>a <a class="link" href="ClutterInputDevice.html" title="ClutterInputDevice"><span class="type">ClutterInputDevice</span></a>
+</td>
+</tr></tbody>
+</table></div>
+<p class="since">Since 1.10</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="clutter-input-device-get-grabbed-actor"></a><h3>clutter_input_device_get_grabbed_actor ()</h3>
+<pre class="programlisting"><a class="link" href="ClutterActor.html" title="ClutterActor"><span class="returnvalue">ClutterActor</span></a> *      clutter_input_device_get_grabbed_actor
+                                                        (<em class="parameter"><code><a class="link" href="ClutterInputDevice.html" title="ClutterInputDevice"><span class="type">ClutterInputDevice</span></a> *device</code></em>);</pre>
+<p>
+Retrieves a pointer to the <a class="link" href="ClutterActor.html" title="ClutterActor"><span class="type">ClutterActor</span></a> currently grabbing all
+the events coming from <em class="parameter"><code>device</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>device</code></em> :</span></p></td>
+<td>a <a class="link" href="ClutterInputDevice.html" title="ClutterInputDevice"><span class="type">ClutterInputDevice</span></a>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
+<td>a <a class="link" href="ClutterActor.html" title="ClutterActor"><span class="type">ClutterActor</span></a>, or <a href="/home/ebassi/gnome3/install/share/gtk-doc/html/liboil/liboil-liboiljunk.html#NULL--CAPS"><code class="literal">NULL</code></a>. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
+</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 1.10</p>
 </div>
 <hr>
 <div class="refsect2">

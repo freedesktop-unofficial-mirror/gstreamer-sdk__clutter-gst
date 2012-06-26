@@ -50,8 +50,11 @@
 #endif
 
 #include "clutter-animatable.h"
+#include "clutter-interval.h"
 #include "clutter-debug.h"
 #include "clutter-private.h"
+
+#include "deprecated/clutter-animatable.h"
 
 typedef ClutterAnimatableIface  ClutterAnimatableInterface;
 G_DEFINE_INTERFACE (ClutterAnimatable, clutter_animatable, G_TYPE_OBJECT);

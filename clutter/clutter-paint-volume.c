@@ -640,6 +640,42 @@ done:
   pv->is_complete = FALSE;
 }
 
+/**
+ * clutter_paint_volume_union_box:
+ * @pv: a #ClutterPaintVolume
+ * @box: a #ClutterActorBox to union to @pv
+ *
+ * Unions the 2D region represented by @box to a #ClutterPaintVolume.
+ *
+ * This function is similar to clutter_paint_volume_union(), but it is
+ * specific for 2D regions.
+ *
+ * Since: 1.10
+ */
+void
+clutter_paint_volume_union_box (ClutterPaintVolume    *pv,
+                                const ClutterActorBox *box)
+{
+  ClutterPaintVolume volume;
+  ClutterVertex origin;
+
+  g_return_if_fail (pv != NULL);
+  g_return_if_fail (box != NULL);
+
+  _clutter_paint_volume_init_static (&volume, pv->actor);
+
+  origin.x = box->x1;
+  origin.y = box->y1;
+  origin.z = 0.f;
+  clutter_paint_volume_set_origin (&volume, &origin);
+  clutter_paint_volume_set_width (&volume, box->x2 - box->x1);
+  clutter_paint_volume_set_height (&volume, box->y2 - box->y1);
+
+  clutter_paint_volume_union (pv, &volume);
+
+  clutter_paint_volume_free (&volume);
+}
+
 /* The paint_volume setters only update vertices 0, 1, 3 and
  * 4 since the others can be drived from them.
  *
@@ -872,7 +908,7 @@ _clutter_paint_volume_axis_align (ClutterPaintVolume *pv)
 
   if (G_LIKELY (pv->vertices[0].x == pv->vertices[1].x &&
                 pv->vertices[0].y == pv->vertices[3].y &&
-                pv->vertices[0].z == pv->vertices[4].y))
+                pv->vertices[0].z == pv->vertices[4].z))
     {
       pv->is_axis_aligned = TRUE;
       return;
@@ -970,6 +1006,10 @@ _clutter_actor_set_default_paint_volume (ClutterActor       *self,
 
   clutter_actor_get_allocation_box (self, &box);
 
+  /* we only set the width and height, as the paint volume is defined
+   * to be relative to the actor's modelview, which means that the
+   * allocation's origin has already been applied
+   */
   clutter_paint_volume_set_width (volume, box.x2 - box.x1);
   clutter_paint_volume_set_height (volume, box.y2 - box.y1);
 
@@ -984,8 +1024,8 @@ _clutter_actor_set_default_paint_volume (ClutterActor       *self,
  * Sets the #ClutterPaintVolume from the allocation of @actor.
  *
  * This function should be used when overriding the
- * <function>get_paint_volume()</function> by #ClutterActor sub-classes that do
- * not paint outside their allocation.
+ * #ClutterActorClass.get_paint_volume() by #ClutterActor sub-classes
+ * that do not paint outside their allocation.
  *
  * A typical example is:
  *
@@ -1063,12 +1103,13 @@ _clutter_paint_volume_cull (ClutterPaintVolume *pv,
           /* XXX: for perspective projections this can be optimized
            * out because all the planes should pass through the origin
            * so (0,0,0) is a valid v0. */
-          p.x = vertices[j].x - planes[i].v0.x;
-          p.y = vertices[j].y - planes[i].v0.y;
-          p.z = vertices[j].z - planes[i].v0.z;
+          p.x = vertices[j].x - planes[i].v0[0];
+          p.y = vertices[j].y - planes[i].v0[1];
+          p.z = vertices[j].z - planes[i].v0[2];
 
-          distance =
-            planes[i].n.x * p.x + planes[i].n.y * p.y + planes[i].n.z * p.z;
+          distance = (planes[i].n[0] * p.x +
+                      planes[i].n[1] * p.y +
+                      planes[i].n[2] * p.z);
 
           if (distance < 0)
             out++;

@@ -15,7 +15,8 @@ static gboolean
 queue_redraw (gpointer stage)
 {
   clutter_actor_queue_redraw (CLUTTER_ACTOR (stage));
-  return TRUE;
+
+  return G_SOURCE_CONTINUE;
 }
 
 static gunichar
@@ -106,9 +107,11 @@ main (int argc, char *argv[])
 
   g_print ("Monospace %dpx, string length = %d\n", font_size, n_chars);
 
-  stage = clutter_stage_get_default ();
+  stage = clutter_stage_new ();
   clutter_actor_set_size (stage, STAGE_WIDTH, STAGE_HEIGHT);
   clutter_stage_set_color (CLUTTER_STAGE (stage), &stage_color);
+  clutter_stage_set_title (CLUTTER_STAGE (stage), "Text Performance");
+  g_signal_connect (stage, "destroy", G_CALLBACK (clutter_main_quit), NULL);
 
   label = create_label ();
   w = clutter_actor_get_width (label);
@@ -156,7 +159,7 @@ main (int argc, char *argv[])
   clutter_actor_show_all (stage);
 
   clutter_perf_fps_start (CLUTTER_STAGE (stage));
-  g_idle_add (queue_redraw, stage);
+  clutter_threads_add_idle (queue_redraw, stage);
   clutter_main ();
   clutter_perf_fps_report ("test-text-perf");
 

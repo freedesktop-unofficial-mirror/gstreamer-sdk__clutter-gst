@@ -8,6 +8,8 @@
 #include "clutter-stage-window.h"
 #include "clutter-private.h"
 
+#define clutter_stage_window_get_type   _clutter_stage_window_get_type
+
 typedef ClutterStageWindowIface ClutterStageWindowInterface;
 
 G_DEFINE_INTERFACE (ClutterStageWindow, clutter_stage_window, G_TYPE_OBJECT);
@@ -15,6 +17,25 @@ G_DEFINE_INTERFACE (ClutterStageWindow, clutter_stage_window, G_TYPE_OBJECT);
 static void
 clutter_stage_window_default_init (ClutterStageWindowInterface *iface)
 {
+  GParamSpec *pspec;
+
+  pspec = g_param_spec_object ("backend",
+                               "Backend",
+                               "Back pointer to the Backend instance",
+                               CLUTTER_TYPE_BACKEND,
+                               G_PARAM_WRITABLE |
+                               G_PARAM_CONSTRUCT_ONLY |
+                               G_PARAM_STATIC_STRINGS);
+  g_object_interface_install_property (iface, pspec);
+
+  pspec = g_param_spec_object ("wrapper",
+                               "Wrapper",
+                               "Back pointer to the Stage actor",
+                               CLUTTER_TYPE_STAGE,
+                               G_PARAM_WRITABLE |
+                               G_PARAM_CONSTRUCT_ONLY |
+                               G_PARAM_STATIC_STRINGS);
+  g_object_interface_install_property (iface, pspec);
 }
 
 ClutterActor *
@@ -95,8 +116,8 @@ _clutter_stage_window_resize (ClutterStageWindow *window,
 }
 
 void
-_clutter_stage_window_get_geometry (ClutterStageWindow *window,
-                                    ClutterGeometry    *geometry)
+_clutter_stage_window_get_geometry (ClutterStageWindow    *window,
+                                    cairo_rectangle_int_t *geometry)
 {
   CLUTTER_STAGE_WINDOW_GET_IFACE (window)->get_geometry (window, geometry);
 }
@@ -119,15 +140,15 @@ _clutter_stage_window_get_pending_swaps (ClutterStageWindow *window)
 }
 
 void
-_clutter_stage_window_add_redraw_clip (ClutterStageWindow *window,
-                                       ClutterGeometry    *stage_clip)
+_clutter_stage_window_add_redraw_clip (ClutterStageWindow    *window,
+                                       cairo_rectangle_int_t *stage_clip)
 {
   ClutterStageWindowIface *iface;
 
   g_return_if_fail (CLUTTER_IS_STAGE_WINDOW (window));
 
   iface = CLUTTER_STAGE_WINDOW_GET_IFACE (window);
-  if (iface->add_redraw_clip)
+  if (iface->add_redraw_clip != NULL)
     iface->add_redraw_clip (window, stage_clip);
 }
 
@@ -147,7 +168,7 @@ _clutter_stage_window_has_redraw_clips (ClutterStageWindow *window)
   g_return_val_if_fail (CLUTTER_IS_STAGE_WINDOW (window), FALSE);
 
   iface = CLUTTER_STAGE_WINDOW_GET_IFACE (window);
-  if (iface->has_redraw_clips)
+  if (iface->has_redraw_clips != NULL)
     return iface->has_redraw_clips (window);
 
   return FALSE;
@@ -169,7 +190,7 @@ _clutter_stage_window_ignoring_redraw_clips (ClutterStageWindow *window)
   g_return_val_if_fail (CLUTTER_IS_STAGE_WINDOW (window), FALSE);
 
   iface = CLUTTER_STAGE_WINDOW_GET_IFACE (window);
-  if (iface->ignoring_redraw_clips)
+  if (iface->ignoring_redraw_clips != NULL)
     return iface->ignoring_redraw_clips (window);
 
   return TRUE;
@@ -184,7 +205,7 @@ _clutter_stage_window_get_redraw_clip_bounds (ClutterStageWindow    *window,
   g_return_val_if_fail (CLUTTER_IS_STAGE_WINDOW (window), FALSE);
 
   iface = CLUTTER_STAGE_WINDOW_GET_IFACE (window);
-  if (iface->get_redraw_clip_bounds)
+  if (iface->get_redraw_clip_bounds != NULL)
     return iface->get_redraw_clip_bounds (window, stage_clip);
 
   return FALSE;
@@ -233,4 +254,18 @@ _clutter_stage_window_get_active_framebuffer (ClutterStageWindow *window)
     return iface->get_active_framebuffer (window);
   else
     return NULL;
+}
+
+gboolean
+_clutter_stage_window_can_clip_redraws (ClutterStageWindow *window)
+{
+  ClutterStageWindowIface *iface;
+
+  g_return_val_if_fail (CLUTTER_IS_STAGE_WINDOW (window), FALSE);
+
+  iface = CLUTTER_STAGE_WINDOW_GET_IFACE (window);
+  if (iface->can_clip_redraws != NULL)
+    return iface->can_clip_redraws (window);
+
+  return FALSE;
 }

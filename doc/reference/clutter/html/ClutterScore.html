@@ -5,20 +5,20 @@
 <title>ClutterScore</title>
 <meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
 <link rel="home" href="index.html" title="Clutter Reference Manual">
-<link rel="up" href="ch08.html" title="Base classes">
-<link rel="prev" href="ClutterTimeline.html" title="ClutterTimeline">
-<link rel="next" href="ClutterAlpha.html" title="ClutterAlpha">
+<link rel="up" href="deprecated.html" title="Part X. Deprecated Classes">
+<link rel="prev" href="deprecated.html" title="Part X. Deprecated Classes">
+<link rel="next" href="clutter-Shaders.html" title="Shaders">
 <meta name="generator" content="GTK-Doc V1.18.1 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
 <tr valign="middle">
-<td><a accesskey="p" href="ClutterTimeline.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
-<td><a accesskey="u" href="ch08.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="deprecated.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="deprecated.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
 <td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
 <th width="100%" align="center">Clutter Reference Manual</th>
-<td><a accesskey="n" href="ClutterAlpha.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+<td><a accesskey="n" href="clutter-Shaders.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
 </tr>
 <tr><td colspan="5" class="shortcuts">
 <a href="#ClutterScore.synopsis" class="shortcut">Top</a>
@@ -184,10 +184,6 @@ The state can be queried using <a class="link" href="ClutterScore.html#clutter-s
 <div class="refsect2">
 <a name="ClutterScore-struct"></a><h3>struct ClutterScore</h3>
 <pre class="programlisting">struct ClutterScore;</pre>
-<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
-<h3 class="title">Warning</h3>
-<p><code class="literal">ClutterScore</code> is deprecated and should not be used in newly-written code.</p>
-</div>
 <p>
 The <a class="link" href="ClutterScore.html" title="ClutterScore"><span class="type">ClutterScore</span></a> structure contains only private data
 and should be accessed using the provided API
@@ -208,10 +204,6 @@ and should be accessed using the provided API
   void (* paused)             (ClutterScore    *score);
 };
 </pre>
-<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
-<h3 class="title">Warning</h3>
-<p><code class="literal">ClutterScoreClass</code> is deprecated and should not be used in newly-written code.</p>
-</div>
 <p>
 The <a class="link" href="ClutterScore.html#ClutterScoreClass" title="struct ClutterScoreClass"><span class="type">ClutterScoreClass</span></a> structure contains only private data
 </p>
@@ -247,10 +239,6 @@ signal</td>
 <div class="refsect2">
 <a name="clutter-score-new"></a><h3>clutter_score_new ()</h3>
 <pre class="programlisting"><a class="link" href="ClutterScore.html" title="ClutterScore"><span class="returnvalue">ClutterScore</span></a> *      clutter_score_new                   (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
-<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
-<h3 class="title">Warning</h3>
-<p><code class="literal">clutter_score_new</code> is deprecated and should not be used in newly-written code.</p>
-</div>
 <p>
 Creates a new <a class="link" href="ClutterScore.html" title="ClutterScore"><span class="type">ClutterScore</span></a>. A <a class="link" href="ClutterScore.html" title="ClutterScore"><span class="type">ClutterScore</span></a> is an object that can
 hold multiple <a class="link" href="ClutterTimeline.html" title="ClutterTimeline"><span class="type">ClutterTimeline</span></a>s in a sequential order.
@@ -270,10 +258,6 @@ when done.</td>
 <a name="clutter-score-set-loop"></a><h3>clutter_score_set_loop ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                clutter_score_set_loop              (<em class="parameter"><code><a class="link" href="ClutterScore.html" title="ClutterScore"><span class="type">ClutterScore</span></a> *score</code></em>,
                                                          <em class="parameter"><code><span class="type">gboolean</span> loop</code></em>);</pre>
-<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
-<h3 class="title">Warning</h3>
-<p><code class="literal">clutter_score_set_loop</code> is deprecated and should not be used in newly-written code.</p>
-</div>
 <p>
 Sets whether <em class="parameter"><code>score</code></em> should loop. A looping <a class="link" href="ClutterScore.html" title="ClutterScore"><span class="type">ClutterScore</span></a> will start
 from its initial state after the ::complete signal has been fired.
@@ -299,10 +283,6 @@ from its initial state after the ::complete signal has been fired.
 <div class="refsect2">
 <a name="clutter-score-get-loop"></a><h3>clutter_score_get_loop ()</h3>
 <pre class="programlisting"><span class="returnvalue">gboolean</span>            clutter_score_get_loop              (<em class="parameter"><code><a class="link" href="ClutterScore.html" title="ClutterScore"><span class="type">ClutterScore</span></a> *score</code></em>);</pre>
-<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
-<h3 class="title">Warning</h3>
-<p><code class="literal">clutter_score_get_loop</code> is deprecated and should not be used in newly-written code.</p>
-</div>
 <p>
 Gets whether <em class="parameter"><code>score</code></em> is looping
 </p>
@@ -329,10 +309,6 @@ Gets whether <em class="parameter"><code>score</code></em> is looping
 <pre class="programlisting"><span class="returnvalue">gulong</span>              clutter_score_append                (<em class="parameter"><code><a class="link" href="ClutterScore.html" title="ClutterScore"><span class="type">ClutterScore</span></a> *score</code></em>,
                                                          <em class="parameter"><code><a class="link" href="ClutterTimeline.html" title="ClutterTimeline"><span class="type">ClutterTimeline</span></a> *parent</code></em>,
                                                          <em class="parameter"><code><a class="link" href="ClutterTimeline.html" title="ClutterTimeline"><span class="type">ClutterTimeline</span></a> *timeline</code></em>);</pre>
-<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
-<h3 class="title">Warning</h3>
-<p><code class="literal">clutter_score_append</code> is deprecated and should not be used in newly-written code.</p>
-</div>
 <p>
 Appends a timeline to another one existing in the score; the newly
 appended timeline will be started when <em class="parameter"><code>parent</code></em> is complete.
@@ -379,10 +355,6 @@ or <a class="link" href="ClutterScore.html#clutter-score-get-timeline" title="cl
                                                          <em class="parameter"><code><a class="link" href="ClutterTimeline.html" title="ClutterTimeline"><span class="type">ClutterTimeline</span></a> *parent</code></em>,
                                                          <em class="parameter"><code>const <span class="type">gchar</span> *marker_name</code></em>,
                                                          <em class="parameter"><code><a class="link" href="ClutterTimeline.html" title="ClutterTimeline"><span class="type">ClutterTimeline</span></a> *timeline</code></em>);</pre>
-<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
-<h3 class="title">Warning</h3>
-<p><code class="literal">clutter_score_append_at_marker</code> is deprecated and should not be used in newly-written code.</p>
-</div>
 <p>
 Appends <em class="parameter"><code>timeline</code></em> at the given <em class="parameter"><code>marker_name</code></em> on the <em class="parameter"><code>parent</code></em>
 <a class="link" href="ClutterTimeline.html" title="ClutterTimeline"><span class="type">ClutterTimeline</span></a>.
@@ -430,10 +402,6 @@ or <a class="link" href="ClutterScore.html#clutter-score-get-timeline" title="cl
 <a name="clutter-score-remove"></a><h3>clutter_score_remove ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                clutter_score_remove                (<em class="parameter"><code><a class="link" href="ClutterScore.html" title="ClutterScore"><span class="type">ClutterScore</span></a> *score</code></em>,
                                                          <em class="parameter"><code><span class="type">gulong</span> id_</code></em>);</pre>
-<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
-<h3 class="title">Warning</h3>
-<p><code class="literal">clutter_score_remove</code> is deprecated and should not be used in newly-written code.</p>
-</div>
 <p>
 Removes the <a class="link" href="ClutterTimeline.html" title="ClutterTimeline"><span class="type">ClutterTimeline</span></a> with the given id inside <em class="parameter"><code>score</code></em>. If
 the timeline has other timelines attached to it, those are removed
@@ -459,10 +427,6 @@ as well.
 <div class="refsect2">
 <a name="clutter-score-remove-all"></a><h3>clutter_score_remove_all ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                clutter_score_remove_all            (<em class="parameter"><code><a class="link" href="ClutterScore.html" title="ClutterScore"><span class="type">ClutterScore</span></a> *score</code></em>);</pre>
-<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
-<h3 class="title">Warning</h3>
-<p><code class="literal">clutter_score_remove_all</code> is deprecated and should not be used in newly-written code.</p>
-</div>
 <p>
 Removes all the timelines inside <em class="parameter"><code>score</code></em>.
 </p>
@@ -481,10 +445,6 @@ Removes all the timelines inside <em class="parameter"><code>score</code></em>.
 <a name="clutter-score-get-timeline"></a><h3>clutter_score_get_timeline ()</h3>
 <pre class="programlisting"><a class="link" href="ClutterTimeline.html" title="ClutterTimeline"><span class="returnvalue">ClutterTimeline</span></a> *   clutter_score_get_timeline          (<em class="parameter"><code><a class="link" href="ClutterScore.html" title="ClutterScore"><span class="type">ClutterScore</span></a> *score</code></em>,
                                                          <em class="parameter"><code><span class="type">gulong</span> id_</code></em>);</pre>
-<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
-<h3 class="title">Warning</h3>
-<p><code class="literal">clutter_score_get_timeline</code> is deprecated and should not be used in newly-written code.</p>
-</div>
 <p>
 Retrieves the <a class="link" href="ClutterTimeline.html" title="ClutterTimeline"><span class="type">ClutterTimeline</span></a> for <em class="parameter"><code>id_</code></em> inside <em class="parameter"><code>score</code></em>.
 </p>
@@ -515,10 +475,6 @@ function does not increase the reference count on the returned
 <div class="refsect2">
 <a name="clutter-score-list-timelines"></a><h3>clutter_score_list_timelines ()</h3>
 <pre class="programlisting"><span class="returnvalue">GSList</span> *            clutter_score_list_timelines        (<em class="parameter"><code><a class="link" href="ClutterScore.html" title="ClutterScore"><span class="type">ClutterScore</span></a> *score</code></em>);</pre>
-<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
-<h3 class="title">Warning</h3>
-<p><code class="literal">clutter_score_list_timelines</code> is deprecated and should not be used in newly-written code.</p>
-</div>
 <p>
 Retrieves a list of all the <a href="ClutterTimeline.html"><span class="type">ClutterTimelines</span></a> managed by <em class="parameter"><code>score</code></em>.
 </p>
@@ -546,10 +502,6 @@ not increase the reference count of the returned timelines. Use
 <div class="refsect2">
 <a name="clutter-score-start"></a><h3>clutter_score_start ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                clutter_score_start                 (<em class="parameter"><code><a class="link" href="ClutterScore.html" title="ClutterScore"><span class="type">ClutterScore</span></a> *score</code></em>);</pre>
-<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
-<h3 class="title">Warning</h3>
-<p><code class="literal">clutter_score_start</code> is deprecated and should not be used in newly-written code.</p>
-</div>
 <p>
 Starts the score.
 </p>
@@ -567,10 +519,6 @@ Starts the score.
 <div class="refsect2">
 <a name="clutter-score-pause"></a><h3>clutter_score_pause ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                clutter_score_pause                 (<em class="parameter"><code><a class="link" href="ClutterScore.html" title="ClutterScore"><span class="type">ClutterScore</span></a> *score</code></em>);</pre>
-<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
-<h3 class="title">Warning</h3>
-<p><code class="literal">clutter_score_pause</code> is deprecated and should not be used in newly-written code.</p>
-</div>
 <p>
 Pauses a playing score <em class="parameter"><code>score</code></em>.
 </p>
@@ -588,10 +536,6 @@ Pauses a playing score <em class="parameter"><code>score</code></em>.
 <div class="refsect2">
 <a name="clutter-score-stop"></a><h3>clutter_score_stop ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                clutter_score_stop                  (<em class="parameter"><code><a class="link" href="ClutterScore.html" title="ClutterScore"><span class="type">ClutterScore</span></a> *score</code></em>);</pre>
-<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
-<h3 class="title">Warning</h3>
-<p><code class="literal">clutter_score_stop</code> is deprecated and should not be used in newly-written code.</p>
-</div>
 <p>
 Stops and rewinds a playing <a class="link" href="ClutterScore.html" title="ClutterScore"><span class="type">ClutterScore</span></a> instance.
 </p>
@@ -609,10 +553,6 @@ Stops and rewinds a playing <a class="link" href="ClutterScore.html" title="Clut
 <div class="refsect2">
 <a name="clutter-score-is-playing"></a><h3>clutter_score_is_playing ()</h3>
 <pre class="programlisting"><span class="returnvalue">gboolean</span>            clutter_score_is_playing            (<em class="parameter"><code><a class="link" href="ClutterScore.html" title="ClutterScore"><span class="type">ClutterScore</span></a> *score</code></em>);</pre>
-<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
-<h3 class="title">Warning</h3>
-<p><code class="literal">clutter_score_is_playing</code> is deprecated and should not be used in newly-written code.</p>
-</div>
 <p>
 Query state of a <a class="link" href="ClutterScore.html" title="ClutterScore"><span class="type">ClutterScore</span></a> instance.
 </p>
@@ -637,10 +577,6 @@ Query state of a <a class="link" href="ClutterScore.html" title="ClutterScore"><
 <div class="refsect2">
 <a name="clutter-score-rewind"></a><h3>clutter_score_rewind ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                clutter_score_rewind                (<em class="parameter"><code><a class="link" href="ClutterScore.html" title="ClutterScore"><span class="type">ClutterScore</span></a> *score</code></em>);</pre>
-<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
-<h3 class="title">Warning</h3>
-<p><code class="literal">clutter_score_rewind</code> is deprecated and should not be used in newly-written code.</p>
-</div>
 <p>
 Rewinds a <a class="link" href="ClutterScore.html" title="ClutterScore"><span class="type">ClutterScore</span></a> to its initial state.
 </p>

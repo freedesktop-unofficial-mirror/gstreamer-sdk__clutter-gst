@@ -29,18 +29,14 @@
 #define __CLUTTER_BACKEND_H__
 
 #include <cairo.h>
-#include <glib-object.h>
 #include <pango/pango.h>
+
 #ifdef COGL_ENABLE_EXPERIMENTAL_2_0_API
 #include <cogl/cogl.h>
 #endif
 
-#include <clutter/clutter-actor.h>
-#include <clutter/clutter-device-manager.h>
-#include <clutter/clutter-event.h>
-#include <clutter/clutter-feature.h>
-#include <clutter/clutter-stage.h>
-#include <clutter/clutter-stage-window.h>
+#include <clutter/clutter-config.h>
+#include <clutter/clutter-types.h>
 
 G_BEGIN_DECLS
 
@@ -63,27 +59,13 @@ GType clutter_backend_get_type    (void) G_GNUC_CONST;
 
 ClutterBackend *clutter_get_default_backend (void);
 
-#ifndef CLUTTER_DISABLE_DEPRECATED
-void                        clutter_backend_set_resolution            (ClutterBackend             *backend,
-                                                                       gdouble                     dpi);
-void                        clutter_backend_set_double_click_time     (ClutterBackend             *backend,
-                                                                       guint                       msec);
-guint                       clutter_backend_get_double_click_time     (ClutterBackend             *backend);
-void                        clutter_backend_set_double_click_distance (ClutterBackend             *backend,
-                                                                       guint                       distance);
-guint                       clutter_backend_get_double_click_distance (ClutterBackend             *backend);
-void                        clutter_backend_set_font_name             (ClutterBackend             *backend,
-                                                                       const gchar                *font_name);
-const gchar *               clutter_backend_get_font_name             (ClutterBackend             *backend);
-#endif /* CLUTTER_DISABLE_DEPRECATED */
-
 gdouble                     clutter_backend_get_resolution            (ClutterBackend             *backend);
 
 void                        clutter_backend_set_font_options          (ClutterBackend             *backend,
                                                                        const cairo_font_options_t *options);
 const cairo_font_options_t *clutter_backend_get_font_options          (ClutterBackend             *backend);
 
-#if defined (COGL_ENABLE_EXPERIMENTAL_2_0_API) && defined (CLUTTER_ENABLE_EXPERIMENTAL_API)
+#if defined (COGL_ENABLE_EXPERIMENTAL_API) && defined (CLUTTER_ENABLE_EXPERIMENTAL_API)
 CoglContext                *clutter_backend_get_cogl_context          (ClutterBackend             *backend);
 #endif
 

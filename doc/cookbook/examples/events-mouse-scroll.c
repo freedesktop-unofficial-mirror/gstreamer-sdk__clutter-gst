@@ -78,8 +78,9 @@ main (int argc, char *argv[])
   if (clutter_init (&argc, &argv) != CLUTTER_INIT_SUCCESS)
     return 1;
 
-  stage = clutter_stage_get_default ();
+  stage = clutter_stage_new ();
   clutter_actor_set_size (stage, STAGE_WIDTH, STAGE_HEIGHT);
+  g_signal_connect (stage, "destroy", G_CALLBACK (clutter_main_quit), NULL);
 
   /* the scrollable actor */
   texture = clutter_texture_new ();
@@ -95,7 +96,7 @@ main (int argc, char *argv[])
                                  NULL);
 
   /* the viewport which the box is scrolled within */
-  viewport = clutter_group_new ();
+  viewport = clutter_actor_new ();
 
   /* viewport is shorter than the stage */
   clutter_actor_set_size (viewport, STAGE_WIDTH, STAGE_HEIGHT * 0.5);
@@ -110,10 +111,10 @@ main (int argc, char *argv[])
   clutter_actor_set_clip_to_allocation (viewport, TRUE);
 
   /* put the texture inside the viewport */
-  clutter_container_add_actor (CLUTTER_CONTAINER (viewport), texture);
+  clutter_actor_add_child (viewport, texture);
 
   /* add the viewport to the stage */
-  clutter_container_add_actor (CLUTTER_CONTAINER (stage), viewport);
+  clutter_actor_add_child (stage, viewport);
 
   g_signal_connect (viewport,
                     "scroll-event",

@@ -1,8 +1,6 @@
 /*
  * Pretty cairo flower hack.
  */
-
-#undef CLUTTER_DISABLE_DEPRECATED
 #include <clutter/clutter.h>
 
 #ifndef _MSC_VER
@@ -25,7 +23,9 @@ typedef struct Flower
 }
 Flower;
 
-ClutterActor*
+static ClutterActor *stage = NULL;
+
+static ClutterActor *
 make_flower_actor (void)
 {
   /* No science here, just a hack from toying */
@@ -143,17 +143,14 @@ tick (ClutterTimeline *timeline,
       gint             msecs,
       gpointer         data)
 {
-  Flower **flowers = (Flower**)data;
+  Flower **flowers = data;
   gint i = 0;
 
   for (i = 0; i < N_FLOWERS; i++)
     {
-      ClutterActor *stage;
-
       flowers[i]->y   += flowers[i]->v;
       flowers[i]->rot += flowers[i]->rv;
 
-      stage = clutter_stage_get_default ();
       if (flowers[i]->y > (gint) clutter_actor_get_height (stage))
         flowers[i]->y = -clutter_actor_get_height (flowers[i]->ctex);
 
@@ -169,23 +166,35 @@ tick (ClutterTimeline *timeline,
     }
 }
 
-int
+static void
+stop_and_quit (ClutterActor    *actor,
+               ClutterTimeline *timeline)
+{
+  clutter_timeline_stop (timeline);
+  clutter_main_quit ();
+}
+
+G_MODULE_EXPORT int
 test_cairo_flowers_main (int argc, char **argv)
 {
-  int              i;
-  ClutterActor    *stage;
-  ClutterColor     stage_color = { 0x0, 0x0, 0x0, 0xff };
+  Flower *flowers[N_FLOWERS];
   ClutterTimeline *timeline;
-  Flower          *flowers[N_FLOWERS];
+  int i;
 
   srand (time (NULL));
 
   if (clutter_init (&argc, &argv) != CLUTTER_INIT_SUCCESS)
     return 1;
 
-  stage = clutter_stage_get_default ();
+  /* Create a timeline to manage animation */
+  timeline = clutter_timeline_new (6000);
+  clutter_timeline_set_repeat_count (timeline, -1);
 
-  clutter_stage_set_color (CLUTTER_STAGE (stage), &stage_color);
+  stage = clutter_stage_new ();
+  clutter_stage_set_title (CLUTTER_STAGE (stage), "Cairo Flowers");
+  g_signal_connect (stage, "destroy", G_CALLBACK (stop_and_quit), timeline);
+
+  clutter_actor_set_background_color (stage, CLUTTER_COLOR_Black);
 
   for (i=0; i< N_FLOWERS; i++)
     {
@@ -203,10 +212,6 @@ test_cairo_flowers_main (int argc, char **argv)
 				  flowers[i]->x, flowers[i]->y);
     }
 
-  /* Create a timeline to manage animation */
-  timeline = clutter_timeline_new (6000);
-  clutter_timeline_set_loop (timeline, TRUE);
-
   /* fire a callback for frame change */
   g_signal_connect (timeline, "new-frame", G_CALLBACK (tick), flowers);
 
@@ -220,6 +225,13 @@ test_cairo_flowers_main (int argc, char **argv)
 
   clutter_main();
 
+  g_object_unref (timeline);
+
   return EXIT_SUCCESS;
 }
 
+G_MODULE_EXPORT const char *
+test_cairo_flowers_describe (void)
+{
+  return "Drawing pretty flowers with Cairo";
+}

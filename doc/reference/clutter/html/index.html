@@ -14,11 +14,11 @@
 <div class="titlepage">
 <div>
 <div><table class="navigation" id="top" width="100%" cellpadding="2" cellspacing="0"><tr><th valign="middle"><p class="title">Clutter Reference Manual</p></th></tr></table></div>
-<div><p class="releaseinfo">for Clutter 1.8.4</p></div>
+<div><p class="releaseinfo">for Clutter 1.10.6</p></div>
 <div><p class="copyright">Copyright © 2006, 2007, 2008 OpenedHand LTD</p></div>
-<div><p class="copyright">Copyright © 2009, 2010 Intel Corporation</p></div>
+<div><p class="copyright">Copyright © 2009, 2010, 2011, 2012 Intel Corporation</p></div>
 <div><div class="legalnotice">
-<a name="id329854"></a><p>
+<a name="id294343"></a><p>
         Permission is granted to copy, distribute and/or modify this
         document under the terms of the <em class="citetitle">GNU Free
         Documentation License</em>, Version 1.1 or any later
@@ -51,10 +51,10 @@
 <dt><span class="chapter"><a href="ch01.html">Abstract classes and interfaces</a></span></dt>
 <dd><dl>
 <dt>
-<span class="refentrytitle"><a href="ClutterActor.html">ClutterActor</a></span><span class="refpurpose"> — Base abstract class for all visual stage actors.</span>
+<span class="refentrytitle"><a href="ClutterActor.html">ClutterActor</a></span><span class="refpurpose"> — The basic element of the scene graph</span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="ClutterContainer.html">ClutterContainer</a></span><span class="refpurpose"> — An interface for implementing container actors</span>
+<span class="refentrytitle"><a href="ClutterContainer.html">ClutterContainer</a></span><span class="refpurpose"> — An interface for container actors</span>
 </dt>
 <dt>
 <span class="refentrytitle"><a href="ClutterChildMeta.html">ClutterChildMeta</a></span><span class="refpurpose"> — Wrapper for actors inside a container</span>
@@ -80,11 +80,14 @@
 <dt>
 <span class="refentrytitle"><a href="ClutterEffect.html">ClutterEffect</a></span><span class="refpurpose"> — Base class for actor effects</span>
 </dt>
+<dt>
+<span class="refentrytitle"><a href="ClutterContent.html">ClutterContent</a></span><span class="refpurpose"> — Delegate for painting the content of an actor</span>
+</dt>
 </dl></dd>
 <dt><span class="chapter"><a href="ch02.html">Base actors</a></span></dt>
 <dd><dl>
 <dt>
-<span class="refentrytitle"><a href="ClutterRectangle.html">ClutterRectangle</a></span><span class="refpurpose"> — An actor that displays a simple rectangle.</span>
+<span class="refentrytitle"><a href="ClutterStage.html">ClutterStage</a></span><span class="refpurpose"> — Top level visual element to which actors are placed.</span>
 </dt>
 <dt>
 <span class="refentrytitle"><a href="ClutterTexture.html">ClutterTexture</a></span><span class="refpurpose"> — An actor for displaying and manipulating images.</span>
@@ -99,19 +102,7 @@
 <span class="refentrytitle"><a href="ClutterCairoTexture.html">ClutterCairoTexture</a></span><span class="refpurpose"> — Texture with Cairo integration</span>
 </dt>
 </dl></dd>
-<dt><span class="chapter"><a href="ch03.html">Container actors</a></span></dt>
-<dd><dl>
-<dt>
-<span class="refentrytitle"><a href="ClutterGroup.html">ClutterGroup</a></span><span class="refpurpose"> — A fixed layout container</span>
-</dt>
-<dt>
-<span class="refentrytitle"><a href="ClutterStage.html">ClutterStage</a></span><span class="refpurpose"> — Top level visual element to which actors are placed.</span>
-</dt>
-<dt>
-<span class="refentrytitle"><a href="ClutterBox.html">ClutterBox</a></span><span class="refpurpose"> — A Generic layout container</span>
-</dt>
-</dl></dd>
-<dt><span class="chapter"><a href="ch04.html">Layout managers</a></span></dt>
+<dt><span class="chapter"><a href="ch03.html">Layout managers</a></span></dt>
 <dd><dl>
 <dt>
 <span class="refentrytitle"><a href="ClutterFixedLayout.html">ClutterFixedLayout</a></span><span class="refpurpose"> — A fixed layout manager</span>
@@ -130,7 +121,7 @@
   and columns</span>
 </dt>
 </dl></dd>
-<dt><span class="chapter"><a href="ch05.html">Actions</a></span></dt>
+<dt><span class="chapter"><a href="ch04.html">Actions</a></span></dt>
 <dd><dl>
 <dt>
 <span class="refentrytitle"><a href="ClutterClickAction.html">ClutterClickAction</a></span><span class="refpurpose"> — Action for clickable actors</span>
@@ -148,7 +139,7 @@
 <span class="refentrytitle"><a href="ClutterSwipeAction.html">ClutterSwipeAction</a></span><span class="refpurpose"> — Action for swipe gestures</span>
 </dt>
 </dl></dd>
-<dt><span class="chapter"><a href="ch06.html">Constraints</a></span></dt>
+<dt><span class="chapter"><a href="ch05.html">Constraints</a></span></dt>
 <dd><dl>
 <dt>
 <span class="refentrytitle"><a href="ClutterAlignConstraint.html">ClutterAlignConstraint</a></span><span class="refpurpose"> — A constraint aligning the position of an actor</span>
@@ -163,7 +154,7 @@
 <span class="refentrytitle"><a href="ClutterSnapConstraint.html">ClutterSnapConstraint</a></span><span class="refpurpose"> — A constraint snapping two actors together</span>
 </dt>
 </dl></dd>
-<dt><span class="chapter"><a href="ch07.html">Effects</a></span></dt>
+<dt><span class="chapter"><a href="ch06.html">Effects</a></span></dt>
 <dd><dl>
 <dt>
 <span class="refentrytitle"><a href="ClutterOffscreenEffect.html">ClutterOffscreenEffect</a></span><span class="refpurpose"> — Base class for effects using offscreen buffers</span>
@@ -179,6 +170,9 @@
 <span class="refentrytitle"><a href="ClutterBlurEffect.html">ClutterBlurEffect</a></span><span class="refpurpose"> — A blur effect</span>
 </dt>
 <dt>
+<span class="refentrytitle"><a href="ClutterBrightnessContrastEffect.html">ClutterBrightnessContrastEffect</a></span><span class="refpurpose"> — Increase/decrease brightness and/or contrast of actor.</span>
+</dt>
+<dt>
 <span class="refentrytitle"><a href="ClutterColorizeEffect.html">ClutterColorizeEffect</a></span><span class="refpurpose"> — A colorization effect</span>
 </dt>
 <dt>
@@ -188,55 +182,52 @@
 <span class="refentrytitle"><a href="ClutterPageTurnEffect.html">ClutterPageTurnEffect</a></span><span class="refpurpose"> — A page turning effect</span>
 </dt>
 </dl></dd>
+<dt><span class="chapter"><a href="ch07.html">Content</a></span></dt>
+<dd><dl>
+<dt>
+<span class="refentrytitle"><a href="ClutterCanvas.html">ClutterCanvas</a></span><span class="refpurpose"> — Content for 2D painting</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="clutter-ClutterImage.html">ClutterImage</a></span><span class="refpurpose"> — Image data content</span>
+</dt>
+</dl></dd>
+<dt><span class="chapter"><a href="ch08.html">Paint Objects</a></span></dt>
+<dd><dl>
+<dt>
+<span class="refentrytitle"><a href="clutter-ClutterPaintNode.html">ClutterPaintNode</a></span><span class="refpurpose"> — Paint objects</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="clutter-Paint-Nodes.html">Paint Nodes</a></span><span class="refpurpose"> — ClutterPaintNode implementations</span>
+</dt>
+</dl></dd>
 </dl></dd>
 <dt><span class="part"><a href="clutteranimation.html">V. Clutter Animation Framework</a></span></dt>
 <dd><dl>
-<dt><span class="chapter"><a href="ch08.html">Base classes</a></span></dt>
+<dt><span class="chapter"><a href="ch09.html">Base classes</a></span></dt>
 <dd><dl>
 <dt>
 <span class="refentrytitle"><a href="ClutterTimeline.html">ClutterTimeline</a></span><span class="refpurpose"> — A class for time-based events</span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="ClutterScore.html">ClutterScore</a></span><span class="refpurpose"> — Controller for multiple timelines</span>
-</dt>
-<dt>
 <span class="refentrytitle"><a href="ClutterAlpha.html">ClutterAlpha</a></span><span class="refpurpose"> — A class for calculating a value as a function of time</span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="ClutterBehaviour.html">ClutterBehaviour</a></span><span class="refpurpose"> — Class for providing behaviours to actors</span>
-</dt>
-</dl></dd>
-<dt><span class="chapter"><a href="ch09.html">Behaviours</a></span></dt>
-<dd><dl>
-<dt>
-<span class="refentrytitle"><a href="ClutterBehaviourDepth.html">ClutterBehaviourDepth</a></span><span class="refpurpose"> — A behaviour controlling the Z position</span>
+<span class="refentrytitle"><a href="clutter-Value-intervals.html">Value intervals</a></span><span class="refpurpose"> — An object holding an interval of two values</span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="ClutterBehaviourEllipse.html">ClutterBehaviourEllipse</a></span><span class="refpurpose"> — A behaviour interpolating position along an ellipse</span>
+<span class="refentrytitle"><a href="ClutterTransition.html">ClutterTransition</a></span><span class="refpurpose"> — Transition between two values</span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="ClutterBehaviourOpacity.html">ClutterBehaviourOpacity</a></span><span class="refpurpose"> — A behaviour controlling opacity</span>
+<span class="refentrytitle"><a href="ClutterAnimatable.html">ClutterAnimatable</a></span><span class="refpurpose"> — Interface for animatable classes</span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="ClutterBehaviourPath.html">ClutterBehaviourPath</a></span><span class="refpurpose"> — A behaviour for moving actors along a <a class="link" href="ClutterPath.html" title="ClutterPath"><span class="type">ClutterPath</span></a></span>
-</dt>
-<dt>
-<span class="refentrytitle"><a href="ClutterBehaviourRotate.html">ClutterBehaviourRotate</a></span><span class="refpurpose"> — A behaviour controlling rotation</span>
-</dt>
-<dt>
-<span class="refentrytitle"><a href="ClutterBehaviourScale.html">ClutterBehaviourScale</a></span><span class="refpurpose"> — A behaviour controlling scale</span>
+<span class="refentrytitle"><a href="ClutterPropertyTransition.html">ClutterPropertyTransition</a></span><span class="refpurpose"> — Property transitions</span>
 </dt>
 </dl></dd>
 <dt><span class="chapter"><a href="ch10.html">High Level API</a></span></dt>
 <dd><dl>
 <dt>
-<span class="refentrytitle"><a href="clutter-Value-intervals.html">Value intervals</a></span><span class="refpurpose"> — An object holding an interval of two values</span>
-</dt>
-<dt>
 <span class="refentrytitle"><a href="clutter-Implicit-Animations.html">Implicit Animations</a></span><span class="refpurpose"> — Simple implicit animations</span>
-</dt>
-<dt>
-<span class="refentrytitle"><a href="ClutterAnimatable.html">ClutterAnimatable</a></span><span class="refpurpose"> — Interface for animatable classes</span>
 </dt>
 <dt>
 <span class="refentrytitle"><a href="ClutterAnimator.html">ClutterAnimator</a></span><span class="refpurpose"> — Multi-actor tweener</span>
@@ -279,10 +270,10 @@ and bezier curves.</span>
 <span class="refentrytitle"><a href="ClutterSettings.html">ClutterSettings</a></span><span class="refpurpose"> — Settings configuration</span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="clutter-Shaders.html">Shaders</a></span><span class="refpurpose"> — Programmable pipeline abstraction</span>
+<span class="refentrytitle"><a href="clutter-Stage-Manager.html">Stage Manager</a></span><span class="refpurpose"> — Maintains the list of stages</span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="clutter-Stage-Manager.html">Stage Manager</a></span><span class="refpurpose"> — Maintains the list of stages</span>
+<span class="refentrytitle"><a href="ClutterTextBuffer.html">ClutterTextBuffer</a></span><span class="refpurpose"> — Text buffer for ClutterText</span>
 </dt>
 <dt>
 <span class="refentrytitle"><a href="clutter-Unit-conversion.html">Unit conversion</a></span><span class="refpurpose"> — A logical distance unit</span>
@@ -340,21 +331,24 @@ and bezier curves.</span>
 <span class="refentrytitle"><a href="clutter-Intel-CE3100-CE4100-Specific-Support.html">Intel CE3100, CE4100 Specific Support</a></span><span class="refpurpose"> — Intel CE3100, CE4100 Specific API</span>
 </dt>
 <dt>
-<span class="refentrytitle"><a href="clutter-Wayland-Specific-Support.html">Wayland Specific Support</a></span><span class="refpurpose"> — Wayland specific API</span>
+<span class="refentrytitle"><a href="clutter-GDK-Specific-Support.html">GDK Specific Support</a></span><span class="refpurpose"> — GDK specific API</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="clutter-Wayland-compositor-specific-support.html">Wayland compositor specific support</a></span><span class="refpurpose"> — Wayland compositor specific APIs</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="clutter-ClutterWaylandSurface.html">ClutterWaylandSurface</a></span><span class="refpurpose"> — An actor which displays the content of a client surface</span>
 </dt>
 </dl></dd>
 <dt><span class="part"><a href="additionaldocs.html">VIII. Additional Documentation</a></span></dt>
 <dd><dl>
-<dt><span class="chapter"><a href="clutter-subclassing-ClutterActor.html">Implementing a new actor</a></span></dt>
 <dt><span class="chapter"><a href="clutter-animations.html">Creating Animations with Clutter</a></span></dt>
 <dd><dl>
 <dt><span class="section"><a href="clutter-animations.html#clutter-animation-basic">Basic Animations</a></span></dt>
 <dt><span class="section"><a href="clutter-animation-timelines.html">Timelines</a></span></dt>
-<dt><span class="section"><a href="clutter-animation-behaviours.html">Behaviours</a></span></dt>
 <dt><span class="section"><a href="clutter-animation-implicit.html">Implicit Animations</a></span></dt>
 <dt><span class="section"><a href="clutter-animation-conclusion.html">Conclusion</a></span></dt>
 </dl></dd>
-<dt><span class="chapter"><a href="creating-your-own-behaviours.html">Creating You Own Behaviours</a></span></dt>
 </dl></dd>
 <dt><span class="part"><a href="migration.html">IX. Migrating from previous version of Clutter</a></span></dt>
 <dd><dl>
@@ -368,12 +362,51 @@ and bezier curves.</span>
 </dl></dd>
 <dt><span class="chapter"><a href="migrating-ClutterBehaviour.html">Migrating from ClutterBehaviour</a></span></dt>
 </dl></dd>
-<dt><span class="part"><a href="clutterobjects.html">X. Clutter Actors and Objects</a></span></dt>
+<dt><span class="part"><a href="deprecated.html">X. Deprecated Classes</a></span></dt>
+<dd><dl>
+<dt>
+<span class="refentrytitle"><a href="ClutterScore.html">ClutterScore</a></span><span class="refpurpose"> — Controller for multiple timelines</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="clutter-Shaders.html">Shaders</a></span><span class="refpurpose"> — Programmable pipeline abstraction</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ClutterBehaviour.html">ClutterBehaviour</a></span><span class="refpurpose"> — Class for providing behaviours to actors</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ClutterBehaviourDepth.html">ClutterBehaviourDepth</a></span><span class="refpurpose"> — A behaviour controlling the Z position</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ClutterBehaviourEllipse.html">ClutterBehaviourEllipse</a></span><span class="refpurpose"> — A behaviour interpolating position along an ellipse</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ClutterBehaviourOpacity.html">ClutterBehaviourOpacity</a></span><span class="refpurpose"> — A behaviour controlling opacity</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ClutterBehaviourPath.html">ClutterBehaviourPath</a></span><span class="refpurpose"> — A behaviour for moving actors along a <a class="link" href="ClutterPath.html" title="ClutterPath"><span class="type">ClutterPath</span></a></span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ClutterBehaviourRotate.html">ClutterBehaviourRotate</a></span><span class="refpurpose"> — A behaviour controlling rotation</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ClutterBehaviourScale.html">ClutterBehaviourScale</a></span><span class="refpurpose"> — A behaviour controlling scale</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ClutterGroup.html">ClutterGroup</a></span><span class="refpurpose"> — A fixed layout container</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ClutterBox.html">ClutterBox</a></span><span class="refpurpose"> — A Generic layout container</span>
+</dt>
+<dt>
+<span class="refentrytitle"><a href="ClutterRectangle.html">ClutterRectangle</a></span><span class="refpurpose"> — An actor that displays a simple rectangle.</span>
+</dt>
+</dl></dd>
+<dt><span class="part"><a href="clutterobjects.html">XI. Clutter Actors and Objects</a></span></dt>
 <dd><dl>
 <dt><span class="chapter"><a href="clutterobjecthierarchy.html">Object Hierarchy</a></span></dt>
 <dt><span class="chapter"><a href="clutterobjectindex.html">Object Index</a></span></dt>
 </dl></dd>
-<dt><span class="part"><a href="clutterglossary.html">XI. Glossaries</a></span></dt>
+<dt><span class="part"><a href="clutterglossary.html">XII. Glossaries</a></span></dt>
 <dd><dl>
 <dt><span class="glossary"><a href="go01.html">Glossary</a></span></dt>
 <dt><span class="glossary"><a href="annotation-glossary.html">Annotation Glossary</a></span></dt>
@@ -389,6 +422,7 @@ and bezier curves.</span>
 <dt><span class="index"><a href="ix09.html">Index of new symbols in 1.4</a></span></dt>
 <dt><span class="index"><a href="ix10.html">Index of new symbols in 1.6</a></span></dt>
 <dt><span class="index"><a href="ix11.html">Index of new symbols in 1.8</a></span></dt>
+<dt><span class="index"><a href="ix12.html">Index of new symbols in 1.10</a></span></dt>
 <dt><span class="appendix"><a href="license.html">A. License</a></span></dt>
 </dl></div>
 </div>

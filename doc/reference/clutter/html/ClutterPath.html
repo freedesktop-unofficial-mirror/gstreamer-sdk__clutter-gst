@@ -42,7 +42,7 @@ and bezier curves.</p>
 </tr></table></div>
 <div class="refsynopsisdiv">
 <a name="ClutterPath.synopsis"></a><h2>Synopsis</h2>
-<pre class="synopsis">struct              <a class="link" href="ClutterPath.html#ClutterPath-struct" title="struct ClutterPath">ClutterPath</a>;
+<pre class="synopsis">                    <a class="link" href="ClutterPath.html#ClutterPath-struct" title="ClutterPath">ClutterPath</a>;
 struct              <a class="link" href="ClutterPath.html#ClutterPathClass" title="struct ClutterPathClass">ClutterPathClass</a>;
 <span class="returnvalue">void</span>                (<a class="link" href="ClutterPath.html#ClutterPathCallback" title="ClutterPathCallback ()">*ClutterPathCallback</a>)              (<em class="parameter"><code>const <a class="link" href="ClutterPath.html#ClutterPathNode" title="struct ClutterPathNode"><span class="type">ClutterPathNode</span></a> *node</code></em>,
                                                          <em class="parameter"><code><span class="type">gpointer</span> data</code></em>);
@@ -205,8 +205,8 @@ in a string using a subset of the SVG path syntax. See
 <div class="refsect1">
 <a name="ClutterPath.details"></a><h2>Details</h2>
 <div class="refsect2">
-<a name="ClutterPath-struct"></a><h3>struct ClutterPath</h3>
-<pre class="programlisting">struct ClutterPath;</pre>
+<a name="ClutterPath-struct"></a><h3>ClutterPath</h3>
+<pre class="programlisting">typedef struct _ClutterPath ClutterPath;</pre>
 <p>
 The <a class="link" href="ClutterPath.html" title="ClutterPath"><span class="type">ClutterPath</span></a> struct contains only private data and should
 be accessed with the functions below.

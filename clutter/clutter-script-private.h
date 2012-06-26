@@ -35,7 +35,7 @@
 
 G_BEGIN_DECLS
 
-#define CLUTTER_TYPE_SCRIPT_PARSER      (clutter_script_parser_get_type ())
+#define CLUTTER_TYPE_SCRIPT_PARSER      (_clutter_script_parser_get_type ())
 #define CLUTTER_SCRIPT_PARSER(obj)      (G_TYPE_CHECK_INSTANCE_CAST ((obj), CLUTTER_TYPE_SCRIPT_PARSER, ClutterScriptParser))
 #define CLUTTER_IS_SCRIPT_PARSER(obj)   (G_TYPE_CHECK_INSTANCE_TYPE ((obj), CLUTTER_TYPE_SCRIPT_PARSER))
 
@@ -99,7 +99,7 @@ typedef struct {
 
 void property_info_free (gpointer data);
 
-GType clutter_script_parser_get_type (void) G_GNUC_CONST;
+GType _clutter_script_parser_get_type (void) G_GNUC_CONST;
 
 gboolean _clutter_script_parse_node        (ClutterScript *script,
                                             GValue        *value,
@@ -130,6 +130,9 @@ gboolean _clutter_script_parse_color       (ClutterScript   *script,
                                             ClutterColor    *color);
 GObject *_clutter_script_parse_alpha       (ClutterScript   *script,
                                             JsonNode        *node);
+gboolean _clutter_script_parse_translatable_string (ClutterScript *script,
+                                                    JsonNode      *node,
+                                                    char         **str);
 
 void _clutter_script_construct_object (ClutterScript *script,
                                        ObjectInfo    *oinfo);

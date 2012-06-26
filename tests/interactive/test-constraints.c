@@ -175,22 +175,19 @@ test_constraints_main (int argc, char *argv[])
 
   /* main rectangle */
   clutter_color_from_string (&rect_color, "#3465a4");
-  rect = clutter_rectangle_new ();
+  rect = clutter_actor_new ();
   g_signal_connect (rect, "button-release-event",
                     G_CALLBACK (on_button_release),
                     NULL);
-  clutter_rectangle_set_color (CLUTTER_RECTANGLE (rect), &rect_color);
+  clutter_actor_set_background_color (rect, &rect_color);
   clutter_actor_set_size (rect, RECT_SIZE, RECT_SIZE);
   clutter_actor_set_reactive (rect, TRUE);
   clutter_actor_set_name (rect, names[Center]);
-  clutter_container_add_actor (CLUTTER_CONTAINER (stage), rect);
+  clutter_actor_add_child (stage, rect);
 
   /* align the center rectangle to the center of the stage */
-  constraint = clutter_align_constraint_new (stage, CLUTTER_ALIGN_X_AXIS, 0.5);
-  clutter_actor_add_constraint_with_name (rect, "x-align", constraint);
-
-  constraint = clutter_align_constraint_new (stage, CLUTTER_ALIGN_Y_AXIS, 0.5);
-  clutter_actor_add_constraint_with_name (rect, "y-align", constraint);
+  constraint = clutter_align_constraint_new (stage, CLUTTER_ALIGN_BOTH, 0.5);
+  clutter_actor_add_constraint_with_name (rect, "align", constraint);
 
   /* this is the equivalent of the DesaturateEffect; we cannot animate
    * the factor because the animation API only understands GObject
@@ -219,11 +216,12 @@ test_constraints_main (int argc, char *argv[])
         continue;
 
       clutter_color_from_string (&rect_color, colors[i]);
-      rect = clutter_rectangle_new ();
-      clutter_rectangle_set_color (CLUTTER_RECTANGLE (rect), &rect_color);
+
+      rect = clutter_actor_new ();
+      clutter_actor_set_background_color (rect, &rect_color);
       clutter_actor_set_opacity (rect, 0);
       clutter_actor_set_name (rect, names[i]);
-      clutter_container_add_actor (CLUTTER_CONTAINER (stage), rect);
+      clutter_actor_add_child (stage, rect);
 
       constraint = clutter_bind_constraint_new (rects[Center], CLUTTER_BIND_X, 0.0);
       clutter_actor_add_constraint_with_name (rect, "x-bind", constraint);
@@ -246,4 +244,10 @@ test_constraints_main (int argc, char *argv[])
   clutter_main ();
 
   return EXIT_SUCCESS;
+}
+
+G_MODULE_EXPORT const char *
+test_constraints_describe (void)
+{
+  return "Visualize usage of Bind and Align constraints";
 }

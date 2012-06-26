@@ -7,7 +7,7 @@
 <link rel="home" href="index.html" title="Clutter Reference Manual">
 <link rel="up" href="ch02.html" title="Base actors">
 <link rel="prev" href="ClutterText.html" title="ClutterText">
-<link rel="next" href="ch03.html" title="Container actors">
+<link rel="next" href="ch03.html" title="Layout managers">
 <meta name="generator" content="GTK-Doc V1.18.1 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
@@ -95,7 +95,7 @@ struct              <a class="link" href="ClutterCairoTexture.html#ClutterCairoT
 <a name="ClutterCairoTexture.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
 <p>
 ClutterCairoTexture implements
- <a class="link" href="ClutterScriptable.html" title="ClutterScriptable">ClutterScriptable</a>,  <a class="link" href="ClutterAnimatable.html" title="ClutterAnimatable">ClutterAnimatable</a> and  AtkImplementorIface.</p>
+ <a class="link" href="ClutterContainer.html" title="ClutterContainer">ClutterContainer</a>,  <a class="link" href="ClutterScriptable.html" title="ClutterScriptable">ClutterScriptable</a>,  <a class="link" href="ClutterAnimatable.html" title="ClutterAnimatable">ClutterAnimatable</a> and  AtkImplementorIface.</p>
 </div>
 <div class="refsect1">
 <a name="ClutterCairoTexture.properties"></a><h2>Properties</h2>
@@ -148,7 +148,7 @@ explicitly.
 <p>
 </p>
 <div class="example">
-<a name="cairo-texture-example"></a><p class="title"><b>Example 5. A simple ClutterCairoTexture canvas</b></p>
+<a name="cairo-texture-example"></a><p class="title"><b>Example 4. A simple ClutterCairoTexture canvas</b></p>
 <div class="example-contents">
   <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
     <tbody>
@@ -265,7 +265,13 @@ explicitly.
 110
 111
 112
-113</pre></td>
+113
+114
+115
+116
+117
+118
+119</pre></td>
         <td class="listing_code"><pre class="programlisting"><span class="preproc">#include</span><span class="normal"> </span><span class="string">&lt;stdlib.h&gt;</span>
 <span class="preproc">#include</span><span class="normal"> </span><span class="string">&lt;math.h&gt;</span>
 <span class="preproc">#include</span><span class="normal"> </span><span class="string">&lt;cairo.h&gt;</span>
@@ -348,8 +354,8 @@ explicitly.
 <span class="normal">  </span><span class="comment">/* create a resizable stage */</span>
 <span class="normal">  stage </span><span class="symbol">=</span><span class="normal"> </span><span class="function"><a href="ClutterStage.html#clutter-stage-new">clutter_stage_new</a></span><span class="normal"> </span><span class="symbol">();</span>
 <span class="normal">  </span><span class="function"><a href="ClutterStage.html#clutter-stage-set-title">clutter_stage_set_title</a></span><span class="normal"> </span><span class="symbol">(</span><span class="function">CLUTTER_STAGE</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">stage</span><span class="symbol">),</span><span class="normal"> </span><span class="string">"2D Clock"</span><span class="symbol">);</span>
-<span class="normal">  </span><span class="function"><a href="ClutterStage.html#clutter-stage-set-color">clutter_stage_set_color</a></span><span class="normal"> </span><span class="symbol">(</span><span class="function">CLUTTER_STAGE</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">stage</span><span class="symbol">),</span><span class="normal"> CLUTTER_COLOR_LightSkyBlue</span><span class="symbol">);</span>
 <span class="normal">  </span><span class="function"><a href="ClutterStage.html#clutter-stage-set-user-resizable">clutter_stage_set_user_resizable</a></span><span class="normal"> </span><span class="symbol">(</span><span class="function">CLUTTER_STAGE</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">stage</span><span class="symbol">),</span><span class="normal"> TRUE</span><span class="symbol">);</span>
+<span class="normal">  </span><span class="function"><a href="ClutterActor.html#clutter-actor-set-background-color">clutter_actor_set_background_color</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">stage</span><span class="symbol">,</span><span class="normal"> CLUTTER_COLOR_LightSkyBlue</span><span class="symbol">);</span>
 <span class="normal">  </span><span class="function"><a href="ClutterActor.html#clutter-actor-set-size">clutter_actor_set_size</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">stage</span><span class="symbol">,</span><span class="normal"> </span><span class="number">300</span><span class="symbol">,</span><span class="normal"> </span><span class="number">300</span><span class="symbol">);</span>
 <span class="normal">  </span><span class="function"><a href="ClutterActor.html#clutter-actor-show">clutter_actor_show</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">stage</span><span class="symbol">);</span>
 
@@ -378,6 +384,12 @@ explicitly.
 <span class="normal">  </span><span class="function"><a href="clutter-General.html#clutter-main">clutter_main</a></span><span class="normal"> </span><span class="symbol">();</span>
 
 <span class="normal">  </span><span class="keyword">return</span><span class="normal"> EXIT_SUCCESS</span><span class="symbol">;</span>
+<span class="cbracket">}</span>
+
+<span class="normal">G_MODULE_EXPORT </span><span class="usertype">const</span><span class="normal"> </span><span class="type">char</span><span class="normal"> </span><span class="symbol">*</span>
+<span class="function">test_cairo_clock_describe</span><span class="normal"> </span><span class="symbol">(</span><span class="type">void</span><span class="symbol">)</span>
+<span class="cbracket">{</span>
+<span class="normal">  </span><span class="keyword">return</span><span class="normal"> </span><span class="string">"Simple 2D canvas using a Cairo texture actor"</span><span class="symbol">;</span>
 <span class="cbracket">}</span></pre></td>
       </tr>
     </tbody>

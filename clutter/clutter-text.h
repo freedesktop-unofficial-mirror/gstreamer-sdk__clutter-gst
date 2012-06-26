@@ -30,6 +30,7 @@
 #define __CLUTTER_TEXT_H__
 
 #include <clutter/clutter-actor.h>
+#include <clutter/clutter-text-buffer.h>
 #include <pango/pango.h>
 
 G_BEGIN_DECLS
@@ -102,7 +103,13 @@ ClutterActor *        clutter_text_new_full             (const gchar          *f
                                                          const ClutterColor   *color);
 ClutterActor *        clutter_text_new_with_text        (const gchar          *font_name,
                                                          const gchar          *text);
-
+CLUTTER_AVAILABLE_IN_1_10
+ClutterActor *        clutter_text_new_with_buffer      (ClutterTextBuffer    *buffer);
+CLUTTER_AVAILABLE_IN_1_10
+ClutterTextBuffer *   clutter_text_get_buffer           (ClutterText          *self);
+CLUTTER_AVAILABLE_IN_1_10
+void                  clutter_text_set_buffer           (ClutterText          *self,
+                                                         ClutterTextBuffer    *buffer);
 const gchar *         clutter_text_get_text             (ClutterText          *self);
 void                  clutter_text_set_text             (ClutterText          *self,
                                                          const gchar          *text);
@@ -206,6 +213,10 @@ void                  clutter_text_get_selected_text_color  (ClutterText        
                                                              ClutterColor         *color);
 
 gboolean              clutter_text_activate             (ClutterText          *self);
+CLUTTER_AVAILABLE_IN_1_10
+gint                  clutter_text_coords_to_position   (ClutterText          *self,
+                                                         gfloat                x,
+                                                         gfloat                y);
 gboolean              clutter_text_position_to_coords   (ClutterText          *self,
                                                          gint                  position,
                                                          gfloat               *x,

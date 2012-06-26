@@ -35,8 +35,10 @@ typedef struct _ClutterStageQueueRedrawEntry ClutterStageQueueRedrawEntry;
 
 /* stage */
 ClutterStageWindow *_clutter_stage_get_default_window    (void);
-void                _clutter_stage_do_paint              (ClutterStage          *stage,
-                                                          const ClutterGeometry *clip);
+
+void                _clutter_stage_do_paint              (ClutterStage                *stage,
+                                                          const cairo_rectangle_int_t *clip);
+
 void                _clutter_stage_set_window            (ClutterStage          *stage,
                                                           ClutterStageWindow    *stage_window);
 ClutterStageWindow *_clutter_stage_get_window            (ClutterStage          *stage);
@@ -106,6 +108,13 @@ ClutterActor *  _clutter_stage_get_drag_actor           (ClutterStage       *sta
                                                          ClutterInputDevice *device);
 void            _clutter_stage_remove_drag_actor        (ClutterStage       *stage,
                                                          ClutterInputDevice *device);
+
+ClutterStageState       _clutter_stage_get_state        (ClutterStage      *stage);
+gboolean                _clutter_stage_is_activated     (ClutterStage      *stage);
+gboolean                _clutter_stage_is_fullscreen    (ClutterStage      *stage);
+gboolean                _clutter_stage_update_state     (ClutterStage      *stage,
+                                                         ClutterStageState  unset_state,
+                                                         ClutterStageState  set_state);
 
 G_END_DECLS
 

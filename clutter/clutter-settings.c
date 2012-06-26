@@ -30,6 +30,7 @@
 #endif /* HAVE_PANGO_FT2 */
 
 #include "clutter-debug.h"
+#include "clutter-settings-private.h"
 #include "clutter-private.h"
 
 #define DEFAULT_FONT_NAME       "Sans 12"
@@ -69,6 +70,8 @@ struct _ClutterSettings
   gint long_press_duration;
 
   guint last_fontconfig_timestamp;
+
+  guint password_hint_time;
 };
 
 struct _ClutterSettingsClass
@@ -99,6 +102,8 @@ enum
 
   PROP_FONTCONFIG_TIMESTAMP,
 
+  PROP_PASSWORD_HINT_TIME,
+
   PROP_LAST
 };
 
@@ -113,6 +118,9 @@ settings_update_font_options (ClutterSettings *self)
   cairo_antialias_t antialias_mode = CAIRO_ANTIALIAS_GRAY;
   cairo_subpixel_order_t subpixel_order = CAIRO_SUBPIXEL_ORDER_DEFAULT;
   cairo_font_options_t *options;
+
+  if (self->backend == NULL)
+    return;
 
   options = cairo_font_options_create ();
 
@@ -183,7 +191,8 @@ settings_update_font_name (ClutterSettings *self)
 {
   CLUTTER_NOTE (BACKEND, "New font-name: %s", self->font_name);
 
-  g_signal_emit_by_name (self->backend, "font-changed");
+  if (self->backend != NULL)
+    g_signal_emit_by_name (self->backend, "font-changed");
 }
 
 static void
@@ -191,13 +200,17 @@ settings_update_resolution (ClutterSettings *self)
 {
   CLUTTER_NOTE (BACKEND, "New resolution: %.2f", self->resolution);
 
-  g_signal_emit_by_name (self->backend, "resolution-changed");
+  if (self->backend != NULL)
+    g_signal_emit_by_name (self->backend, "resolution-changed");
 }
 
 static void
 settings_update_fontmap (ClutterSettings *self,
                          guint            stamp)
 {
+  if (self->backend == NULL)
+    return;
+
 #ifdef HAVE_PANGO_FT2
   CLUTTER_NOTE (BACKEND, "Update fontmaps (stamp: %d)", stamp);
 
@@ -304,6 +317,10 @@ clutter_settings_set_property (GObject      *gobject,
       settings_update_fontmap (self, g_value_get_uint (value));
       break;
 
+    case PROP_PASSWORD_HINT_TIME:
+      self->password_hint_time = g_value_get_uint (value);
+      break;
+
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (gobject, prop_id, pspec);
       break;
@@ -360,6 +377,10 @@ clutter_settings_get_property (GObject    *gobject,
       g_value_set_int (value, self->long_press_duration);
       break;
 
+    case PROP_PASSWORD_HINT_TIME:
+      g_value_set_uint (value, self->password_hint_time);
+      break;
+
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (gobject, prop_id, pspec);
       break;
@@ -379,7 +400,8 @@ clutter_settings_dispatch_properties_changed (GObject     *gobject,
   klass->dispatch_properties_changed (gobject, n_pspecs, pspecs);
 
   /* emit settings-changed just once for multiple properties */
-  g_signal_emit_by_name (self->backend, "settings-changed");
+  if (self->backend != NULL)
+    g_signal_emit_by_name (self->backend, "settings-changed");
 }
 
 static void
@@ -393,13 +415,17 @@ clutter_settings_class_init (ClutterSettingsClass *klass)
    * A back pointer to the #ClutterBackend
    *
    * Since: 1.4
+   *
+   * Deprecated: 1.10
    */
   obj_props[PROP_BACKEND] =
     g_param_spec_object ("backend",
                          "Backend",
                          "A pointer to the backend",
                          CLUTTER_TYPE_BACKEND,
-                         CLUTTER_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY);
+                         CLUTTER_PARAM_WRITABLE |
+                         G_PARAM_DEPRECATED |
+                         G_PARAM_CONSTRUCT_ONLY);
 
   /**
    * ClutterSettings:double-click-time:
@@ -584,6 +610,24 @@ clutter_settings_class_init (ClutterSettingsClass *klass)
                        0,
                        CLUTTER_PARAM_WRITABLE);
 
+  /**
+   * ClutterText:password-hint-time:
+   *
+   * How long should Clutter show the last input character in editable
+   * ClutterText actors. The value is in milliseconds. A value of 0
+   * disables showing the password hint. 600 is a good value for
+   * enabling the hint.
+   *
+   * Since: 1.10
+   */
+  obj_props[PROP_PASSWORD_HINT_TIME] =
+    g_param_spec_uint ("password-hint-time",
+                       P_("Password Hint Time"),
+                       P_("How long to show the last input character in hidden entries"),
+                       0, G_MAXUINT,
+                       0,
+                       CLUTTER_PARAM_READWRITE);
+
   gobject_class->set_property = clutter_settings_set_property;
   gobject_class->get_property = clutter_settings_get_property;
   gobject_class->dispatch_properties_changed =
@@ -626,14 +670,123 @@ clutter_settings_init (ClutterSettings *self)
 ClutterSettings *
 clutter_settings_get_default (void)
 {
-  ClutterMainContext *context = _clutter_context_get_default ();
+  static ClutterSettings *settings = NULL;
 
-  if (G_LIKELY (context->settings != NULL))
-    return context->settings;
+  if (G_UNLIKELY (settings == NULL))
+    settings = g_object_new (CLUTTER_TYPE_SETTINGS, NULL);
 
-  context->settings = g_object_new (CLUTTER_TYPE_SETTINGS,
-                                    "backend", context->backend,
-                                    NULL);
+  return settings;
+}
 
-  return context->settings;
+void
+_clutter_settings_set_backend (ClutterSettings *settings,
+                               ClutterBackend  *backend)
+{
+  g_assert (CLUTTER_IS_SETTINGS (settings));
+  g_assert (CLUTTER_IS_BACKEND (backend));
+
+  settings->backend = backend;
+}
+
+#define SETTINGS_GROUP  "Settings"
+
+void
+_clutter_settings_read_from_key_file (ClutterSettings *settings,
+                                      GKeyFile        *keyfile)
+{
+  GObjectClass *settings_class;
+  GObject *settings_obj;
+  GParamSpec **pspecs;
+  guint n_pspecs, i;
+
+  if (!g_key_file_has_group (keyfile, SETTINGS_GROUP))
+    return;
+
+  settings_obj = G_OBJECT (settings);
+  settings_class = G_OBJECT_GET_CLASS (settings);
+  pspecs = g_object_class_list_properties (settings_class, &n_pspecs);
+
+  for (i = 0; i < n_pspecs; i++)
+    {
+      GParamSpec *pspec = pspecs[i];
+      const gchar *p_name = pspec->name;
+      GType p_type = G_TYPE_FUNDAMENTAL (pspec->value_type);
+      GValue value = G_VALUE_INIT;
+      GError *key_error = NULL;
+
+      g_value_init (&value, p_type);
+
+      switch (p_type)
+        {
+        case G_TYPE_INT:
+        case G_TYPE_UINT:
+          {
+            gint val;
+
+            val = g_key_file_get_integer (keyfile,
+                                          SETTINGS_GROUP, p_name,
+                                          &key_error);
+            if (p_type == G_TYPE_INT)
+              g_value_set_int (&value, val);
+            else
+              g_value_set_uint (&value, val);
+          }
+          break;
+
+        case G_TYPE_BOOLEAN:
+          {
+            gboolean val;
+
+            val = g_key_file_get_boolean (keyfile,
+                                          SETTINGS_GROUP, p_name,
+                                          &key_error);
+            g_value_set_boolean (&value, val);
+          }
+          break;
+
+        case G_TYPE_FLOAT:
+        case G_TYPE_DOUBLE:
+          {
+            gdouble val;
+
+            val = g_key_file_get_double (keyfile,
+                                         SETTINGS_GROUP, p_name,
+                                         &key_error);
+            if (p_type == G_TYPE_FLOAT)
+              g_value_set_float (&value, val);
+            else
+              g_value_set_double (&value, val);
+          }
+          break;
+
+        case G_TYPE_STRING:
+          {
+            gchar *val;
+
+            val = g_key_file_get_string (keyfile,
+                                         SETTINGS_GROUP, p_name,
+                                         &key_error);
+            g_value_take_string (&value, val);
+          }
+          break;
+        }
+
+      if (key_error != NULL &&
+          key_error->domain != G_KEY_FILE_ERROR &&
+          key_error->code != G_KEY_FILE_ERROR_KEY_NOT_FOUND)
+        {
+          g_critical ("Unable to read the value for setting '%s': %s",
+                      p_name,
+                      key_error->message);
+        }
+
+      if (key_error == NULL)
+        g_object_set_property (settings_obj, p_name, &value);
+      else
+        g_error_free (key_error);
+
+      g_value_unset (&value);
+    }
+
+  g_free (pspecs);
 }

@@ -121,55 +121,11 @@ struct _ClutterTextureClass
   void (*_clutter_texture5) (void);
 };
 
-/**
- * ClutterTextureFlags:
- * @CLUTTER_TEXTURE_NONE: No flags
- * @CLUTTER_TEXTURE_RGB_FLAG_BGR: FIXME
- * @CLUTTER_TEXTURE_RGB_FLAG_PREMULT: FIXME
- * @CLUTTER_TEXTURE_YUV_FLAG_YUV2: FIXME
- *
- * Flags for clutter_texture_set_from_rgb_data() and
- * clutter_texture_set_from_yuv_data().
- *
- * Since: 0.4
- */
-typedef enum { /*< prefix=CLUTTER_TEXTURE >*/
-  CLUTTER_TEXTURE_NONE             = 0,
-  CLUTTER_TEXTURE_RGB_FLAG_BGR     = 1 << 1,
-  CLUTTER_TEXTURE_RGB_FLAG_PREMULT = 1 << 2, /* FIXME: not handled */
-  CLUTTER_TEXTURE_YUV_FLAG_YUV2    = 1 << 3
-
-  /* FIXME: add compressed types ? */
-} ClutterTextureFlags;
-
-/**
- * ClutterTextureQuality:
- * @CLUTTER_TEXTURE_QUALITY_LOW: fastest rendering will use nearest neighbour
- *   interpolation when rendering. good setting.
- * @CLUTTER_TEXTURE_QUALITY_MEDIUM: higher quality rendering without using
- *   extra resources.
- * @CLUTTER_TEXTURE_QUALITY_HIGH: render the texture with the best quality
- *   available using extra memory.
- *
- * Enumaration controlling the texture quality.
- *
- * Since: 0.8
- */
-typedef enum { /*< prefix=CLUTTER_TEXTURE_QUALITY >*/
-  CLUTTER_TEXTURE_QUALITY_LOW,
-  CLUTTER_TEXTURE_QUALITY_MEDIUM,
-  CLUTTER_TEXTURE_QUALITY_HIGH
-} ClutterTextureQuality;
-
 GType clutter_texture_get_type (void) G_GNUC_CONST;
 
 ClutterActor *       clutter_texture_new                    (void);
 ClutterActor *       clutter_texture_new_from_file          (const gchar            *filename,
                                                              GError                **error);
-
-#ifndef CLUTTER_DISABLE_DEPRECATED
-ClutterActor *       clutter_texture_new_from_actor         (ClutterActor           *actor);
-#endif /* CLUTTER_DISABLE_DEPRECATED */
 
 gboolean             clutter_texture_set_from_file          (ClutterTexture         *texture,
                                                              const gchar            *filename,
@@ -183,12 +139,6 @@ gboolean             clutter_texture_set_from_rgb_data      (ClutterTexture     
                                                              gint                    bpp,
                                                              ClutterTextureFlags     flags,
                                                              GError                **error);
-gboolean              clutter_texture_set_from_yuv_data     (ClutterTexture         *texture,
-                                                             const guchar           *data,
-                                                             gint                    width,
-                                                             gint                    height,
-                                                             ClutterTextureFlags     flags,
-                                                             GError                **error);
 gboolean             clutter_texture_set_area_from_rgb_data (ClutterTexture         *texture,
                                                              const guchar           *data,
                                                              gboolean                has_alpha,
@@ -200,6 +150,7 @@ gboolean             clutter_texture_set_area_from_rgb_data (ClutterTexture     
                                                              gint                    bpp,
                                                              ClutterTextureFlags     flags,
                                                              GError                **error);
+
 void                  clutter_texture_get_base_size         (ClutterTexture         *texture,
                                                              gint                   *width,
                                                              gint                   *height);

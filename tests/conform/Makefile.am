@@ -16,34 +16,25 @@ units_sources =
 
 # animation tests
 units_sources += \
-	test-animator.c			\
-	test-behaviours.c		\
-	test-score.c			\
-	test-state.c			\
-	test-timeline.c			\
-	test-timeline-interpolate.c 	\
-	test-timeline-rewind.c 		\
+	animator.c			\
+	behaviours.c			\
+	score.c				\
+	state.c				\
+	timeline.c			\
+	timeline-interpolate.c 		\
+	timeline-rewind.c 		\
 	$(NULL)
 
 # cogl tests
 units_sources += \
-	test-cogl-backface-culling.c 		\
-	test-cogl-blend-strings.c		\
-	test-cogl-depth-test.c			\
 	test-cogl-fixed.c 			\
 	test-cogl-materials.c			\
-	test-cogl-pipeline-user-matrix.c	\
 	test-cogl-viewport.c			\
 	test-cogl-multitexture.c        	\
 	test-cogl-npot-texture.c        	\
 	test-cogl-object.c			\
-	test-cogl-offscreen.c			\
-	test-cogl-path.c			\
-	test-cogl-pixel-buffer.c		\
 	test-cogl-premult.c			\
 	test-cogl-readpixels.c			\
-	test-cogl-sub-texture.c         	\
-	test-cogl-texture-3d.c          	\
 	test-cogl-texture-get-set-data.c 	\
 	test-cogl-texture-mipmaps.c     	\
 	test-cogl-texture-pixmap-x11.c  	\
@@ -52,42 +43,43 @@ units_sources += \
 	test-cogl-vertex-buffer-contiguous.c 	\
 	test-cogl-vertex-buffer-interleved.c 	\
 	test-cogl-vertex-buffer-mutability.c 	\
-	test-cogl-wrap-modes.c          	\
-	test-cogl-primitive.c			\
-	test-cogl-just-vertex-shader.c		\
 	$(NULL)
 
 # actors tests
 units_sources += \
-	test-actor-destroy.c		\
-	test-actor-size.c		\
-	test-actor-invariants.c 	\
-	test-anchors.c                  \
-	test-binding-pool.c		\
-	test-clutter-cairo-texture.c    \
-	test-clutter-rectangle.c 	\
-        test-clutter-text.c             \
-	test-clutter-texture.c		\
-	test-group.c			\
-	test-offscreen-redirect.c	\
-	test-path.c 			\
-	test-paint-opacity.c 		\
-	test-pick.c 			\
-	test-texture-fbo.c		\
-        test-text-cache.c               \
+	actor-anchors.c                	\
+	actor-graph.c			\
+	actor-destroy.c			\
+	actor-invariants.c 		\
+	actor-iter.c			\
+	actor-layout.c			\
+	actor-offscreen-redirect.c	\
+	actor-paint-opacity.c 		\
+	actor-pick.c 			\
+	actor-shader-effect.c		\
+	actor-size.c			\
+	binding-pool.c			\
+	cairo-texture.c    		\
+	group.c				\
+	path.c 				\
+	rectangle.c 			\
+	texture-fbo.c			\
+	texture.c			\
+        text-cache.c               	\
+        text.c             		\
 	$(NULL)
 
 # objects tests
 units_sources += \
-	test-clutter-units.c		\
-	test-color.c			\
-	test-model.c			\
-	test-script-parser.c		\
+	color.c				\
+	model.c				\
+	script-parser.c			\
+	units.c				\
         $(NULL)
 
 # cally tests
 units_sources += \
-	test-cally-text.c		\
+	cally-text.c			\
 	$(NULL)
 
 test_conformance_SOURCES = $(common_sources) $(units_sources)
@@ -127,6 +119,8 @@ stamp-test-conformance: Makefile $(srcdir)/test-conform-main.c
 		echo "  GEN    $$unit"; \
 		( echo "#!/bin/sh" ; echo "$(abs_builddir)/test-launcher.sh '$$i' \"\$$@\"" ) > $$unit$(SHEXT) ; \
 		( echo "#!/bin/sh" ; echo "exec $(abs_builddir)/test-conformance$(EXEEXT) -p $$i \"\$$@\"" ) > wrappers/$$unit$(SHEXT) ; \
+		( echo "test-conformance-clutter$(EXEEXT) -p $$i" ) > $(top_builddir)/build/win32/$$unit-clutter.bat ; \
+		( echo "test-conformance-clutter$(EXEEXT) -p $$i" ) >> $(top_builddir)/build/win32/test-conformance-clutter.bat ; \
 		chmod +x $$unit$(SHEXT); \
 		chmod +x wrappers/$$unit$(SHEXT); \
 		echo "/$$unit$(SHEXT)" >> .gitignore; \
@@ -142,6 +136,7 @@ clean-wrappers:
 		rm -f wrappers/$$unit$(SHEXT) ; \
 	done \
 	&& rm -f unit-tests \
+	&& rm -f $(top_builddir)/build/win32/*.bat \
 	&& rm -f stamp-test-conformance
 
 # NB: BUILT_SOURCES here a misnomer. We aren't building source, just inserting
@@ -151,20 +146,18 @@ BUILT_SOURCES = wrappers
 INCLUDES = \
 	-I$(top_srcdir)/ \
 	-I$(top_srcdir)/clutter \
-	-I$(top_srcdir)/clutter/cogl \
-	-I$(top_builddir)/clutter \
-	-I$(top_builddir)/clutter/cogl
+	-I$(top_builddir)/clutter
 
 test_conformance_CPPFLAGS = \
 	-DG_DISABLE_SINGLE_INCLUDES \
 	-DCOGL_ENABLE_EXPERIMENTAL_API \
-	-DCOGL_DISABLE_DEPRECATED \
-	-DCLUTTER_DISABLE_DEPRECATED \
+	-DG_DISABLE_DEPRECATION_WARNINGS \
+	-DCLUTTER_DISABLE_DEPRECATION_WARNINGS \
 	-DTESTS_DATADIR=\""$(top_srcdir)/tests/data"\"
 
-test_conformance_CFLAGS = -g $(CLUTTER_CFLAGS) $(MAINTAINER_CFLAGS)
+test_conformance_CFLAGS = -g $(CLUTTER_CFLAGS)
 
-test_conformance_LDADD = $(top_builddir)/clutter/libclutter-@CLUTTER_SONAME_INFIX@-@CLUTTER_API_VERSION@.la $(CLUTTER_LIBS)
+test_conformance_LDADD = $(top_builddir)/clutter/libclutter-@CLUTTER_API_VERSION@.la $(CLUTTER_LIBS)
 
 test_conformance_LDFLAGS = -export-dynamic
 
@@ -283,6 +276,44 @@ HTML_REPORTS = \
 
 EXTRA_DIST = ADDING_NEW_TESTS test-launcher.sh.in run-tests.sh
 DISTCLEANFILES = test-launcher.sh .gitignore
+
+dist-hook: $(top_builddir)/build/win32/vs9/test-conformance-clutter.vcproj $(top_builddir)/build/win32/vs10/test-conformance-clutter.vcxproj $(top_builddir)/build/win32/vs10/test-conformance-clutter.vcxproj.filters
+
+$(top_builddir)/build/win32/vs9/test-conformance-clutter.vcproj: $(top_srcdir)/build/win32/vs9/test-conformance-clutter.vcprojin
+	@for F in $(test_conformance_SOURCES); do \
+		case $$F in \
+		*.c)	echo '   <File RelativePath="..\..\..\tests\conform\'$$F'" />' \
+			;; \
+		esac; \
+	done > testconformance.sourcefiles
+	$(CPP) -P - <$(top_srcdir)/build/win32/vs9/test-conformance-clutter.vcprojin >$@
+	rm -f testconformance.sourcefiles
+
+$(top_builddir)/build/win32/vs10/test-conformance-clutter.vcxproj: $(top_srcdir)/build/win32/vs10/test-conformance-clutter.vcxprojin
+	@for F in $(test_conformance_SOURCES); do \
+		case $$F in \
+		*.c)	echo '    <ClCompile Include="..\..\..\tests\conform\'$$F'" />' \
+			;; \
+		esac; \
+	done >testconformance.vs10.sourcefiles
+	$(CPP) -P - <$(top_srcdir)/build/win32/vs10/test-conformance-clutter.vcxprojin >$@
+	rm -f testconformance.vs10.sourcefiles
+	
+$(top_builddir)/build/win32/vs10/test-conformance-clutter.vcxproj.filters: $(top_srcdir)/build/win32/vs10/test-conformance-clutter.vcxproj.filtersin
+	@for F in $(test_conformance_SOURCES); do \
+		case $$F in \
+		*.c)	echo '    <ClCompile Include="..\..\..\tests\conform\'$$F'"><Filter>Sources</Filter></ClCompile>' \
+			;; \
+		esac; \
+	done > testconformance.vs10.sourcefiles.filters
+	$(CPP) -P - < $(top_srcdir)/build/win32/vs10/test-conformance-clutter.vcxproj.filtersin > $@
+	rm -f testconformance.vs10.sourcefiles.filters
+
+# Let the VS9/VS10 Project files be cleared out before they are re-expanded...
+DISTCLEANFILES += \
+	$(top_builddir)/build/win32/vs9/test-conformance-clutter.vcproj	\
+	$(top_builddir)/build/win32/vs10/test-conformance-clutter.vcxproj \
+	$(top_builddir)/build/win32/vs10/test-conformance-clutter.vcxproj.filters
 
 # we override the clean-generic target to clean up the wrappers so
 # we cannot use CLEANFILES

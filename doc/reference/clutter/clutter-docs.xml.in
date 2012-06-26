@@ -19,6 +19,8 @@
     <copyright>
       <year>2009</year>
       <year>2010</year>
+      <year>2011</year>
+      <year>2012</year>
       <holder>Intel Corporation</holder>
     </copyright>
 
@@ -64,23 +66,16 @@
       <xi:include href="xml/clutter-action.xml"/>
       <xi:include href="xml/clutter-constraint.xml"/>
       <xi:include href="xml/clutter-effect.xml"/>
+      <xi:include href="xml/clutter-content.xml"/>
     </chapter>
 
     <chapter>
       <title>Base actors</title>
-      <xi:include href="xml/clutter-rectangle.xml"/>
+      <xi:include href="xml/clutter-stage.xml"/>
       <xi:include href="xml/clutter-texture.xml"/>
       <xi:include href="xml/clutter-clone.xml"/>
       <xi:include href="xml/clutter-text.xml"/>
       <xi:include href="xml/clutter-cairo-texture.xml"/>
-    </chapter>
-
-    <chapter>
-      <title>Container actors</title>
-
-      <xi:include href="xml/clutter-group.xml"/>
-      <xi:include href="xml/clutter-stage.xml"/>
-      <xi:include href="xml/clutter-box.xml"/>
     </chapter>
 
     <chapter>
@@ -120,9 +115,24 @@
       <xi:include href="xml/clutter-deform-effect.xml"/>
 
       <xi:include href="xml/clutter-blur-effect.xml"/>
+      <xi:include href="xml/clutter-brightness-contrast-effect.xml"/>
       <xi:include href="xml/clutter-colorize-effect.xml"/>
       <xi:include href="xml/clutter-desaturate-effect.xml"/>
       <xi:include href="xml/clutter-page-turn-effect.xml"/>
+    </chapter>
+
+    <chapter>
+      <title>Content</title>
+
+      <xi:include href="xml/clutter-canvas.xml"/>
+      <xi:include href="xml/clutter-image.xml"/>
+    </chapter>
+
+    <chapter>
+      <title>Paint Objects</title>
+
+      <xi:include href="xml/clutter-paint-node.xml"/>
+      <xi:include href="xml/clutter-paint-nodes.xml"/>
     </chapter>
 
   </part>
@@ -140,28 +150,17 @@
       <title>Base classes</title>
 
       <xi:include href="xml/clutter-timeline.xml"/>
-      <xi:include href="xml/clutter-score.xml"/>
       <xi:include href="xml/clutter-alpha.xml"/>
-      <xi:include href="xml/clutter-behaviour.xml"/>
-    </chapter>
-
-    <chapter>
-      <title>Behaviours</title>
-
-      <xi:include href="xml/clutter-behaviour-depth.xml"/>
-      <xi:include href="xml/clutter-behaviour-ellipse.xml"/>
-      <xi:include href="xml/clutter-behaviour-opacity.xml"/>
-      <xi:include href="xml/clutter-behaviour-path.xml"/>
-      <xi:include href="xml/clutter-behaviour-rotate.xml"/>
-      <xi:include href="xml/clutter-behaviour-scale.xml"/>
+      <xi:include href="xml/clutter-interval.xml"/>
+      <xi:include href="xml/clutter-transition.xml"/>
+      <xi:include href="xml/clutter-animatable.xml"/>
+      <xi:include href="xml/clutter-property-transition.xml"/>
     </chapter>
 
     <chapter>
       <title>High Level API</title>
 
-      <xi:include href="xml/clutter-interval.xml"/>
       <xi:include href="xml/clutter-animation.xml"/>
-      <xi:include href="xml/clutter-animatable.xml"/>
       <xi:include href="xml/clutter-animator.xml"/>
       <xi:include href="xml/clutter-state.xml"/>
 
@@ -184,8 +183,8 @@
       <xi:include href="xml/clutter-main.xml"/>
       <xi:include href="xml/clutter-path.xml"/>
       <xi:include href="xml/clutter-settings.xml"/>
-      <xi:include href="xml/clutter-shader.xml"/>
       <xi:include href="xml/clutter-stage-manager.xml"/>
+      <xi:include href="xml/clutter-text-buffer.xml"/>
       <xi:include href="xml/clutter-units.xml"/>
       <xi:include href="xml/clutter-util.xml"/>
       <xi:include href="xml/clutter-version.xml"/>
@@ -224,7 +223,9 @@
     <xi:include href="xml/clutter-win32.xml"/>
     <xi:include href="xml/clutter-egl.xml"/>
     <xi:include href="xml/clutter-cex100.xml"/>
-    <xi:include href="xml/clutter-wayland.xml"/>
+    <xi:include href="xml/clutter-gdk.xml"/>
+    <xi:include href="xml/clutter-wayland-compositor.xml"/>
+    <xi:include href="xml/clutter-wayland-surface.xml"/>
   </part>
 
   <part id="additionaldocs">
@@ -235,9 +236,7 @@
       developing with Clutter.</para>
     </partintro>
 
-    <xi:include href="xml/subclassing-ClutterActor.xml"/>
     <xi:include href="xml/clutter-animation-tutorial.xml"/>
-    <xi:include href="xml/creating-behaviours.xml"/>
   </part>
 
   <part id="migration">
@@ -253,6 +252,23 @@
     <xi:include href="xml/migrating-ClutterPath.xml"/>
     <xi:include href="xml/migrating-ClutterBehaviour.xml"/>
 
+  </part>
+
+  <part id="deprecated">
+    <title>Deprecated Classes</title>
+
+      <xi:include href="xml/clutter-score.xml"/>
+      <xi:include href="xml/clutter-shader.xml"/>
+      <xi:include href="xml/clutter-behaviour.xml"/>
+      <xi:include href="xml/clutter-behaviour-depth.xml"/>
+      <xi:include href="xml/clutter-behaviour-ellipse.xml"/>
+      <xi:include href="xml/clutter-behaviour-opacity.xml"/>
+      <xi:include href="xml/clutter-behaviour-path.xml"/>
+      <xi:include href="xml/clutter-behaviour-rotate.xml"/>
+      <xi:include href="xml/clutter-behaviour-scale.xml"/>
+      <xi:include href="xml/clutter-group.xml"/>
+      <xi:include href="xml/clutter-box.xml"/>
+      <xi:include href="xml/clutter-rectangle.xml"/>
   </part>
 
   <part id="clutterobjects">
@@ -331,6 +347,11 @@
   <index role="1.8">
     <title>Index of new symbols in 1.8</title>
     <xi:include href="xml/api-index-1.8.xml"><xi:fallback /></xi:include>
+  </index>
+
+  <index role="1.10">
+    <title>Index of new symbols in 1.10</title>
+    <xi:include href="xml/api-index-1.10.xml"><xi:fallback /></xi:include>
   </index>
 
   <appendix id="license">

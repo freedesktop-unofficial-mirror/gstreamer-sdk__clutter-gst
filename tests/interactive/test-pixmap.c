@@ -1,24 +1,22 @@
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include <stdlib.h>
 #include <string.h>
 #include <gmodule.h>
 
-#undef CLUTTER_DISABLE_DEPRECATED
+#include <cairo.h>
+
+#ifdef CAIRO_HAS_XLIB_SURFACE
+#include <cairo-xlib.h>
+#endif
+
 #include <clutter/clutter.h>
 
 #ifdef CLUTTER_WINDOWING_X11
+#include <X11/Xlib.h>
+#include <X11/extensions/Xcomposite.h>
 
-# include <clutter/x11/clutter-x11.h>
-# include <clutter/x11/clutter-x11-texture-pixmap.h>
-
-# include <X11/Xlib.h>
-# include <X11/extensions/Xcomposite.h>
-
-# include <cairo.h>
-# include <cairo-xlib.h>
+#include <clutter/x11/clutter-x11.h>
+#include <clutter/x11/clutter-x11-texture-pixmap.h>
+#endif
 
 #define IMAGE   TESTS_DATADIR G_DIR_SEPARATOR_S "redhand.png"
 
@@ -91,9 +89,11 @@ stage_key_release_cb (ClutterActor *actor,
 }
 
 static gboolean
-draw_arc (Pixmap pixmap)
+draw_arc (data)
 {
+  Pixmap pixmap = GPOINTER_TO_UINT (data);
   Display *dpy = clutter_x11_get_default_display ();
+
   static GC gc = None;
   static int x = 100, y = 100;
 
@@ -118,7 +118,7 @@ draw_arc (Pixmap pixmap)
   x -= 5;
   y -= 5;
 
-  return TRUE;
+  return G_SOURCE_CONTINUE;
 }
 
 static gboolean
@@ -126,8 +126,9 @@ stage_button_press_cb (ClutterActor    *actor,
 		       ClutterEvent    *event,
 		       gpointer         data)
 {
-  draw_arc ((Pixmap)data);
-  return FALSE;
+  draw_arc (GPOINTER_TO_UINT (data));
+
+  return CLUTTER_EVENT_STOP;
 }
 
 Pixmap
@@ -172,9 +173,12 @@ create_pixmap (guint *width, guint *height, guint *depth)
   cairo_paint (cr);
   cairo_surface_destroy (image);
 
-  if (width) *width = w;
-  if (height) *height = h;
-  if (depth) *depth = 32;
+  if (width)
+    *width = w;
+  if (height)
+    *height = h;
+  if (depth)
+    *depth = 32;
 
   return pixmap;
 }
@@ -210,6 +214,11 @@ test_pixmap_main (int argc, char **argv)
   if (clutter_init (&argc, &argv) != CLUTTER_INIT_SUCCESS)
     return 1;
 
+#ifdef CLUTTER_WINDOWING_X11
+  if (!clutter_check_windowing_backend (CLUTTER_WINDOWING_X11))
+    g_error ("test-pixmap requires the X11 Clutter backend.");
+#endif
+
   xdpy = clutter_x11_get_default_display ();
   XSynchronize (xdpy, True);
 
@@ -228,9 +237,11 @@ test_pixmap_main (int argc, char **argv)
 
   XMapWindow (xdpy, win_remote);
 
-  stage = clutter_stage_get_default ();
+  stage = clutter_stage_new ();
   clutter_actor_set_position (stage, 0, 150);
-  clutter_stage_set_color (CLUTTER_STAGE (stage), &gry);
+  clutter_actor_set_background_color (stage, &gry);
+  clutter_stage_set_title (CLUTTER_STAGE (stage), "X11 Texture from Pixmap");
+  g_signal_connect (stage, "destroy", G_CALLBACK (clutter_main_quit), NULL);
 
   timeline = clutter_timeline_new (5000);
   g_signal_connect (timeline,
@@ -302,19 +313,15 @@ test_pixmap_main (int argc, char **argv)
   if (!disable_animation)
     clutter_timeline_start (timeline);
 
-  g_timeout_add_seconds (1, (GSourceFunc)draw_arc, GUINT_TO_POINTER (pixmap));
+  clutter_threads_add_timeout (1000, draw_arc, GUINT_TO_POINTER (pixmap));
 
   clutter_main ();
 
   return EXIT_SUCCESS;
 }
 
-#else
-
-int
-test_pixmap_main (int argc, char **argv)
+G_MODULE_EXPORT const char *
+test_pixmap_describe (void)
 {
-  return EXIT_SUCCESS;
-};
-
-#endif /* CLUTTER_WINDOWING_X11 */
+  return "GLX Texture from pixmap extension support.";
+}

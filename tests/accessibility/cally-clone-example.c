@@ -41,7 +41,6 @@ make_ui (ClutterActor *stage)
   ClutterColor     color_sel     = { 0x00, 0xff, 0x00, 0x55 };
   ClutterColor     color_label   = { 0x00, 0xff, 0x55, 0xff };
   ClutterColor     color_rect    = { 0x00, 0xff, 0xff, 0x55 };
-  ClutterGeometry  editable_geom = {150, 50, 100, 75};
   ClutterActor    *full_entry    = NULL;
   ClutterActor    *cloned_entry  = NULL;
 
@@ -68,7 +67,8 @@ make_ui (ClutterActor *stage)
 
   /* rectangle: to create a entry "feeling" */
   rectangle = clutter_rectangle_new_with_color (&color_rect);
-  clutter_actor_set_geometry (rectangle, &editable_geom);
+  clutter_actor_set_position (rectangle, 150, 50);
+  clutter_actor_add_constraint (rectangle, clutter_bind_constraint_new (editable, CLUTTER_BIND_SIZE, 0));
 
   full_entry = clutter_group_new ();
   clutter_actor_set_position (full_entry, 0, 50);
@@ -93,7 +93,7 @@ make_ui (ClutterActor *stage)
 int
 main (int argc, char *argv[])
 {
-  ClutterActor *stage         = NULL;
+  ClutterActor *stage;
 
   g_set_application_name ("Clone Example");
 
@@ -102,7 +102,10 @@ main (int argc, char *argv[])
 
   cally_util_a11y_init (&argc, &argv);
 
-  stage = clutter_stage_get_default ();
+  stage = clutter_stage_new ();
+  clutter_stage_set_title (CLUTTER_STAGE (stage), "Cally - Clone Test");
+  g_signal_connect (stage, "destroy", G_CALLBACK (clutter_main_quit), NULL);
+
   make_ui (stage);
 
   clutter_actor_show_all (stage);

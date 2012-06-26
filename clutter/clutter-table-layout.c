@@ -67,6 +67,12 @@
  * #ClutterTableLayout:easing-mode and #ClutterTableLayout:easing-duration
  * properties and their accessor functions.
  *
+ * <figure id="table-layout-image">
+ *   <title>Table layout</title>
+ *   <para>The image shows a #ClutterTableLayout.</para>
+ *   <graphic fileref="table-layout.png" format="PNG"/>
+ * </figure>
+ *
  * #ClutterTableLayout is available since Clutter 1.4
  */
 
@@ -75,6 +81,9 @@
 #endif
 
 #include <math.h>
+
+#define CLUTTER_DISABLE_DEPRECATION_WARNINGS
+#include "deprecated/clutter-container.h"
 
 #include "clutter-table-layout.h"
 
@@ -99,7 +108,6 @@ typedef struct _DimensionData {
   gfloat final_size;
 
   guint expand  : 1;
-  guint shrink  : 1;
   guint visible : 1;
 } DimensionData;
 
@@ -179,6 +187,8 @@ enum
   PROP_EASING_MODE,
   PROP_EASING_DURATION
 };
+
+GType clutter_table_child_get_type (void);
 
 G_DEFINE_TYPE (ClutterTableChild,
                clutter_table_child,
@@ -500,14 +510,14 @@ clutter_table_child_set_property (GObject      *gobject,
 
     case PROP_CHILD_X_EXPAND:
       table_child_set_expand (self,
-                            g_value_get_boolean (value),
-                            self->y_expand);
+                              g_value_get_boolean (value),
+                              self->y_expand);
       break;
 
     case PROP_CHILD_Y_EXPAND:
       table_child_set_expand (self,
-                            self->x_expand,
-                            g_value_get_boolean (value));
+                              self->x_expand,
+                              g_value_get_boolean (value));
       break;
 
     default:
@@ -708,29 +718,35 @@ clutter_table_layout_set_container (ClutterLayoutManager *layout,
 
 static void
 update_row_col (ClutterTableLayout *layout,
-                ClutterContainer *container)
+                ClutterContainer   *container)
 {
   ClutterTableLayoutPrivate *priv = layout->priv;
   ClutterLayoutManager *manager = CLUTTER_LAYOUT_MANAGER (layout);
-  GList *children, *l;
+  ClutterActor *actor, *child;
   gint n_cols, n_rows;
 
   n_cols = n_rows = 0;
-  children = container ? clutter_container_get_children (container) : NULL;
 
-  for (l = children; l; l = g_list_next (l))
+  if (container == NULL)
+    goto out;
+
+  actor = CLUTTER_ACTOR (container);
+  for (child = clutter_actor_get_first_child (actor);
+       child != NULL;
+       child = clutter_actor_get_next_sibling (child))
     {
-      ClutterActor *child = l->data;
       ClutterTableChild *meta;
 
-      meta = CLUTTER_TABLE_CHILD (clutter_layout_manager_get_child_meta (manager, container, child));
+      meta =
+        CLUTTER_TABLE_CHILD (clutter_layout_manager_get_child_meta (manager,
+                                                                    container,
+                                                                    child));
 
       n_cols = MAX (n_cols, meta->col + meta->col_span);
       n_rows = MAX (n_rows, meta->row + meta->row_span);
     }
 
-  g_list_free (children);
-
+out:
   priv->n_cols = n_cols;
   priv->n_rows = n_rows;
 
@@ -743,26 +759,30 @@ calculate_col_widths (ClutterTableLayout *self,
 {
   ClutterTableLayoutPrivate *priv = self->priv;
   ClutterLayoutManager *manager = CLUTTER_LAYOUT_MANAGER (self);
+  ClutterActor *actor, *child;
   gint i;
   DimensionData *columns;
-  GList *l, *children;
 
   update_row_col (self, container);
   g_array_set_size (priv->columns, 0);
   g_array_set_size (priv->columns, priv->n_cols);
-  columns = (DimensionData *) priv->columns->data;
+  columns = (DimensionData *) (void *) priv->columns->data;
 
   /* reset the visibility of all columns */
   priv->visible_cols = 0;
   for (i = 0; i < priv->n_cols; i++)
-    columns[i].visible = FALSE;
+    {
+      columns[i].expand = FALSE;
+      columns[i].visible = FALSE;
+    }
 
-  children = clutter_container_get_children (container);
+  actor = CLUTTER_ACTOR (container);
 
   /* STAGE ONE: calculate column widths for non-spanned children */
-  for (l = children; l; l = g_list_next (l))
+  for (child = clutter_actor_get_first_child (actor);
+       child != NULL;
+       child = clutter_actor_get_next_sibling (child))
     {
-      ClutterActor *child = l->data;
       ClutterTableChild *meta;
       DimensionData *col;
       gfloat c_min, c_pref;
@@ -770,8 +790,10 @@ calculate_col_widths (ClutterTableLayout *self,
       if (!CLUTTER_ACTOR_IS_VISIBLE (child))
         continue;
 
-      meta = (ClutterTableChild *)
-        clutter_layout_manager_get_child_meta (manager, container, child);
+      meta =
+        CLUTTER_TABLE_CHILD (clutter_layout_manager_get_child_meta (manager,
+                                                                    container,
+                                                                    child));
 
       if (meta->col_span > 1)
         continue;
@@ -788,15 +810,17 @@ calculate_col_widths (ClutterTableLayout *self,
 
       col->min_size = MAX (col->min_size, c_min);
       col->pref_size = MAX (col->pref_size, c_pref);
-      col->expand = MAX (col->expand, meta->x_expand);
+
+      if (!col->expand)
+        col->expand = meta->x_expand;
     }
 
   /* STAGE TWO: take spanning children into account */
-  for (l = children; l; l = g_list_next (l))
+  for (child = clutter_actor_get_first_child (actor);
+       child != NULL;
+       child = clutter_actor_get_next_sibling (child))
     {
-      ClutterActor *child = l->data;
       ClutterTableChild *meta;
-      DimensionData *col;
       gfloat c_min, c_pref;
       gfloat min_width, pref_width;
       gint start_col, end_col;
@@ -805,13 +829,14 @@ calculate_col_widths (ClutterTableLayout *self,
       if (!CLUTTER_ACTOR_IS_VISIBLE (child))
         continue;
 
-      meta = (ClutterTableChild *)
-        clutter_layout_manager_get_child_meta (manager, container, child);
+      meta =
+        CLUTTER_TABLE_CHILD (clutter_layout_manager_get_child_meta (manager,
+                                                                    container,
+                                                                    child));
 
       if (meta->col_span < 2)
         continue;
 
-      col = &columns[meta->col];
       start_col = meta->col;
       end_col = meta->col + meta->col_span - 1;
 
@@ -829,11 +854,14 @@ calculate_col_widths (ClutterTableLayout *self,
           if (columns[i].expand)
             n_expand++;
 
-          if (!col->visible)
+          if (!columns[i].visible)
             {
-              col->visible = TRUE;
+              columns[i].visible = TRUE;
               priv->visible_cols += 1;
             }
+
+          if (!columns[i].expand)
+            columns[i].expand = meta->x_expand;
         }
       min_width += priv->col_spacing * (meta->col_span - 1);
       pref_width += priv->col_spacing * (meta->col_span - 1);
@@ -887,10 +915,7 @@ calculate_col_widths (ClutterTableLayout *self,
                 }
             }
         }
-
-
     }
-  g_list_free (children);
 
   /* calculate final widths */
   if (for_width >= 0)
@@ -901,6 +926,7 @@ calculate_col_widths (ClutterTableLayout *self,
       min_width = 0;
       pref_width = 0;
       n_expand = 0;
+
       for (i = 0; i < self->priv->n_cols; i++)
         {
           pref_width += columns[i].pref_size;
@@ -908,6 +934,7 @@ calculate_col_widths (ClutterTableLayout *self,
           if (columns[i].expand)
             n_expand++;
         }
+
       pref_width += priv->col_spacing * (priv->n_cols - 1);
       min_width += priv->col_spacing * (priv->n_cols - 1);
 
@@ -972,12 +999,8 @@ calculate_col_widths (ClutterTableLayout *self,
             {
               if (columns[i].expand)
                 {
-                  if (n_expand)
-                    columns[i].final_size = columns[i].pref_size
-                                          + (extra_width / n_expand);
-                  else
-                    columns[i].final_size = columns[i].pref_size
-                                          + (extra_width / priv->n_cols);
+                  columns[i].final_size = columns[i].pref_size
+                                        + (extra_width / n_expand);
                 }
               else
                 columns[i].final_size = columns[i].pref_size;
@@ -1003,7 +1026,7 @@ calculate_row_heights (ClutterTableLayout *self,
 {
   ClutterTableLayoutPrivate *priv = self->priv;
   ClutterLayoutManager *manager = CLUTTER_LAYOUT_MANAGER (self);
-  GList *l, *children;
+  ClutterActor *actor, *child;
   gint i;
   DimensionData *rows, *columns;
 
@@ -1011,19 +1034,24 @@ calculate_row_heights (ClutterTableLayout *self,
   g_array_set_size (priv->rows, 0);
   g_array_set_size (priv->rows, self->priv->n_rows);
 
-  rows = (DimensionData*) priv->rows->data;
-  columns = (DimensionData*) priv->columns->data;
+  rows = (DimensionData *) (void *) priv->rows->data;
+  columns = (DimensionData *) (void *) priv->columns->data;
 
   /* reset the visibility of all rows */
   priv->visible_rows = 0;
   for (i = 0; i < priv->n_rows; i++)
-    rows[i].visible = FALSE;
-
-  children = clutter_container_get_children (container);
-  /* STAGE ONE: calculate row heights for non-spanned children */
-  for (l = children; l; l = g_list_next (l))
     {
-      ClutterActor *child = l->data;
+      rows[i].expand = FALSE;
+      rows[i].visible = FALSE;
+    }
+
+  actor = CLUTTER_ACTOR (container);
+
+  /* STAGE ONE: calculate row heights for non-spanned children */
+  for (child = clutter_actor_get_first_child (actor);
+       child != NULL;
+       child = clutter_actor_get_next_sibling (child))
+    {
       ClutterTableChild *meta;
       DimensionData *row;
       gfloat c_min, c_pref;
@@ -1031,8 +1059,10 @@ calculate_row_heights (ClutterTableLayout *self,
       if (!CLUTTER_ACTOR_IS_VISIBLE (child))
         continue;
 
-      meta = (ClutterTableChild *)
-        clutter_layout_manager_get_child_meta (manager, container, child);
+      meta =
+        CLUTTER_TABLE_CHILD (clutter_layout_manager_get_child_meta (manager,
+                                                                    container,
+                                                                    child));
 
       if (meta->row_span > 1)
         continue;
@@ -1050,15 +1080,16 @@ calculate_row_heights (ClutterTableLayout *self,
 
       row->min_size = MAX (row->min_size, c_min);
       row->pref_size = MAX (row->pref_size, c_pref);
-      row->expand = MAX (row->expand, meta->y_expand);
+
+      if (!row->expand)
+        row->expand = meta->y_expand;
     }
 
-
-
   /* STAGE TWO: take spanning children into account */
-  for (l = children; l; l = g_list_next (l))
+  for (child = clutter_actor_get_first_child (actor);
+       child != NULL;
+       child = clutter_actor_get_next_sibling (child))
     {
-      ClutterActor *child = l->data;
       ClutterTableChild *meta;
       gfloat c_min, c_pref;
       gfloat min_height, pref_height;
@@ -1068,8 +1099,10 @@ calculate_row_heights (ClutterTableLayout *self,
       if (!CLUTTER_ACTOR_IS_VISIBLE (child))
         continue;
 
-      meta = (ClutterTableChild *)
-        clutter_layout_manager_get_child_meta (manager, container, child);
+      meta =
+        CLUTTER_TABLE_CHILD (clutter_layout_manager_get_child_meta (manager,
+                                                                    container,
+                                                                    child));
 
       if (meta->row_span < 2)
         continue;
@@ -1098,6 +1131,9 @@ calculate_row_heights (ClutterTableLayout *self,
               rows[i].visible = TRUE;
               priv->visible_rows += 1;
             }
+
+          if (!rows[i].expand)
+            rows[i].expand = meta->y_expand;
         }
 
       min_height += priv->row_spacing * (meta->row_span - 1);
@@ -1162,10 +1198,7 @@ calculate_row_heights (ClutterTableLayout *self,
                 }
             }
         }
-
     }
-
-  g_list_free (children);
 
   /* calculate final heights */
   if (for_height >= 0)
@@ -1176,6 +1209,7 @@ calculate_row_heights (ClutterTableLayout *self,
       min_height = 0;
       pref_height = 0;
       n_expand = 0;
+
       for (i = 0; i < self->priv->n_rows; i++)
         {
           pref_height += rows[i].pref_size;
@@ -1183,6 +1217,7 @@ calculate_row_heights (ClutterTableLayout *self,
           if (rows[i].expand)
             n_expand++;
         }
+
       pref_height += priv->row_spacing * (priv->n_rows - 1);
       min_height += priv->row_spacing * (priv->n_rows - 1);
 
@@ -1247,12 +1282,8 @@ calculate_row_heights (ClutterTableLayout *self,
             {
               if (rows[i].expand)
                 {
-                  if (n_expand)
-                    rows[i].final_size = rows[i].pref_size
-                                       + (extra_height / n_expand);
-                  else
-                    rows[i].final_size = rows[i].pref_size
-                                       + (extra_height / priv->n_rows);
+                  rows[i].final_size = rows[i].pref_size
+                                     + (extra_height / n_expand);
                 }
               else
                 rows[i].final_size = rows[i].pref_size;
@@ -1303,7 +1334,7 @@ clutter_table_layout_get_preferred_width (ClutterLayoutManager *layout,
     }
 
   calculate_table_dimensions (self, container, -1, for_height);
-  columns = (DimensionData *) priv->columns->data;
+  columns = (DimensionData *) (void *) priv->columns->data;
 
   total_min_width = (priv->visible_cols - 1) * (float) priv->col_spacing;
   total_pref_width = total_min_width;
@@ -1343,7 +1374,7 @@ clutter_table_layout_get_preferred_height (ClutterLayoutManager *layout,
     }
 
   calculate_table_dimensions (self, container, for_width, -1);
-  rows = (DimensionData *) priv->rows->data;
+  rows = (DimensionData *) (void *) priv->rows->data;
 
   total_min_height = (priv->visible_rows - 1) * (float) priv->row_spacing;
   total_pref_height = total_min_height;
@@ -1387,7 +1418,7 @@ clutter_table_layout_allocate (ClutterLayoutManager   *layout,
 {
   ClutterTableLayout *self = CLUTTER_TABLE_LAYOUT (layout);
   ClutterTableLayoutPrivate *priv = self->priv;
-  GList *list, *children;
+  ClutterActor *actor, *child;
   gint row_spacing, col_spacing;
   gint i;
   DimensionData *rows, *columns;
@@ -1396,8 +1427,9 @@ clutter_table_layout_allocate (ClutterLayoutManager   *layout,
   if (priv->n_cols < 1 || priv->n_rows < 1)
     return;
 
-  children = clutter_container_get_children (container);
-  if (children == NULL)
+  actor = CLUTTER_ACTOR (container);
+
+  if (clutter_actor_get_n_children (actor) == 0)
     return;
 
   col_spacing = (priv->col_spacing);
@@ -1407,12 +1439,13 @@ clutter_table_layout_allocate (ClutterLayoutManager   *layout,
                               box->x2 - box->x1,
                               box->y2 - box->y1);
 
-  rows = (DimensionData *) priv->rows->data;
-  columns = (DimensionData *) priv->columns->data;
+  rows = (DimensionData *) (void *) priv->rows->data;
+  columns = (DimensionData *) (void *) priv->columns->data;
 
-  for (list = children; list; list = g_list_next (list))
+  for (child = clutter_actor_get_first_child (actor);
+       child != NULL;
+       child = clutter_actor_get_next_sibling (child))
     {
-      ClutterActor *child = list->data;
       gint row, col, row_span, col_span;
       gint col_width, row_height;
       ClutterTableChild *meta;
@@ -1424,8 +1457,10 @@ clutter_table_layout_allocate (ClutterLayoutManager   *layout,
       if (!CLUTTER_ACTOR_IS_VISIBLE (child))
         continue;
 
-      meta = (ClutterTableChild *)
-        clutter_layout_manager_get_child_meta (layout, priv->container, child);
+      meta =
+        CLUTTER_TABLE_CHILD (clutter_layout_manager_get_child_meta (layout,
+                                                                    container,
+                                                                    child));
 
       /* get child properties */
       col = meta->col;
@@ -1560,8 +1595,6 @@ clutter_table_layout_allocate (ClutterLayoutManager   *layout,
     do_allocate:
       clutter_actor_allocate (child, &childbox, flags);
     }
-
-  g_list_free (children);
 }
 
 static ClutterAlpha *

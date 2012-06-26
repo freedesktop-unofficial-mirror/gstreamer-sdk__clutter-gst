@@ -30,6 +30,8 @@
                   <a href="#ClutterContainer.prerequisites" class="shortcut">Prerequisites</a>
                    | 
                   <a href="#ClutterContainer.implementations" class="shortcut">Known Implementations</a>
+                   | 
+                  <a href="#ClutterContainer.signals" class="shortcut">Signals</a>
 </td></tr>
 </table>
 <div class="refentry">
@@ -37,7 +39,7 @@
 <div class="refnamediv"><table width="100%"><tr>
 <td valign="top">
 <h2><span class="refentrytitle"><a name="ClutterContainer.top_of_page"></a>ClutterContainer</span></h2>
-<p>ClutterContainer — An interface for implementing container actors</p>
+<p>ClutterContainer — An interface for container actors</p>
 </td>
 <td valign="top" align="right"></td>
 </tr></table></div>
@@ -135,20 +137,31 @@ ClutterContainer requires
 <a name="ClutterContainer.implementations"></a><h2>Known Implementations</h2>
 <p>
 ClutterContainer is implemented by
- <a class="link" href="ClutterBox.html" title="ClutterBox">ClutterBox</a>,  <a class="link" href="ClutterGroup.html" title="ClutterGroup">ClutterGroup</a> and  <a class="link" href="ClutterStage.html" title="ClutterStage">ClutterStage</a>.</p>
+ <a class="link" href="ClutterActor.html" title="ClutterActor">ClutterActor</a>,  <a class="link" href="ClutterBox.html" title="ClutterBox">ClutterBox</a>,  <a class="link" href="ClutterCairoTexture.html" title="ClutterCairoTexture">ClutterCairoTexture</a>,  <a class="link" href="ClutterClone.html" title="ClutterClone">ClutterClone</a>,  <a class="link" href="ClutterGroup.html" title="ClutterGroup">ClutterGroup</a>,  <a class="link" href="ClutterRectangle.html" title="ClutterRectangle">ClutterRectangle</a>,  <a class="link" href="ClutterStage.html" title="ClutterStage">ClutterStage</a>,  <a class="link" href="ClutterText.html" title="ClutterText">ClutterText</a> and  <a class="link" href="ClutterTexture.html" title="ClutterTexture">ClutterTexture</a>.</p>
+</div>
+<div class="refsect1">
+<a name="ClutterContainer.signals"></a><h2>Signals</h2>
+<pre class="synopsis">
+  "<a class="link" href="ClutterContainer.html#ClutterContainer-actor-added" title='The "actor-added" signal'>actor-added</a>"                                    : <code class="literal">Run First</code>
+  "<a class="link" href="ClutterContainer.html#ClutterContainer-actor-removed" title='The "actor-removed" signal'>actor-removed</a>"                                  : <code class="literal">Run First</code>
+  "<a class="link" href="ClutterContainer.html#ClutterContainer-child-notify" title='The "child-notify" signal'>child-notify</a>"                                   : <code class="literal">Has Details</code>
+</pre>
 </div>
 <div class="refsect1">
 <a name="ClutterContainer.description"></a><h2>Description</h2>
 <p>
-<a class="link" href="ClutterContainer.html" title="ClutterContainer"><span class="type">ClutterContainer</span></a> is an interface for writing actors containing other
-<a class="link" href="ClutterActor.html" title="ClutterActor"><span class="type">ClutterActor</span></a>s. It provides a standard API for adding, removing
-and iterating on every contained actor.
+<a class="link" href="ClutterContainer.html" title="ClutterContainer"><span class="type">ClutterContainer</span></a> is an interface implemented by <a class="link" href="ClutterActor.html" title="ClutterActor"><span class="type">ClutterActor</span></a>, and
+it provides some common API for notifying when a child actor is added
+or removed, as well as the infrastructure for accessing child properties
+through <a class="link" href="ClutterChildMeta.html" title="ClutterChildMeta"><span class="type">ClutterChildMeta</span></a>.
 </p>
 <p>
-An actor implementing <a class="link" href="ClutterContainer.html" title="ClutterContainer"><span class="type">ClutterContainer</span></a> is <a class="link" href="ClutterGroup.html" title="ClutterGroup"><span class="type">ClutterGroup</span></a>.
-</p>
-<p>
-<a class="link" href="ClutterContainer.html" title="ClutterContainer"><span class="type">ClutterContainer</span></a> is available since Clutter 0.4
+Until Clutter 1.10, the <a class="link" href="ClutterContainer.html" title="ClutterContainer"><span class="type">ClutterContainer</span></a> interface was also the public
+API for implementing container actors; this part of the interface has
+been deprecated: <a class="link" href="ClutterContainer.html" title="ClutterContainer"><span class="type">ClutterContainer</span></a> has a default implementation which
+defers to <a class="link" href="ClutterActor.html" title="ClutterActor"><span class="type">ClutterActor</span></a> the child addition and removal, as well as the
+iteration. See the documentation of <a class="link" href="ClutterContainer.html#ClutterContainerIface" title="struct ClutterContainerIface"><span class="type">ClutterContainerIface</span></a> for the list
+of virtual functions that should be overridden.
 </p>
 </div>
 <div class="refsect1">
@@ -217,18 +230,18 @@ virtual functions are optional.
 <tbody>
 <tr>
 <td><p><span class="term"><em class="structfield"><code><a name="ClutterContainerIface.add"></a>add</code></em> ()</span></p></td>
-<td>virtual function for adding an actor to the container. The
-implementation of this virtual function is required.</td>
+<td>virtual function for adding an actor to the container. This virtual
+function is deprecated, and it should not be overridden.</td>
 </tr>
 <tr>
 <td><p><span class="term"><em class="structfield"><code><a name="ClutterContainerIface.remove"></a>remove</code></em> ()</span></p></td>
-<td>virtual function for removing an actor from the container. The
-implementation of this virtual function is required.</td>
+<td>virtual function for removing an actor from the container. This
+virtual function is deprecated, and it should not be overridden.</td>
 </tr>
 <tr>
 <td><p><span class="term"><em class="structfield"><code><a name="ClutterContainerIface.foreach"></a>foreach</code></em> ()</span></p></td>
 <td>virtual function for iterating over the container's children.
-The implementation of this virtual function is required.</td>
+This virtual function is deprecated, and it should not be overridden.</td>
 </tr>
 <tr>
 <td><p><span class="term"><em class="structfield"><code><a name="ClutterContainerIface.foreach-with-internals"></a>foreach_with_internals</code></em> ()</span></p></td>
@@ -236,20 +249,24 @@ The implementation of this virtual function is required.</td>
 container's children, both added using the <a class="link" href="ClutterContainer.html" title="ClutterContainer"><span class="type">ClutterContainer</span></a> API
 and internal children. The implementation of this virtual function
 is required only if the <a class="link" href="ClutterContainer.html" title="ClutterContainer"><span class="type">ClutterContainer</span></a> implementation has
-internal children.</td>
+internal children. This virtual function is deprecated, and it should
+not be overridden.</td>
 </tr>
 <tr>
 <td><p><span class="term"><em class="structfield"><code><a name="ClutterContainerIface.raise"></a>raise</code></em> ()</span></p></td>
-<td>virtual function for raising a child</td>
+<td>virtual function for raising a child. This virtual function is
+deprecated and it should not be overridden.</td>
 </tr>
 <tr>
 <td><p><span class="term"><em class="structfield"><code><a name="ClutterContainerIface.lower"></a>lower</code></em> ()</span></p></td>
-<td>virtual function for lowering a child</td>
+<td>virtual function for lowering a child. This virtual function is
+deprecated and it should not be overridden.</td>
 </tr>
 <tr>
 <td><p><span class="term"><em class="structfield"><code><a name="ClutterContainerIface.sort-depth-order"></a>sort_depth_order</code></em> ()</span></p></td>
 <td>virtual function for sorting the children of a
-container depending on their depth</td>
+container depending on their depth. This virtual function is deprecated
+and it should not be overridden.</td>
 </tr>
 <tr>
 <td><p><span class="term"><span class="type">GType</span> <em class="structfield"><code><a name="ClutterContainerIface.child-meta-type"></a>child_meta_type</code></em>;</span></p></td>
@@ -276,17 +293,17 @@ removed; it shuld release all resources held by the record</td>
 </tr>
 <tr>
 <td><p><span class="term"><em class="structfield"><code><a name="ClutterContainerIface.actor-added"></a>actor_added</code></em> ()</span></p></td>
-<td>class handler for <span class="type">"actor-added"</span>
+<td>class handler for <a class="link" href="ClutterContainer.html#ClutterContainer-actor-added" title='The "actor-added" signal'><span class="type">"actor-added"</span></a>
 </td>
 </tr>
 <tr>
 <td><p><span class="term"><em class="structfield"><code><a name="ClutterContainerIface.actor-removed"></a>actor_removed</code></em> ()</span></p></td>
-<td>class handler for <span class="type">"actor-removed"</span>
+<td>class handler for <a class="link" href="ClutterContainer.html#ClutterContainer-actor-removed" title='The "actor-removed" signal'><span class="type">"actor-removed"</span></a>
 </td>
 </tr>
 <tr>
 <td><p><span class="term"><em class="structfield"><code><a name="ClutterContainerIface.child-notify"></a>child_notify</code></em> ()</span></p></td>
-<td>class handler for <span class="type">"child-notify"</span>
+<td>class handler for <a class="link" href="ClutterContainer.html#ClutterContainer-child-notify" title='The "child-notify" signal'><span class="type">"child-notify"</span></a>
 </td>
 </tr>
 </tbody>
@@ -298,11 +315,20 @@ removed; it shuld release all resources held by the record</td>
 <a name="clutter-container-add-actor"></a><h3>clutter_container_add_actor ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                clutter_container_add_actor         (<em class="parameter"><code><a class="link" href="ClutterContainer.html" title="ClutterContainer"><span class="type">ClutterContainer</span></a> *container</code></em>,
                                                          <em class="parameter"><code><a class="link" href="ClutterActor.html" title="ClutterActor"><span class="type">ClutterActor</span></a> *actor</code></em>);</pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">clutter_container_add_actor</code> has been deprecated since version 1.10 and should not be used in newly-written code. Use <a class="link" href="ClutterActor.html#clutter-actor-add-child" title="clutter_actor_add_child ()"><code class="function">clutter_actor_add_child()</code></a> instead.</p>
+</div>
 <p>
 Adds a <a class="link" href="ClutterActor.html" title="ClutterActor"><span class="type">ClutterActor</span></a> to <em class="parameter"><code>container</code></em>. This function will emit the
 "actor-added" signal. The actor should be parented to
 <em class="parameter"><code>container</code></em>. You cannot add a <a class="link" href="ClutterActor.html" title="ClutterActor"><span class="type">ClutterActor</span></a> to more than one
 <a class="link" href="ClutterContainer.html" title="ClutterContainer"><span class="type">ClutterContainer</span></a>.
+</p>
+<p>
+This function will call <a class="link" href="ClutterContainer.html#ClutterContainerIface.add"><code class="function">ClutterContainerIface.add()</code></a>, which is a
+deprecated virtual function. The default implementation will
+call <a class="link" href="ClutterActor.html#clutter-actor-add-child" title="clutter_actor_add_child ()"><code class="function">clutter_actor_add_child()</code></a>.
 </p>
 <p>
 Virtual: add
@@ -329,11 +355,20 @@ Virtual: add
 <pre class="programlisting"><span class="returnvalue">void</span>                clutter_container_add               (<em class="parameter"><code><a class="link" href="ClutterContainer.html" title="ClutterContainer"><span class="type">ClutterContainer</span></a> *container</code></em>,
                                                          <em class="parameter"><code><a class="link" href="ClutterActor.html" title="ClutterActor"><span class="type">ClutterActor</span></a> *first_actor</code></em>,
                                                          <em class="parameter"><code>...</code></em>);</pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">clutter_container_add</code> has been deprecated since version 1.10 and should not be used in newly-written code. Use <a class="link" href="ClutterActor.html#clutter-actor-add-child" title="clutter_actor_add_child ()"><code class="function">clutter_actor_add_child()</code></a> instead.</p>
+</div>
 <p>
 Adds a list of <a class="link" href="ClutterActor.html" title="ClutterActor"><span class="type">ClutterActor</span></a>s to <em class="parameter"><code>container</code></em>. Each time and
 actor is added, the "actor-added" signal is emitted. Each actor should
 be parented to <em class="parameter"><code>container</code></em>, which takes a reference on the actor. You
 cannot add a <a class="link" href="ClutterActor.html" title="ClutterActor"><span class="type">ClutterActor</span></a> to more than one <a class="link" href="ClutterContainer.html" title="ClutterContainer"><span class="type">ClutterContainer</span></a>.
+</p>
+<p>
+This function will call <a class="link" href="ClutterContainer.html#ClutterContainerIface.add"><code class="function">ClutterContainerIface.add()</code></a>, which is a
+deprecated virtual function. The default implementation will
+call <a class="link" href="ClutterActor.html#clutter-actor-add-child" title="clutter_actor_add_child ()"><code class="function">clutter_actor_add_child()</code></a>.
 </p>
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
@@ -362,8 +397,17 @@ cannot add a <a class="link" href="ClutterActor.html" title="ClutterActor"><span
 <pre class="programlisting"><span class="returnvalue">void</span>                clutter_container_add_valist        (<em class="parameter"><code><a class="link" href="ClutterContainer.html" title="ClutterContainer"><span class="type">ClutterContainer</span></a> *container</code></em>,
                                                          <em class="parameter"><code><a class="link" href="ClutterActor.html" title="ClutterActor"><span class="type">ClutterActor</span></a> *first_actor</code></em>,
                                                          <em class="parameter"><code><span class="type">va_list</span> var_args</code></em>);</pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">clutter_container_add_valist</code> has been deprecated since version 1.10 and should not be used in newly-written code. Use <a class="link" href="ClutterActor.html#clutter-actor-add-child" title="clutter_actor_add_child ()"><code class="function">clutter_actor_add_child()</code></a> instead.</p>
+</div>
 <p>
 Alternative va_list version of <a class="link" href="ClutterContainer.html#clutter-container-add" title="clutter_container_add ()"><code class="function">clutter_container_add()</code></a>.
+</p>
+<p>
+This function will call <a class="link" href="ClutterContainer.html#ClutterContainerIface.add"><code class="function">ClutterContainerIface.add()</code></a>, which is a
+deprecated virtual function. The default implementation will
+call <a class="link" href="ClutterActor.html#clutter-actor-add-child" title="clutter_actor_add_child ()"><code class="function">clutter_actor_add_child()</code></a>.
 </p>
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
@@ -391,11 +435,20 @@ Alternative va_list version of <a class="link" href="ClutterContainer.html#clutt
 <a name="clutter-container-remove-actor"></a><h3>clutter_container_remove_actor ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                clutter_container_remove_actor      (<em class="parameter"><code><a class="link" href="ClutterContainer.html" title="ClutterContainer"><span class="type">ClutterContainer</span></a> *container</code></em>,
                                                          <em class="parameter"><code><a class="link" href="ClutterActor.html" title="ClutterActor"><span class="type">ClutterActor</span></a> *actor</code></em>);</pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">clutter_container_remove_actor</code> has been deprecated since version 1.10 and should not be used in newly-written code. Use <a class="link" href="ClutterActor.html#clutter-actor-remove-child" title="clutter_actor_remove_child ()"><code class="function">clutter_actor_remove_child()</code></a> instead.</p>
+</div>
 <p>
 Removes <em class="parameter"><code>actor</code></em> from <em class="parameter"><code>container</code></em>. The actor should be unparented, so
 if you want to keep it around you must hold a reference to it
 yourself, using <code class="function">g_object_ref()</code>. When the actor has been removed,
 the "actor-removed" signal is emitted by <em class="parameter"><code>container</code></em>.
+</p>
+<p>
+This function will call <a class="link" href="ClutterContainer.html#ClutterContainerIface.remove"><code class="function">ClutterContainerIface.remove()</code></a>, which is a
+deprecated virtual function. The default implementation will call
+<a class="link" href="ClutterActor.html#clutter-actor-remove-child" title="clutter_actor_remove_child ()"><code class="function">clutter_actor_remove_child()</code></a>.
 </p>
 <p>
 Virtual: remove
@@ -423,12 +476,21 @@ Virtual: remove
 <pre class="programlisting"><span class="returnvalue">void</span>                clutter_container_remove            (<em class="parameter"><code><a class="link" href="ClutterContainer.html" title="ClutterContainer"><span class="type">ClutterContainer</span></a> *container</code></em>,
                                                          <em class="parameter"><code><a class="link" href="ClutterActor.html" title="ClutterActor"><span class="type">ClutterActor</span></a> *first_actor</code></em>,
                                                          <em class="parameter"><code>...</code></em>);</pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">clutter_container_remove</code> has been deprecated since version 1.10 and should not be used in newly-written code. Use <a class="link" href="ClutterActor.html#clutter-actor-remove-child" title="clutter_actor_remove_child ()"><code class="function">clutter_actor_remove_child()</code></a> instead.</p>
+</div>
 <p>
 Removes a <a href="/home/ebassi/gnome3/install/share/gtk-doc/html/liboil/liboil-liboiljunk.html#NULL--CAPS"><code class="literal">NULL</code></a> terminated list of <a class="link" href="ClutterActor.html" title="ClutterActor"><span class="type">ClutterActor</span></a>s from
 <em class="parameter"><code>container</code></em>. Each actor should be unparented, so if you want to keep it
 around you must hold a reference to it yourself, using <code class="function">g_object_ref()</code>.
 Each time an actor is removed, the "actor-removed" signal is
 emitted by <em class="parameter"><code>container</code></em>.
+</p>
+<p>
+This function will call <a class="link" href="ClutterContainer.html#ClutterContainerIface.remove"><code class="function">ClutterContainerIface.remove()</code></a>, which is a
+deprecated virtual function. The default implementation will call
+<a class="link" href="ClutterActor.html#clutter-actor-remove-child" title="clutter_actor_remove_child ()"><code class="function">clutter_actor_remove_child()</code></a>.
 </p>
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
@@ -456,8 +518,17 @@ emitted by <em class="parameter"><code>container</code></em>.
 <pre class="programlisting"><span class="returnvalue">void</span>                clutter_container_remove_valist     (<em class="parameter"><code><a class="link" href="ClutterContainer.html" title="ClutterContainer"><span class="type">ClutterContainer</span></a> *container</code></em>,
                                                          <em class="parameter"><code><a class="link" href="ClutterActor.html" title="ClutterActor"><span class="type">ClutterActor</span></a> *first_actor</code></em>,
                                                          <em class="parameter"><code><span class="type">va_list</span> var_args</code></em>);</pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">clutter_container_remove_valist</code> has been deprecated since version 1.10 and should not be used in newly-written code. Use <a class="link" href="ClutterActor.html#clutter-actor-remove-child" title="clutter_actor_remove_child ()"><code class="function">clutter_actor_remove_child()</code></a> instead.</p>
+</div>
 <p>
 Alternative va_list version of <a class="link" href="ClutterContainer.html#clutter-container-remove" title="clutter_container_remove ()"><code class="function">clutter_container_remove()</code></a>.
+</p>
+<p>
+This function will call <a class="link" href="ClutterContainer.html#ClutterContainerIface.remove"><code class="function">ClutterContainerIface.remove()</code></a>, which is a
+deprecated virtual function. The default implementation will call
+<a class="link" href="ClutterActor.html#clutter-actor-remove-child" title="clutter_actor_remove_child ()"><code class="function">clutter_actor_remove_child()</code></a>.
 </p>
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
@@ -484,6 +555,10 @@ Alternative va_list version of <a class="link" href="ClutterContainer.html#clutt
 <div class="refsect2">
 <a name="clutter-container-get-children"></a><h3>clutter_container_get_children ()</h3>
 <pre class="programlisting"><span class="returnvalue">GList</span> *             clutter_container_get_children      (<em class="parameter"><code><a class="link" href="ClutterContainer.html" title="ClutterContainer"><span class="type">ClutterContainer</span></a> *container</code></em>);</pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">clutter_container_get_children</code> has been deprecated since version 1.10 and should not be used in newly-written code. Use <a class="link" href="ClutterActor.html#clutter-actor-get-children" title="clutter_actor_get_children ()"><code class="function">clutter_actor_get_children()</code></a> instead.</p>
+</div>
 <p>
 Retrieves all the children of <em class="parameter"><code>container</code></em>.
 </p>
@@ -512,11 +587,23 @@ list when done. <span class="annotation">[<acronym title="Generics and defining 
 <pre class="programlisting"><span class="returnvalue">void</span>                clutter_container_foreach           (<em class="parameter"><code><a class="link" href="ClutterContainer.html" title="ClutterContainer"><span class="type">ClutterContainer</span></a> *container</code></em>,
                                                          <em class="parameter"><code><a class="link" href="ClutterActor.html#ClutterCallback" title="ClutterCallback ()"><span class="type">ClutterCallback</span></a> callback</code></em>,
                                                          <em class="parameter"><code><span class="type">gpointer</span> user_data</code></em>);</pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">clutter_container_foreach</code> has been deprecated since version 1.10 and should not be used in newly-written code. Use <a class="link" href="ClutterActor.html#clutter-actor-get-first-child" title="clutter_actor_get_first_child ()"><code class="function">clutter_actor_get_first_child()</code></a> or
+  <a class="link" href="ClutterActor.html#clutter-actor-get-last-child" title="clutter_actor_get_last_child ()"><code class="function">clutter_actor_get_last_child()</code></a> to retrieve the beginning of
+  the list of children, and <a class="link" href="ClutterActor.html#clutter-actor-get-next-sibling" title="clutter_actor_get_next_sibling ()"><code class="function">clutter_actor_get_next_sibling()</code></a>
+  and <a class="link" href="ClutterActor.html#clutter-actor-get-previous-sibling" title="clutter_actor_get_previous_sibling ()"><code class="function">clutter_actor_get_previous_sibling()</code></a> to iterate over it;
+  alternatively, use the <a class="link" href="ClutterActor.html#ClutterActorIter" title="ClutterActorIter"><span class="type">ClutterActorIter</span></a> API.</p>
+</div>
 <p>
 Calls <em class="parameter"><code>callback</code></em> for each child of <em class="parameter"><code>container</code></em> that was added
 by the application (with <a class="link" href="ClutterContainer.html#clutter-container-add-actor" title="clutter_container_add_actor ()"><code class="function">clutter_container_add_actor()</code></a>). Does
 not iterate over "internal" children that are part of the
 container's own implementation, if any.
+</p>
+<p>
+This function calls the <a class="link" href="ClutterContainer.html#ClutterContainerIface.foreach"><code class="function">ClutterContainerIface.foreach()</code></a>
+virtual function, which has been deprecated.
 </p>
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
@@ -547,10 +634,18 @@ container's own implementation, if any.
                                                         (<em class="parameter"><code><a class="link" href="ClutterContainer.html" title="ClutterContainer"><span class="type">ClutterContainer</span></a> *container</code></em>,
                                                          <em class="parameter"><code><a class="link" href="ClutterActor.html#ClutterCallback" title="ClutterCallback ()"><span class="type">ClutterCallback</span></a> callback</code></em>,
                                                          <em class="parameter"><code><span class="type">gpointer</span> user_data</code></em>);</pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">clutter_container_foreach_with_internals</code> has been deprecated since version 1.10 and should not be used in newly-written code. See <a class="link" href="ClutterContainer.html#clutter-container-foreach" title="clutter_container_foreach ()"><code class="function">clutter_container_foreach()</code></a>.</p>
+</div>
 <p>
 Calls <em class="parameter"><code>callback</code></em> for each child of <em class="parameter"><code>container</code></em>, including "internal"
 children built in to the container itself that were never added
 by the application.
+</p>
+<p>
+This function calls the <a class="link" href="ClutterContainer.html#ClutterContainerIface.foreach-with-internals"><code class="function">ClutterContainerIface.foreach_with_internals()</code></a>
+virtual function, which has been deprecated.
 </p>
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
@@ -612,8 +707,17 @@ or <a href="/home/ebassi/gnome3/install/share/gtk-doc/html/liboil/liboil-liboilj
 <pre class="programlisting"><span class="returnvalue">void</span>                clutter_container_raise_child       (<em class="parameter"><code><a class="link" href="ClutterContainer.html" title="ClutterContainer"><span class="type">ClutterContainer</span></a> *container</code></em>,
                                                          <em class="parameter"><code><a class="link" href="ClutterActor.html" title="ClutterActor"><span class="type">ClutterActor</span></a> *actor</code></em>,
                                                          <em class="parameter"><code><a class="link" href="ClutterActor.html" title="ClutterActor"><span class="type">ClutterActor</span></a> *sibling</code></em>);</pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">clutter_container_raise_child</code> has been deprecated since version 1.10 and should not be used in newly-written code. Use <a class="link" href="ClutterActor.html#clutter-actor-set-child-above-sibling" title="clutter_actor_set_child_above_sibling ()"><code class="function">clutter_actor_set_child_above_sibling()</code></a> instead.</p>
+</div>
 <p>
 Raises <em class="parameter"><code>actor</code></em> to <em class="parameter"><code>sibling</code></em> level, in the depth ordering.
+</p>
+<p>
+This function calls the <a class="link" href="ClutterContainer.html#ClutterContainerIface.raise"><code class="function">ClutterContainerIface.raise()</code></a> virtual function,
+which has been deprecated. The default implementation will call
+<a class="link" href="ClutterActor.html#clutter-actor-set-child-above-sibling" title="clutter_actor_set_child_above_sibling ()"><code class="function">clutter_actor_set_child_above_sibling()</code></a>.
 </p>
 <p>
 Virtual: raise
@@ -646,8 +750,17 @@ to the top. <span class="annotation">[<acronym title="NULL is ok, both for passi
 <pre class="programlisting"><span class="returnvalue">void</span>                clutter_container_lower_child       (<em class="parameter"><code><a class="link" href="ClutterContainer.html" title="ClutterContainer"><span class="type">ClutterContainer</span></a> *container</code></em>,
                                                          <em class="parameter"><code><a class="link" href="ClutterActor.html" title="ClutterActor"><span class="type">ClutterActor</span></a> *actor</code></em>,
                                                          <em class="parameter"><code><a class="link" href="ClutterActor.html" title="ClutterActor"><span class="type">ClutterActor</span></a> *sibling</code></em>);</pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">clutter_container_lower_child</code> has been deprecated since version 1.10 and should not be used in newly-written code. Use <a class="link" href="ClutterActor.html#clutter-actor-set-child-below-sibling" title="clutter_actor_set_child_below_sibling ()"><code class="function">clutter_actor_set_child_below_sibling()</code></a> instead.</p>
+</div>
 <p>
 Lowers <em class="parameter"><code>actor</code></em> to <em class="parameter"><code>sibling</code></em> level, in the depth ordering.
+</p>
+<p>
+This function calls the <a class="link" href="ClutterContainer.html#ClutterContainerIface.lower"><code class="function">ClutterContainerIface.lower()</code></a> virtual function,
+which has been deprecated. The default implementation will call
+<a class="link" href="ClutterActor.html#clutter-actor-set-child-below-sibling" title="clutter_actor_set_child_below_sibling ()"><code class="function">clutter_actor_set_child_below_sibling()</code></a>.
 </p>
 <p>
 Virtual: lower
@@ -678,6 +791,12 @@ to the bottom. <span class="annotation">[<acronym title="NULL is ok, both for pa
 <div class="refsect2">
 <a name="clutter-container-sort-depth-order"></a><h3>clutter_container_sort_depth_order ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                clutter_container_sort_depth_order  (<em class="parameter"><code><a class="link" href="ClutterContainer.html" title="ClutterContainer"><span class="type">ClutterContainer</span></a> *container</code></em>);</pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">clutter_container_sort_depth_order</code> has been deprecated since version 1.10 and should not be used in newly-written code. The <a class="link" href="ClutterContainer.html#ClutterContainerIface.sort-depth-order"><code class="function">ClutterContainerIface.sort_depth_order()</code></a> virtual
+  function should not be used any more; the default implementation in
+  <a class="link" href="ClutterContainer.html" title="ClutterContainer"><span class="type">ClutterContainer</span></a> does not do anything.</p>
+</div>
 <p>
 Sorts a container's children using their depth. This function should not
 be normally used by applications.
@@ -911,9 +1030,9 @@ pairs terminated with NULL.</td>
                                                          <em class="parameter"><code><a class="link" href="ClutterActor.html" title="ClutterActor"><span class="type">ClutterActor</span></a> *child</code></em>,
                                                          <em class="parameter"><code><span class="type">GParamSpec</span> *pspec</code></em>);</pre>
 <p>
-Calls the <code class="function"><code class="function">child_notify()</code></code> virtual function of
-<a class="link" href="ClutterContainer.html" title="ClutterContainer"><span class="type">ClutterContainer</span></a>. The default implementation will emit the
-<span class="type">"child-notify"</span> signal.
+Calls the <a class="link" href="ClutterContainer.html#ClutterContainerIface.child-notify"><code class="function">ClutterContainerIface.child_notify()</code></a> virtual function
+of <a class="link" href="ClutterContainer.html" title="ClutterContainer"><span class="type">ClutterContainer</span></a>. The default implementation will emit the
+<a class="link" href="ClutterContainer.html#ClutterContainer-child-notify" title='The "child-notify" signal'><span class="type">"child-notify"</span></a> signal.
 </p>
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
@@ -1034,6 +1153,104 @@ Retrieves the <a class="link" href="ClutterChildMeta.html" title="ClutterChildMe
 of <em class="parameter"><code>container</code></em> or <a href="/home/ebassi/gnome3/install/share/gtk-doc/html/liboil/liboil-liboiljunk.html#NULL--CAPS"><code class="literal">NULL</code></a> if the specifiec actor does not exist or the
 container is not configured to provide <a class="link" href="ClutterChildMeta.html" title="ClutterChildMeta"><span class="type">ClutterChildMeta</span></a>s. <span class="annotation">[<acronym title="Don't free data after the code is done."><span class="acronym">transfer none</span></acronym>]</span>
 </td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.8</p>
+</div>
+</div>
+<div class="refsect1">
+<a name="ClutterContainer.signal-details"></a><h2>Signal Details</h2>
+<div class="refsect2">
+<a name="ClutterContainer-actor-added"></a><h3>The <code class="literal">"actor-added"</code> signal</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                user_function                      (<a class="link" href="ClutterContainer.html" title="ClutterContainer"><span class="type">ClutterContainer</span></a> *container,
+                                                        <a class="link" href="ClutterActor.html" title="ClutterActor"><span class="type">ClutterActor</span></a>     *actor,
+                                                        <span class="type">gpointer</span>          user_data)      : <code class="literal">Run First</code></pre>
+<p>
+The ::actor-added signal is emitted each time an actor
+has been added to <em class="parameter"><code>container</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>container</code></em> :</span></p></td>
+<td>the actor which received the signal</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>actor</code></em> :</span></p></td>
+<td>the new child that has been added to <em class="parameter"><code>container</code></em>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>user_data</code></em> :</span></p></td>
+<td>user data set when the signal handler was connected.</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ClutterContainer-actor-removed"></a><h3>The <code class="literal">"actor-removed"</code> signal</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                user_function                      (<a class="link" href="ClutterContainer.html" title="ClutterContainer"><span class="type">ClutterContainer</span></a> *container,
+                                                        <a class="link" href="ClutterActor.html" title="ClutterActor"><span class="type">ClutterActor</span></a>     *actor,
+                                                        <span class="type">gpointer</span>          user_data)      : <code class="literal">Run First</code></pre>
+<p>
+The ::actor-removed signal is emitted each time an actor
+is removed from <em class="parameter"><code>container</code></em>.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>container</code></em> :</span></p></td>
+<td>the actor which received the signal</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>actor</code></em> :</span></p></td>
+<td>the child that has been removed from <em class="parameter"><code>container</code></em>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>user_data</code></em> :</span></p></td>
+<td>user data set when the signal handler was connected.</td>
+</tr>
+</tbody>
+</table></div>
+<p class="since">Since 0.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ClutterContainer-child-notify"></a><h3>The <code class="literal">"child-notify"</code> signal</h3>
+<pre class="programlisting"><span class="returnvalue">void</span>                user_function                      (<a class="link" href="ClutterContainer.html" title="ClutterContainer"><span class="type">ClutterContainer</span></a> *container,
+                                                        <a class="link" href="ClutterActor.html" title="ClutterActor"><span class="type">ClutterActor</span></a>     *actor,
+                                                        <span class="type">GParamSpec</span>       *pspec,
+                                                        <span class="type">gpointer</span>          user_data)      : <code class="literal">Has Details</code></pre>
+<p>
+The ::child-notify signal is emitted each time a property is
+being set through the <a class="link" href="ClutterContainer.html#clutter-container-child-set" title="clutter_container_child_set ()"><code class="function">clutter_container_child_set()</code></a> and
+<a class="link" href="ClutterContainer.html#clutter-container-child-set-property" title="clutter_container_child_set_property ()"><code class="function">clutter_container_child_set_property()</code></a> calls.
+</p>
+<div class="variablelist"><table border="0">
+<col align="left" valign="top">
+<tbody>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>container</code></em> :</span></p></td>
+<td>the container which received the signal</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>actor</code></em> :</span></p></td>
+<td>the child that has had a property set</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>pspec</code></em> :</span></p></td>
+<td>the <span class="type">GParamSpec</span> of the property set. <span class="annotation">[<acronym title="Override the parsed C type with given type."><span class="acronym">type</span></acronym> GParamSpec]</span>
+</td>
+</tr>
+<tr>
+<td><p><span class="term"><em class="parameter"><code>user_data</code></em> :</span></p></td>
+<td>user data set when the signal handler was connected.</td>
 </tr>
 </tbody>
 </table></div>

@@ -5,20 +5,20 @@
 <title>ClutterAlpha</title>
 <meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
 <link rel="home" href="index.html" title="Clutter Reference Manual">
-<link rel="up" href="ch08.html" title="Base classes">
-<link rel="prev" href="ClutterScore.html" title="ClutterScore">
-<link rel="next" href="ClutterBehaviour.html" title="ClutterBehaviour">
+<link rel="up" href="ch09.html" title="Base classes">
+<link rel="prev" href="ClutterTimeline.html" title="ClutterTimeline">
+<link rel="next" href="clutter-Value-intervals.html" title="Value intervals">
 <meta name="generator" content="GTK-Doc V1.18.1 (XML mode)">
 <link rel="stylesheet" href="style.css" type="text/css">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table class="navigation" id="top" width="100%" summary="Navigation header" cellpadding="2" cellspacing="2">
 <tr valign="middle">
-<td><a accesskey="p" href="ClutterScore.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
-<td><a accesskey="u" href="ch08.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
+<td><a accesskey="p" href="ClutterTimeline.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
+<td><a accesskey="u" href="ch09.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
 <td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
 <th width="100%" align="center">Clutter Reference Manual</th>
-<td><a accesskey="n" href="ClutterBehaviour.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
+<td><a accesskey="n" href="clutter-Value-intervals.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
 </tr>
 <tr><td colspan="5" class="shortcuts">
 <a href="#ClutterAlpha.synopsis" class="shortcut">Top</a>
@@ -43,7 +43,7 @@
 </tr></table></div>
 <div class="refsynopsisdiv">
 <a name="ClutterAlpha.synopsis"></a><h2>Synopsis</h2>
-<pre class="synopsis">struct              <a class="link" href="ClutterAlpha.html#ClutterAlpha-struct" title="struct ClutterAlpha">ClutterAlpha</a>;
+<pre class="synopsis">                    <a class="link" href="ClutterAlpha.html#ClutterAlpha-struct" title="ClutterAlpha">ClutterAlpha</a>;
 struct              <a class="link" href="ClutterAlpha.html#ClutterAlphaClass" title="struct ClutterAlphaClass">ClutterAlphaClass</a>;
 <span class="returnvalue">gdouble</span>             (<a class="link" href="ClutterAlpha.html#ClutterAlphaFunc" title="ClutterAlphaFunc ()">*ClutterAlphaFunc</a>)                 (<em class="parameter"><code><a class="link" href="ClutterAlpha.html" title="ClutterAlpha"><span class="type">ClutterAlpha</span></a> *alpha</code></em>,
                                                          <em class="parameter"><code><span class="type">gpointer</span> user_data</code></em>);
@@ -103,6 +103,16 @@ ClutterAlpha implements
 dependent only on the position of a <a class="link" href="ClutterTimeline.html" title="ClutterTimeline"><span class="type">ClutterTimeline</span></a>.
 </p>
 <p>
+</p>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>For newly written code, it is recommended to use the
+<a class="link" href="ClutterTimeline.html#ClutterTimeline--progress-mode" title='The "progress-mode" property'><span class="type">"progress-mode"</span></a> property of <a class="link" href="ClutterTimeline.html" title="ClutterTimeline"><span class="type">ClutterTimeline</span></a>, or the
+<a class="link" href="ClutterTimeline.html#clutter-timeline-set-progress-func" title="clutter_timeline_set_progress_func ()"><code class="function">clutter_timeline_set_progress_func()</code></a> function instead of <a class="link" href="ClutterAlpha.html" title="ClutterAlpha"><span class="type">ClutterAlpha</span></a>.
+The <a class="link" href="ClutterAlpha.html" title="ClutterAlpha"><span class="type">ClutterAlpha</span></a> class will be deprecated in the future, and will not
+be available any more in the next major version of Clutter.</div>
+<p>
+</p>
+<p>
 A <a class="link" href="ClutterAlpha.html" title="ClutterAlpha"><span class="type">ClutterAlpha</span></a> binds a <a class="link" href="ClutterTimeline.html" title="ClutterTimeline"><span class="type">ClutterTimeline</span></a> to a progress function which
 translates the time T into an adimensional factor alpha. The factor can
 then be used to drive a <a class="link" href="ClutterBehaviour.html" title="ClutterBehaviour"><span class="type">ClutterBehaviour</span></a>, which will translate the
@@ -134,7 +144,7 @@ is internally used by the <a class="link" href="clutter-Implicit-Animations.html
 <p>
 </p>
 <div class="figure">
-<a name="easing-modes"></a><p class="title"><b>Figure 9. Easing modes provided by Clutter</b></p>
+<a name="easing-modes"></a><p class="title"><b>Figure 8. Easing modes provided by Clutter</b></p>
 <div class="figure-contents"><div><img src="easing-modes.png" alt="Easing modes provided by Clutter"></div></div>
 </div>
 <p><br class="figure-break">
@@ -151,7 +161,7 @@ is internally used by the <a class="link" href="clutter-Implicit-Animations.html
   specified function name. No user data or <span class="type">GDestroyNotify</span> is
   available to be passed.</p>
 <div class="example">
-<a name="ClutterAlpha-script-example"></a><p class="title"><b>Example 12. Defining a ClutterAlpha in ClutterScript</b></p>
+<a name="ClutterAlpha-script-example"></a><p class="title"><b>Example 10. Defining a ClutterAlpha in ClutterScript</b></p>
 <div class="example-contents">
 <p>The following JSON fragment defines a <a class="link" href="ClutterAlpha.html" title="ClutterAlpha"><span class="type">ClutterAlpha</span></a>
     using a <a class="link" href="ClutterTimeline.html" title="ClutterTimeline"><span class="type">ClutterTimeline</span></a> with id "sine-timeline" and an alpha
@@ -181,8 +191,8 @@ is internally used by the <a class="link" href="clutter-Implicit-Animations.html
 <div class="refsect1">
 <a name="ClutterAlpha.details"></a><h2>Details</h2>
 <div class="refsect2">
-<a name="ClutterAlpha-struct"></a><h3>struct ClutterAlpha</h3>
-<pre class="programlisting">struct ClutterAlpha;</pre>
+<a name="ClutterAlpha-struct"></a><h3>ClutterAlpha</h3>
+<pre class="programlisting">typedef struct _ClutterAlpha ClutterAlpha;</pre>
 <p>
 <a class="link" href="ClutterAlpha.html" title="ClutterAlpha"><span class="type">ClutterAlpha</span></a> combines a <a class="link" href="ClutterTimeline.html" title="ClutterTimeline"><span class="type">ClutterTimeline</span></a> and a function.
 The contents of the <a class="link" href="ClutterAlpha.html" title="ClutterAlpha"><span class="type">ClutterAlpha</span></a> structure are private and should

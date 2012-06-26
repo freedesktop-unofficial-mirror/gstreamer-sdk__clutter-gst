@@ -1,5 +1,13 @@
 #include "config.h"
 
+/* XXX: we currently include config.h above as a hack so we can
+ * determine if we are running with GLES2 or not but since Clutter
+ * uses the experimental Cogl api that will also define
+ * COGL_ENABLE_EXPERIMENTAL_2_0_API. The cogl_material_ api isn't
+ * exposed if COGL_ENABLE_EXPERIMENTAL_2_0_API is defined though so we
+ * undef it before cogl.h is included */
+#undef COGL_ENABLE_EXPERIMENTAL_2_0_API
+
 #include <clutter/clutter.h>
 #include <cogl/cogl.h>
 #include <string.h>
@@ -22,6 +30,20 @@ static TestConformGLFunctions gl_functions;
 #define MASK_BLUE(COLOR)  ((COLOR & 0xff00) >> 8)
 #define MASK_ALPHA(COLOR) (COLOR & 0xff)
 
+#ifndef GL_VERSION
+#define GL_VERSION 0x1F02
+#endif
+
+#ifndef GL_MAX_TEXTURE_IMAGE_UNITS
+#define GL_MAX_TEXTURE_IMAGE_UNITS 0x8872
+#endif
+#ifndef GL_MAX_VERTEX_ATTRIBS
+#define GL_MAX_VERTEX_ATTRIBS 0x8869
+#endif
+#ifndef GL_MAX_TEXTURE_UNITS
+#define GL_MAX_TEXTURE_UNITS 0x84E2
+#endif
+
 typedef struct _TestState
 {
   ClutterGeometry stage_geom;
@@ -31,9 +53,9 @@ typedef struct _TestState
 static void
 check_pixel (TestState *state, int x, int y, guint32 color)
 {
-  GLint y_off;
-  GLint x_off;
-  GLubyte pixel[4];
+  int y_off;
+  int x_off;
+  guint8 pixel[4];
   guint8 r = MASK_RED (color);
   guint8 g = MASK_GREEN (color);
   guint8 b = MASK_BLUE (color);
@@ -71,13 +93,21 @@ test_material_with_primitives (TestState *state,
                                int x, int y,
                                guint32 color)
 {
-  CoglTextureVertex verts[4] = {
-    { .x = 0,          .y = 0,          .z = 0 },
-    { .x = 0,          .y = QUAD_WIDTH, .z = 0 },
-    { .x = QUAD_WIDTH, .y = QUAD_WIDTH, .z = 0 },
-    { .x = QUAD_WIDTH, .y = 0,          .z = 0 },
-  };
+  CoglTextureVertex verts[4];
   CoglHandle vbo;
+
+  verts[0].x = 0;
+  verts[0].y = 0;
+  verts[0].z = 0;
+  verts[1].x = 0;
+  verts[1].y = QUAD_WIDTH;
+  verts[1].z = 0;
+  verts[2].x = QUAD_WIDTH;
+  verts[2].y = QUAD_WIDTH;
+  verts[2].z = 0;
+  verts[3].x = QUAD_WIDTH;
+  verts[3].y = 0;
+  verts[3].z = 0;
 
   cogl_push_matrix ();
 
@@ -147,7 +177,7 @@ test_using_all_layers (TestState *state, int x, int y)
   guint8 red_pixel[] = { 0xff, 0x00, 0x00, 0xff };
   CoglHandle white_texture;
   CoglHandle red_texture;
-  GLint n_layers;
+  int n_layers;
   int i;
 
   /* Create a material that uses the maximum number of layers. All but
@@ -169,7 +199,7 @@ test_using_all_layers (TestState *state, int x, int y)
 #ifdef COGL_HAS_GLES2
   if (using_gles2_driver ())
     {
-      GLint n_image_units, n_attribs;
+      int n_image_units, n_attribs;
       /* GLES 2 doesn't have GL_MAX_TEXTURE_UNITS and it uses
          GL_MAX_TEXTURE_IMAGE_UNITS instead */
       gl_functions.glGetIntegerv (GL_MAX_TEXTURE_IMAGE_UNITS, &n_image_units);
@@ -311,7 +341,7 @@ queue_redraw (gpointer stage)
 {
   clutter_actor_queue_redraw (CLUTTER_ACTOR (stage));
 
-  return TRUE;
+  return G_SOURCE_CONTINUE;
 }
 
 void
@@ -325,7 +355,7 @@ test_cogl_materials (TestConformSimpleFixture *fixture,
 
   test_conform_get_gl_functions (&gl_functions);
 
-  stage = clutter_stage_get_default ();
+  stage = clutter_stage_new ();
 
   clutter_stage_set_color (CLUTTER_STAGE (stage), &stage_color);
   clutter_actor_get_geometry (stage, &state.stage_geom);
@@ -336,7 +366,7 @@ test_cogl_materials (TestConformSimpleFixture *fixture,
   /* We force continuous redrawing of the stage, since we need to skip
    * the first few frames, and we wont be doing anything else that
    * will trigger redrawing. */
-  idle_source = g_idle_add (queue_redraw, stage);
+  idle_source = clutter_threads_add_idle (queue_redraw, stage);
 
   g_signal_connect (group, "paint", G_CALLBACK (on_paint), &state);
 
@@ -346,7 +376,8 @@ test_cogl_materials (TestConformSimpleFixture *fixture,
 
   g_source_remove (idle_source);
 
+  clutter_actor_destroy (stage);
+
   if (g_test_verbose ())
     g_print ("OK\n");
 }
-

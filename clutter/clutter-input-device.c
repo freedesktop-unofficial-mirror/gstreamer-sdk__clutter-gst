@@ -422,16 +422,10 @@ _clutter_input_device_set_time (ClutterInputDevice *device,
     device->current_time = time_;
 }
 
-/* #ClutterInputDevice keeps a weak reference on the actor
- * under its pointer; this function unsets the reference on
- * the actor to avoid keeping around stale pointers
- */
 static void
-cursor_weak_unref (gpointer  user_data,
-                   GObject  *object_pointer)
+on_cursor_actor_destroy (ClutterActor       *actor,
+                         ClutterInputDevice *device)
 {
-  ClutterInputDevice *device = user_data;
-
   device->cursor_actor = NULL;
 }
 
@@ -456,6 +450,20 @@ _clutter_input_device_set_stage (ClutterInputDevice *device,
    * we can emit a leave event on the cursor actor right before
    * we emit the leave event on the stage.
    */
+}
+
+/*< private >
+ * clutter_input_device_get_stage:
+ * @device: a #ClutterInputDevice
+ *
+ * Retrieves the stage currently associated with @device.
+ *
+ * Return value: The stage currently associated with @device.
+ */
+ClutterStage *
+_clutter_input_device_get_stage (ClutterInputDevice *device)
+{
+  return device->stage;
 }
 
 /*< private >
@@ -519,9 +527,9 @@ _clutter_input_device_set_actor (ClutterInputDevice *device,
       if (device->cursor_actor != NULL)
         {
           _clutter_actor_set_has_pointer (device->cursor_actor, FALSE);
-          g_object_weak_unref (G_OBJECT (device->cursor_actor),
-                               cursor_weak_unref,
-                               device);
+          g_signal_handlers_disconnect_by_func (device->cursor_actor,
+                                                G_CALLBACK (on_cursor_actor_destroy),
+                                                device);
 
           device->cursor_actor = NULL;
         }
@@ -553,9 +561,9 @@ _clutter_input_device_set_actor (ClutterInputDevice *device,
   device->cursor_actor = actor;
   if (device->cursor_actor != NULL)
     {
-      g_object_weak_ref (G_OBJECT (device->cursor_actor),
-                         cursor_weak_unref,
-                         device);
+      g_signal_connect (device->cursor_actor,
+                        "destroy", G_CALLBACK (on_cursor_actor_destroy),
+                        device);
       _clutter_actor_set_has_pointer (device->cursor_actor, TRUE);
     }
 }
@@ -1401,4 +1409,134 @@ _clutter_input_device_select_stage_events (ClutterInputDevice *device,
   device_class = CLUTTER_INPUT_DEVICE_GET_CLASS (device);
   if (device_class->select_stage_events != NULL)
     device_class->select_stage_events (device, stage, event_mask);
+}
+
+/**
+ * clutter_input_device_keycode_to_evdev:
+ * @device: A #ClutterInputDevice
+ * @hardware_keycode: The hardware keycode from a #ClutterKeyEvent
+ * @evdev_keycode: The return location for the evdev keycode
+ *
+ * Translates a hardware keycode from a #ClutterKeyEvent to the
+ * equivalent evdev keycode. Note that depending on the input backend
+ * used by Clutter this function can fail if there is no obvious
+ * mapping between the key codes. The hardware keycode can be taken
+ * from the #ClutterKeyEvent.hardware_keycode member of #ClutterKeyEvent.
+ *
+ * Return value: %TRUE if the conversion succeeded, %FALSE otherwise.
+ *
+ * Since: 1.10
+ */
+gboolean
+clutter_input_device_keycode_to_evdev (ClutterInputDevice *device,
+                                       guint               hardware_keycode,
+                                       guint              *evdev_keycode)
+{
+  ClutterInputDeviceClass *device_class;
+
+  g_return_val_if_fail (CLUTTER_IS_INPUT_DEVICE (device), FALSE);
+
+  device_class = CLUTTER_INPUT_DEVICE_GET_CLASS (device);
+  if (device_class->keycode_to_evdev == NULL)
+    return FALSE;
+  else
+    return device_class->keycode_to_evdev (device,
+                                           hardware_keycode,
+                                           evdev_keycode);
+}
+
+void
+_clutter_input_device_add_scroll_info (ClutterInputDevice     *device,
+                                       guint                   index_,
+                                       ClutterScrollDirection  direction,
+                                       gdouble                 increment)
+{
+  ClutterScrollInfo info;
+
+  g_return_if_fail (CLUTTER_IS_INPUT_DEVICE (device));
+  g_return_if_fail (index_ < clutter_input_device_get_n_axes (device));
+
+  info.axis_id = index_;
+  info.direction = direction;
+  info.increment = increment;
+  info.last_value_valid = FALSE;
+
+  if (device->scroll_info == NULL)
+    {
+      device->scroll_info = g_array_new (FALSE,
+                                         FALSE,
+                                         sizeof (ClutterScrollInfo));
+    }
+
+  g_array_append_val (device->scroll_info, info);
+}
+
+gboolean
+_clutter_input_device_get_scroll_delta (ClutterInputDevice     *device,
+                                        guint                   index_,
+                                        gdouble                 value,
+                                        ClutterScrollDirection *direction_p,
+                                        gdouble                *delta_p)
+{
+  guint i;
+
+  g_return_val_if_fail (CLUTTER_IS_INPUT_DEVICE (device), FALSE);
+  g_return_val_if_fail (index_ < clutter_input_device_get_n_axes (device), FALSE);
+
+  if (device->scroll_info == NULL)
+    return FALSE;
+
+  for (i = 0; i < device->scroll_info->len; i++)
+    {
+      ClutterScrollInfo *info = &g_array_index (device->scroll_info,
+                                                ClutterScrollInfo,
+                                                i);
+
+      if (info->axis_id == index_)
+        {
+          if (direction_p != NULL)
+            *direction_p = info->direction;
+
+          if (delta_p != NULL)
+            *delta_p = 0.0;
+
+          if (info->last_value_valid)
+            {
+              if (delta_p != NULL)
+                {
+                  *delta_p = (value - info->last_value)
+                           / info->increment;
+                }
+
+              info->last_value = value;
+            }
+          else
+            {
+              info->last_value = value;
+              info->last_value_valid = TRUE;
+            }
+
+          return TRUE;
+        }
+    }
+
+  return FALSE;
+}
+
+void
+_clutter_input_device_reset_scroll_info (ClutterInputDevice *device)
+{
+  guint i;
+
+  if (device->scroll_info == NULL)
+    return;
+
+  for (i = 0; i < device->scroll_info->len; i++)
+    {
+      ClutterScrollInfo *info = &g_array_index (device->scroll_info,
+                                                ClutterScrollInfo,
+                                                i);
+
+      info->last_value_valid = FALSE;
+    }
 }

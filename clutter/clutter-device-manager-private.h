@@ -50,6 +50,16 @@ typedef struct _ClutterKeyInfo
   ClutterModifierType modifiers;
 } ClutterKeyInfo;
 
+typedef struct _ClutterScrollInfo
+{
+  guint axis_id;
+  ClutterScrollDirection direction;
+  gdouble increment;
+
+  gdouble last_value;
+  guint last_value_valid : 1;
+} ClutterScrollInfo;
+
 struct _ClutterInputDevice
 {
   GObject parent_instance;
@@ -75,6 +85,7 @@ struct _ClutterInputDevice
 
   /* the actor that has a grab in place for the device */
   ClutterActor *pointer_grab_actor;
+  ClutterActor *keyboard_grab_actor;
 
   /* the current click count */
   gint click_count;
@@ -101,6 +112,8 @@ struct _ClutterInputDevice
   guint n_keys;
   GArray *keys;
 
+  GArray *scroll_info;
+
   guint has_cursor : 1;
   guint is_enabled : 1;
 };
@@ -112,6 +125,9 @@ struct _ClutterInputDeviceClass
   void (* select_stage_events) (ClutterInputDevice *device,
                                 ClutterStage       *stage,
                                 gint                event_mask);
+  gboolean (* keycode_to_evdev) (ClutterInputDevice *device,
+                                 guint               hardware_keycode,
+                                 guint              *evdev_keycode);
 };
 
 /* device manager */
@@ -135,6 +151,7 @@ void            _clutter_input_device_set_time                  (ClutterInputDev
                                                                  guint32               time_);
 void            _clutter_input_device_set_stage                 (ClutterInputDevice   *device,
                                                                  ClutterStage         *stage);
+ClutterStage *  _clutter_input_device_get_stage                 (ClutterInputDevice   *device);
 void            _clutter_input_device_set_actor                 (ClutterInputDevice   *device,
                                                                  ClutterActor         *actor,
                                                                  gboolean              emit_crossing);
@@ -164,6 +181,17 @@ gboolean        _clutter_input_device_translate_axis            (ClutterInputDev
                                                                  guint                 index_,
                                                                  gdouble               value,
                                                                  gdouble              *axis_value);
+
+void            _clutter_input_device_add_scroll_info           (ClutterInputDevice   *device,
+                                                                 guint                 index_,
+                                                                 ClutterScrollDirection direction,
+                                                                 gdouble               increment);
+void            _clutter_input_device_reset_scroll_info         (ClutterInputDevice   *device);
+gboolean        _clutter_input_device_get_scroll_delta          (ClutterInputDevice   *device,
+                                                                 guint                 index_,
+                                                                 gdouble               value,
+                                                                 ClutterScrollDirection *direction_p,
+                                                                 gdouble                *delta_p);
 
 G_END_DECLS
 

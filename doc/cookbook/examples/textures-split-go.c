@@ -3,7 +3,7 @@
 /* Context will be used to carry interesting variables between functions */
 typedef struct
 {
-  ClutterActor *sub_no, *sub_ne, *sub_so, *sub_se;
+  ClutterActor *sub_nw, *sub_ne, *sub_sw, *sub_se;
   gfloat image_width, image_height;
 } Context;
 
@@ -15,7 +15,7 @@ go_away (gpointer data)
 {
   Context *context = data;
 
-  clutter_actor_animate (context->sub_no, CLUTTER_EASE_OUT_CUBIC, 1500,
+  clutter_actor_animate (context->sub_nw, CLUTTER_EASE_OUT_CUBIC, 1500,
                          "x", -context->image_width,
                          "y", -context->image_height,
                          "rotation-angle-z", 2000.,
@@ -25,7 +25,7 @@ go_away (gpointer data)
                          "y", -context->image_height,
                          "rotation-angle-z", 2000.,
                          NULL);
-  clutter_actor_animate (context->sub_so, CLUTTER_EASE_OUT_CUBIC, 1500,
+  clutter_actor_animate (context->sub_sw, CLUTTER_EASE_OUT_CUBIC, 1500,
                          "x", -context->image_width,
                          "y", +context->image_height,
                          "rotation-angle-z", 2000.,
@@ -35,7 +35,7 @@ go_away (gpointer data)
                          "y", +context->image_height,
                          "rotation-angle-z", 2000.,
                          NULL);
-  return FALSE; /* remove the timeout source */
+  return G_SOURCE_REMOVE; /* remove the timeout source */
 }
 
 /* We split the four sub-textures faking to be the big texture, moving them
@@ -46,8 +46,8 @@ split (gpointer data)
   Context *context = data;
   gfloat x, y;
 
-  clutter_actor_get_position (context->sub_no, &x, &y);
-  clutter_actor_animate (context->sub_no, CLUTTER_EASE_OUT_CUBIC, 300,
+  clutter_actor_get_position (context->sub_nw, &x, &y);
+  clutter_actor_animate (context->sub_nw, CLUTTER_EASE_OUT_CUBIC, 300,
                          "x", x - 10,
                          "y", y - 10,
                          NULL);
@@ -56,8 +56,8 @@ split (gpointer data)
                          "x", x + 10,
                          "y", y - 10,
                          NULL);
-  clutter_actor_get_position (context->sub_so, &x, &y);
-  clutter_actor_animate (context->sub_so, CLUTTER_EASE_OUT_CUBIC, 300,
+  clutter_actor_get_position (context->sub_sw, &x, &y);
+  clutter_actor_animate (context->sub_sw, CLUTTER_EASE_OUT_CUBIC, 300,
                          "x", x - 10,
                          "y", y + 10,
                          NULL);
@@ -68,9 +68,9 @@ split (gpointer data)
                          NULL);
 
   /* In 500ms the textures will flee! */
-  g_timeout_add (500, go_away, context);
+  clutter_threads_add_timeout (500, go_away, context);
 
-  return FALSE; /* remove the timeout source */
+  return G_SOURCE_REMOVE; /* remove the timeout source */
 }
 
 static ClutterActor *
@@ -117,9 +117,10 @@ main (int    argc,
   if (clutter_init (NULL, NULL) != CLUTTER_INIT_SUCCESS)
     return 1;
 
-  stage = clutter_stage_get_default ();
+  stage = clutter_stage_new ();
   clutter_actor_get_size (stage, &stage_width, &stage_height);
   clutter_stage_set_title (CLUTTER_STAGE (stage), "Animate sub-textures");
+  g_signal_connect (stage, "destroy", G_CALLBACK (clutter_main_quit), NULL);
 
   /* Load smiley.png, creating a new ClutterTexture, get its size and the
    * Cogl texture handle */
@@ -135,12 +136,12 @@ main (int    argc,
 
   /* Create four sub-textures from image, actually splitting the image in
    * four */
-  context.sub_no = setup_sub (texture, image_width, image_height,
+  context.sub_nw = setup_sub (texture, image_width, image_height,
                               0, 0, image_width / 2 , image_width / 2);
   context.sub_ne = setup_sub (texture, image_width, image_height,
                               image_width / 2 , 0,
                               image_width / 2, image_width / 2);
-  context.sub_so = setup_sub (texture, image_width, image_height,
+  context.sub_sw = setup_sub (texture, image_width, image_height,
                               0.f, image_width / 2,
                               image_width / 2, image_width / 2);
   context.sub_se = setup_sub (texture, image_width, image_height,
@@ -154,13 +155,13 @@ main (int    argc,
 
   /* Position the sub-texures in the middle of the screen, recreating the
    * original texture */
-  clutter_actor_set_position (context.sub_no,
+  clutter_actor_set_position (context.sub_nw,
                               stage_width / 2 - image_width / 4,
                               stage_height / 2 - image_height / 4);
   clutter_actor_set_position (context.sub_ne,
                               stage_width / 2 + image_width / 4,
                               stage_height / 2 - image_height / 4);
-  clutter_actor_set_position (context.sub_so,
+  clutter_actor_set_position (context.sub_sw,
                               stage_width / 2 - image_width / 4,
                               stage_height / 2 + image_height / 4);
   clutter_actor_set_position (context.sub_se,
@@ -168,8 +169,8 @@ main (int    argc,
                               stage_height / 2 + image_height / 4);
 
   /* Add the four sub-textures to the stage */
-  clutter_container_add (CLUTTER_CONTAINER (stage), context.sub_no,
-                         context.sub_ne, context.sub_so, context.sub_se, NULL);
+  clutter_container_add (CLUTTER_CONTAINER (stage), context.sub_nw,
+                         context.sub_ne, context.sub_sw, context.sub_se, NULL);
 
   clutter_actor_show_all (stage);
 
@@ -177,7 +178,7 @@ main (int    argc,
   context.image_height = image_height;
 
   /* In two seconds, we'll split the texture! */
-  g_timeout_add_seconds (2, split, &context);
+  clutter_threads_add_timeout (2000, split, &context);
 
   clutter_main ();
 

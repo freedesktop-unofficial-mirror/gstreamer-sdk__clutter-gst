@@ -1,7 +1,5 @@
 #include <stdlib.h>
 #include <gmodule.h>
-
-#undef CLUTTER_DISABLE_DEPRECATED
 #include <clutter/clutter.h>
 
 /* each time the timeline animating the label completes, swap the direction */
@@ -18,11 +16,14 @@ static ClutterActor *raise_actor[2];
 static gboolean raise_no = 0;
 
 static gboolean
-raise_top (gpointer ignored)
+raise_top (gpointer ignored G_GNUC_UNUSED)
 {
-  clutter_actor_raise_top (raise_actor[raise_no]);
+  ClutterActor *parent = clutter_actor_get_parent (raise_actor[raise_no]);
+
+  clutter_actor_set_child_above_sibling (parent, raise_actor[raise_no], NULL);
   raise_no = !raise_no;
-  return TRUE;
+
+  return G_SOURCE_CONTINUE;
 }
 
 static ClutterActor *
@@ -34,41 +35,39 @@ clone_box (ClutterActor *original)
 
   clutter_actor_get_size (original, &width, &height);
 
-  group = clutter_group_new ();
+  group = clutter_actor_new ();
   clone = clutter_clone_new (original);
-  clutter_container_add_actor (CLUTTER_CONTAINER (group), clone);
+  clutter_actor_add_child (group, clone);
   clutter_actor_set_depth (clone, width / 2);
 
   clone = clutter_clone_new (original);
-  clutter_container_add_actor (CLUTTER_CONTAINER (group), clone);
+  clutter_actor_add_child (group, clone);
   clutter_actor_set_rotation (clone, CLUTTER_Y_AXIS, 180, width / 2, 0, 0);
   clutter_actor_set_depth (clone, -width / 2);
 
   clone = clutter_clone_new (original);
-  clutter_container_add_actor (CLUTTER_CONTAINER (group), clone);
+  clutter_actor_add_child (group, clone);
   clutter_actor_set_rotation (clone, CLUTTER_Y_AXIS, 90, 0, 0, 0);
   clutter_actor_set_depth (clone, width / 2);
   clutter_actor_set_position (clone, 0, 0);
 
   clone = clutter_clone_new (original);
-  clutter_container_add_actor (CLUTTER_CONTAINER (group), clone);
+  clutter_actor_add_child (group, clone);
   clutter_actor_set_rotation (clone, CLUTTER_Y_AXIS, 90, 0, 0, 0);
   clutter_actor_set_depth (clone, width / 2);
   clutter_actor_set_position (clone, width, 0);
 
   clone = clutter_clone_new (original);
-  clutter_container_add_actor (CLUTTER_CONTAINER (group), clone);
+  clutter_actor_add_child (group, clone);
   clutter_actor_set_rotation (clone, CLUTTER_X_AXIS, 90, 0, 0, 0);
   clutter_actor_set_depth (clone, -width / 2);
   clutter_actor_set_position (clone, 0, height);
 
   clone = clutter_clone_new (original);
-  clutter_container_add_actor (CLUTTER_CONTAINER (group), clone);
+  clutter_actor_add_child (group, clone);
   clutter_actor_set_rotation (clone, CLUTTER_X_AXIS, 90, 0, 0, 0);
   clutter_actor_set_depth (clone, -width / 2);
   clutter_actor_set_position (clone, 0, 0);
-
-  clutter_actor_show_all (group);
 
   return group;
 }
@@ -81,8 +80,9 @@ janus_group (const gchar *front_text,
   gfloat width, height;
   gfloat width2, height2;
 
-  group = clutter_group_new ();
-  rectangle = clutter_rectangle_new_with_color (CLUTTER_COLOR_White);
+  group = clutter_actor_new ();
+  rectangle = clutter_actor_new ();
+  clutter_actor_set_background_color (rectangle, CLUTTER_COLOR_White);
   front = clutter_text_new_with_text ("Sans 50px", front_text);
   back = clutter_text_new_with_text ("Sans 50px", back_text);
   clutter_text_set_color (CLUTTER_TEXT (front), CLUTTER_COLOR_Red);
@@ -100,13 +100,12 @@ janus_group (const gchar *front_text,
   clutter_actor_set_size (rectangle, width, height);
   clutter_actor_set_rotation (back, CLUTTER_Y_AXIS, 180, width / 2, 0, 0);
 
-  clutter_container_add (CLUTTER_CONTAINER (group),
-                         back, rectangle, front, NULL);
+  clutter_actor_add_child (group, back);
+  clutter_actor_add_child (group, rectangle);
+  clutter_actor_add_child (group, front);
 
-  clutter_actor_show_all (group);
   return group;
 }
-
 
 G_MODULE_EXPORT gint
 test_depth_main (int argc, char *argv[])
@@ -119,11 +118,11 @@ test_depth_main (int argc, char *argv[])
   GError           *error;
 
   if (clutter_init (&argc, &argv) != CLUTTER_INIT_SUCCESS)
-    return 1;
+    return EXIT_FAILURE;
 
   stage = clutter_stage_new ();
   clutter_stage_set_title (CLUTTER_STAGE (stage), "Depth Test");
-  clutter_stage_set_color (CLUTTER_STAGE (stage), CLUTTER_COLOR_Aluminium2);
+  clutter_actor_set_background_color (stage, CLUTTER_COLOR_Aluminium2);
   g_signal_connect (stage,
                     "destroy", G_CALLBACK (clutter_main_quit),
                     NULL);
@@ -131,12 +130,12 @@ test_depth_main (int argc, char *argv[])
                     "button-press-event", G_CALLBACK (clutter_main_quit),
                     NULL);
 
-  group = clutter_group_new ();
-  clutter_container_add_actor (CLUTTER_CONTAINER (stage), group);
+  group = clutter_actor_new ();
+  clutter_actor_add_child (stage, group);
 
   label = clutter_text_new_with_text ("Mono 26", "Clutter");
   clutter_actor_set_position (label, 120, 200);
-  clutter_actor_show (label);
+  clutter_actor_add_child (stage, label);
 
   error = NULL;
   hand = clutter_texture_new_from_file (TESTS_DATADIR
@@ -146,18 +145,15 @@ test_depth_main (int argc, char *argv[])
   if (error)
     g_error ("Unable to load redhand.png: %s", error->message);
   clutter_actor_set_position (hand, 240, 100);
-  clutter_actor_show (hand);
 
   rect = clutter_rectangle_new_with_color (CLUTTER_COLOR_Black);
   clutter_actor_set_position (rect, 340, 100);
   clutter_actor_set_size (rect, 200, 200);
   clutter_actor_set_opacity (rect, 128);
-  clutter_actor_show (rect);
 
-  clutter_container_add (CLUTTER_CONTAINER (group), hand, rect, NULL);
-  clutter_container_add_actor (CLUTTER_CONTAINER (stage), label);
+  clutter_actor_add_child (group, hand);
+  clutter_actor_add_child (group, rect);
 
-  /* 3 seconds, at 60 fps */
   timeline = clutter_timeline_new (3000);
   g_signal_connect (timeline,
                     "completed", G_CALLBACK (timeline_completed),
@@ -184,7 +180,7 @@ test_depth_main (int argc, char *argv[])
 
   /* add hand box */
   box = clone_box (hand);
-  clutter_container_add_actor (CLUTTER_CONTAINER (stage), box);
+  clutter_actor_add_child (stage, box);
   clutter_actor_set_position (box, 200, 250);
   clutter_actor_set_scale (box, 0.5, 0.5);
   clutter_actor_set_rotation (box, CLUTTER_X_AXIS, 45, 0, 0, 0);
@@ -198,14 +194,13 @@ test_depth_main (int argc, char *argv[])
                                   0, 360);
   clutter_behaviour_apply (r_behave, box);
 
-
   clutter_actor_show (stage);
 
   clutter_timeline_start (timeline);
 
   raise_actor[0] = rect;
   raise_actor[1] = hand;
-  g_timeout_add (2000, raise_top, NULL);
+  clutter_threads_add_timeout (2000, raise_top, NULL);
 
   clutter_main ();
 

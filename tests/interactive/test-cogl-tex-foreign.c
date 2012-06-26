@@ -4,6 +4,31 @@
 #include <clutter/clutter.h>
 #include <cogl/cogl.h>
 
+#ifndef GL_UNPACK_ALIGNMENT
+#define GL_UNPACK_ALIGNMENT 0x0CF5
+#endif
+#ifndef GL_TEXTURE_BINDING_2D
+#define GL_TEXTURE_BINDING_2D 0x8069
+#endif
+#ifndef GL_TEXTURE_2D
+#define GL_TEXTURE_2D 0x0DE1
+#endif
+#ifndef GL_RGB
+#define GL_RGB 0x1907
+#endif
+#ifndef GL_UNSIGNED_BYTE
+#define GL_UNSIGNED_BYTE 0x1401
+#endif
+#ifndef GL_TEXTURE_MAG_FILTER
+#define GL_TEXTURE_MAG_FILTER 0x2800
+#endif
+#ifndef GL_LINEAR
+#define GL_LINEAR 0x1208
+#endif
+#ifndef GL_TEXTURE_MIN_FILTER
+#define GL_TEXTURE_MIN_FILTER 0x2801
+#endif
+
 /* Coglbox declaration
  *--------------------------------------------------*/
 
@@ -68,27 +93,27 @@ G_DEFINE_TYPE (TestCoglbox, test_coglbox, CLUTTER_TYPE_ACTOR);
 
 struct _TestCoglboxPrivate
 {
-  GLuint     gl_handle;
+  guint      gl_handle;
   CoglHandle cogl_handle;
 
   void
-  (* glGetIntegerv) (GLenum pname, GLint *params);
+  (* glGetIntegerv) (guint pname, int *params);
   void
-  (* glPixelStorei) (GLenum pname, GLint param);
+  (* glPixelStorei) (guint pname, int param);
   void
-  (* glTexParameteri) (GLenum target, GLenum pname, GLint param);
+  (* glTexParameteri) (guint target, guint pname, int param);
   void
-  (* glTexImage2D) (GLenum target, GLint level,
-                    GLint internalFormat,
-                    GLsizei width, GLsizei height,
-                    GLint border, GLenum format, GLenum type,
-                    const GLvoid *pixels);
+  (* glTexImage2D) (guint target, int level,
+                    int internalFormat,
+                    int width, int height,
+                    int border, guint format, guint type,
+                    const void *pixels);
   void
-  (* glGenTextures) (GLsizei n, GLuint *textures);
+  (* glGenTextures) (int n, guint *textures);
   void
-  (* glDeleteTextures) (GLsizei n, const GLuint *textures);
+  (* glDeleteTextures) (int n, const guint *textures);
   void
-  (* glBindTexture) (GLenum target, GLuint texture);
+  (* glBindTexture) (guint target, guint texture);
 };
 
 /* Coglbox implementation
@@ -140,8 +165,8 @@ test_coglbox_init (TestCoglbox *self)
 {
   TestCoglboxPrivate *priv;
   guchar              data[12];
-  GLint prev_unpack_alignment;
-  GLint prev_2d_texture_binding;
+  int prev_unpack_alignment;
+  int prev_2d_texture_binding;
   
   self->priv = priv = TEST_COGLBOX_GET_PRIVATE(self);
   
@@ -226,10 +251,11 @@ test_cogl_tex_foreign_main (int argc, char *argv[])
     return 1;
   
   /* Stage */
-  stage = clutter_stage_get_default ();
+  stage = clutter_stage_new ();
   clutter_actor_set_size (stage, 400, 400);
-  clutter_stage_set_title (CLUTTER_STAGE (stage), "Cogl Test");
-  
+  clutter_stage_set_title (CLUTTER_STAGE (stage), "Cogl Foreign Textures");
+  g_signal_connect (stage, "destroy", G_CALLBACK (clutter_main_quit), NULL);
+
   /* Cogl Box */
   coglbox = test_coglbox_new ();
   clutter_container_add_actor (CLUTTER_CONTAINER (stage), coglbox);
@@ -239,4 +265,10 @@ test_cogl_tex_foreign_main (int argc, char *argv[])
   clutter_main ();
   
   return 0;
+}
+
+G_MODULE_EXPORT const char *
+test_cogl_tex_foreign_describe (void)
+{
+  return "Foreign textures support in Cogl.";
 }

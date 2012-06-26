@@ -53,18 +53,19 @@ clutter_fixed_layout_get_preferred_width (ClutterLayoutManager *manager,
                                           gfloat               *min_width_p,
                                           gfloat               *nat_width_p)
 {
-  GList *children, *l;
+  ClutterActor *actor, *child;
   gdouble min_right;
   gdouble natural_right;
 
   min_right = 0;
   natural_right = 0;
 
-  children = clutter_container_get_children (container);
+  actor = CLUTTER_ACTOR (container);
 
-  for (l = children; l != NULL; l = l->next)
+  for (child = clutter_actor_get_first_child (actor);
+       child != NULL;
+       child = clutter_actor_get_next_sibling (child))
     {
-      ClutterActor *child = l->data;
       gfloat child_x, child_min, child_natural;
 
       child_x = clutter_actor_get_x (child);
@@ -80,8 +81,6 @@ clutter_fixed_layout_get_preferred_width (ClutterLayoutManager *manager,
         natural_right = child_x + child_natural;
     }
 
-  g_list_free (children);
-
   if (min_width_p)
     *min_width_p = min_right;
 
@@ -96,18 +95,19 @@ clutter_fixed_layout_get_preferred_height (ClutterLayoutManager *manager,
                                            gfloat               *min_height_p,
                                            gfloat               *nat_height_p)
 {
-  GList *children, *l;
+  ClutterActor *actor, *child;
   gdouble min_bottom;
   gdouble natural_bottom;
 
   min_bottom = 0;
   natural_bottom = 0;
 
-  children = clutter_container_get_children (container);
+  actor = CLUTTER_ACTOR (container);
 
-  for (l = children; l != NULL; l = l->next)
+  for (child = clutter_actor_get_first_child (actor);
+       child != NULL;
+       child = clutter_actor_get_next_sibling (child))
     {
-      ClutterActor *child = l->data;
       gfloat child_y, child_min, child_natural;
 
       child_y = clutter_actor_get_y (child);
@@ -123,8 +123,6 @@ clutter_fixed_layout_get_preferred_height (ClutterLayoutManager *manager,
         natural_bottom = child_y + child_natural;
     }
 
-  g_list_free (children);
-
   if (min_height_p)
     *min_height_p = min_bottom;
 
@@ -138,49 +136,14 @@ clutter_fixed_layout_allocate (ClutterLayoutManager   *manager,
                                const ClutterActorBox  *allocation,
                                ClutterAllocationFlags  flags)
 {
-  GList *children, *l;
+  ClutterActor *child;
 
-  children = clutter_container_get_children (container);
-
-  for (l = children; l != NULL; l = l->next)
+  for (child = clutter_actor_get_first_child (CLUTTER_ACTOR (container));
+       child != NULL;
+       child = clutter_actor_get_next_sibling (child))
     {
-      ClutterActor *child = l->data;
-
       clutter_actor_allocate_preferred_size (child, flags);
     }
-
-  g_list_free (children);
-}
-
-void
-clutter_fixed_layout_set_container (ClutterLayoutManager *manager,
-                                    ClutterContainer *container)
-{
-  ClutterLayoutManagerClass *parent_class;
-
-  if (container != NULL)
-    {
-      g_object_set_data (G_OBJECT (manager), "fixed-container", container);
-
-      /* signal Clutter that we don't impose any layout on
-       * our children, so we can shave off some relayout
-       * operations
-       */
-      CLUTTER_ACTOR_SET_FLAGS (container, CLUTTER_ACTOR_NO_LAYOUT);
-    }
-  else
-    {
-      gpointer old_container;
-
-      old_container = g_object_get_data (G_OBJECT (manager), "fixed-container");
-      if (old_container != NULL)
-        CLUTTER_ACTOR_UNSET_FLAGS (old_container, CLUTTER_ACTOR_NO_LAYOUT);
-
-      g_object_set_data (G_OBJECT (manager), "fixed-container", NULL);
-    }
-
-  parent_class = CLUTTER_LAYOUT_MANAGER_CLASS (clutter_fixed_layout_parent_class);
-  parent_class->set_container (manager, container);
 }
 
 static void
@@ -194,7 +157,6 @@ clutter_fixed_layout_class_init (ClutterFixedLayoutClass *klass)
   manager_class->get_preferred_height =
     clutter_fixed_layout_get_preferred_height;
   manager_class->allocate = clutter_fixed_layout_allocate;
-  manager_class->set_container = clutter_fixed_layout_set_container;
 }
 
 static void

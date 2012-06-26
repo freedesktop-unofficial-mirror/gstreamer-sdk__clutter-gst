@@ -106,6 +106,14 @@ private data and should be accessed using the provided API
 <div class="refsect2">
 <a name="ClutterActorMetaClass"></a><h3>struct ClutterActorMetaClass</h3>
 <pre class="programlisting">struct ClutterActorMetaClass {
+  /**
+   * ClutterActorMetaClass::set_actor:
+   * @meta: a #ClutterActorMeta
+   * @actor: (allow-none): the actor attached to @meta, or %NULL
+   *
+   * Virtual function, called when @meta is attached or detached
+   * from a #ClutterActor.
+   */
   void (* set_actor) (ClutterActorMeta *meta,
                       ClutterActor     *actor);
 };

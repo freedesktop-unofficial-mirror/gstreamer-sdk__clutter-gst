@@ -31,6 +31,7 @@
 
 #include <cogl/cogl.h>
 #include <clutter/clutter-effect.h>
+#include <clutter/clutter-cogl-compat.h>
 
 G_BEGIN_DECLS
 
@@ -94,6 +95,9 @@ struct _ClutterOffscreenEffectClass
 GType clutter_offscreen_effect_get_type (void) G_GNUC_CONST;
 
 CoglMaterial *  clutter_offscreen_effect_get_target             (ClutterOffscreenEffect *effect);
+
+CLUTTER_AVAILABLE_IN_1_10
+CoglHandle      clutter_offscreen_effect_get_texture            (ClutterOffscreenEffect *effect);
 
 void            clutter_offscreen_effect_paint_target           (ClutterOffscreenEffect *effect);
 CoglHandle      clutter_offscreen_effect_create_texture         (ClutterOffscreenEffect *effect,
