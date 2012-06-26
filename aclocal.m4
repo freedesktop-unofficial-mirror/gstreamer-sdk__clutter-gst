@@ -1200,7 +1200,6 @@ fi[]dnl
 
 m4_include([build/autotools/as-am-really-silent.m4])
 m4_include([build/autotools/as-compiler-flag.m4])
-m4_include([build/autotools/dolt.m4])
 m4_include([build/autotools/gtk-doc.m4])
 m4_include([build/autotools/introspection.m4])
 m4_include([build/autotools/libtool.m4])

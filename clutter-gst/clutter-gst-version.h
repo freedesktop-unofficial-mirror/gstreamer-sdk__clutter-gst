@@ -49,28 +49,28 @@
  *
  * ClutterGst minor version (e.g. "2", if %CLUTTER_GST_VERSION is "1.2.3")
  */
-#define CLUTTER_GST_MINOR_VERSION   (4)
+#define CLUTTER_GST_MINOR_VERSION   (6)
 
 /**
  * CLUTTER_GST_MICRO_VERSION:
  *
  * ClutterGst micro version (e.g. "3", if %CLUTTER_GST_VERSION is "1.2.3")
  */
-#define CLUTTER_GST_MICRO_VERSION   (6)
+#define CLUTTER_GST_MICRO_VERSION   (0)
 
 /**
  * CLUTTER_GST_VERSION:
  *
  * ClutterGst full version (e.g. "1.2.3")
  */
-#define CLUTTER_GST_VERSION         (1.4.6)
+#define CLUTTER_GST_VERSION         (1.6.0)
 
 /**
  * CLUTTER_GST_VERSION_S:
  *
  * ClutterGst full version, encoded as a string.
  */
-#define CLUTTER_GST_VERSION_S       "1.4.6"
+#define CLUTTER_GST_VERSION_S       "1.6.0"
 
 /**
  * CLUTTER_GST_VERSION_HEX:

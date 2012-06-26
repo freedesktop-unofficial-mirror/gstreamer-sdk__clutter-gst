@@ -30,6 +30,7 @@
 <ANCHOR id="ClutterGstPlayer--audio-stream" href="clutter-gst/ClutterGstPlayer.html#ClutterGstPlayer--audio-stream">
 <ANCHOR id="ClutterGstPlayer--audio-streams" href="clutter-gst/ClutterGstPlayer.html#ClutterGstPlayer--audio-streams">
 <ANCHOR id="ClutterGstPlayer--idle" href="clutter-gst/ClutterGstPlayer.html#ClutterGstPlayer--idle">
+<ANCHOR id="ClutterGstPlayer--in-seek" href="clutter-gst/ClutterGstPlayer.html#ClutterGstPlayer--in-seek">
 <ANCHOR id="ClutterGstPlayer--seek-flags" href="clutter-gst/ClutterGstPlayer.html#ClutterGstPlayer--seek-flags">
 <ANCHOR id="ClutterGstPlayer--subtitle-track" href="clutter-gst/ClutterGstPlayer.html#ClutterGstPlayer--subtitle-track">
 <ANCHOR id="ClutterGstPlayer--subtitle-tracks" href="clutter-gst/ClutterGstPlayer.html#ClutterGstPlayer--subtitle-tracks">
@@ -63,6 +64,7 @@
 <ANCHOR id="clutter-gst-video-texture-set-subtitle-track" href="clutter-gst/ClutterGstVideoTexture.html#clutter-gst-video-texture-set-subtitle-track">
 <ANCHOR id="ClutterGstVideoTexture.property-details" href="clutter-gst/ClutterGstVideoTexture.html#ClutterGstVideoTexture.property-details">
 <ANCHOR id="ClutterGstVideoTexture--idle-material" href="clutter-gst/ClutterGstVideoTexture.html#ClutterGstVideoTexture--idle-material">
+<ANCHOR id="ClutterGstVideoTexture--pixel-aspect-ratio" href="clutter-gst/ClutterGstVideoTexture.html#ClutterGstVideoTexture--pixel-aspect-ratio">
 <ANCHOR id="ClutterGstVideoSink" href="clutter-gst/ClutterGstVideoSink.html">
 <ANCHOR id="ClutterGstVideoSink.synopsis" href="clutter-gst/ClutterGstVideoSink.html#ClutterGstVideoSink.synopsis">
 <ANCHOR id="ClutterGstVideoSink.object-hierarchy" href="clutter-gst/ClutterGstVideoSink.html#ClutterGstVideoSink.object-hierarchy">

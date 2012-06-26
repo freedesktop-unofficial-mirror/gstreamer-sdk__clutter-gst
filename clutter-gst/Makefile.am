@@ -25,7 +25,7 @@ source_h = 					\
 	$(srcdir)/clutter-gst-types.h		\
 	$(srcdir)/clutter-gst-util.h		\
 	$(srcdir)/clutter-gst-version.h		\
-	$(srcdir)/clutter-gst-video-sink.h 	\
+	$(srcdir)/clutter-gst-video-sink.h	\
 	$(srcdir)/clutter-gst-video-texture.h 	\
 	$(srcdir)/clutter-gst-player.h		\
 	$(NULL)
@@ -65,7 +65,6 @@ AM_CPPFLAGS =					\
 	-DCLUTTER_GST_COMPILATION		\
 	-DG_DISABLE_SINGLE_INCLUDES		\
 	-DCOGL_ENABLE_EXPERIMENTAL_API		\
-	-DCOGL_ENABLE_EXPERIMENTAL_2_0_API	\
 	-DCLUTTER_ENABLE_EXPERIMENTAL_API	\
 	-DG_LOG_DOMAIN=\"Clutter-Gst\"		\
 	$(NULL)
@@ -75,11 +74,12 @@ AM_CFLAGS = 				\
 	$(CLUTTER_GST_DEBUG_CFLAGS)	\
 	$(CLUTTER_GST_CFLAGS)		\
 	$(GST_CFLAGS)			\
+	$(HW_CFLAGS)			\
 	$(NULL)
 
 lib_LTLIBRARIES = libclutter-gst-@CLUTTER_GST_MAJORMINOR@.la
 
-libclutter_gst_@CLUTTER_GST_MAJORMINOR@_la_LIBADD  = @CLUTTER_GST_LIBS@ $(GST_LIBS)
+libclutter_gst_@CLUTTER_GST_MAJORMINOR@_la_LIBADD  = @CLUTTER_GST_LIBS@ $(GST_LIBS) $(HW_LIBS)
 libclutter_gst_@CLUTTER_GST_MAJORMINOR@_la_LDFLAGS =	\
 	$(CLUTTER_GST_LT_LDFLAGS)			\
 	$(GL_LDFLAGS)					\
@@ -90,6 +90,30 @@ libclutter_gst_@CLUTTER_GST_MAJORMINOR@_la_LDFLAGS =	\
 
 cluttergstheadersdir = $(includedir)/clutter-@CLUTTER_API_VERSION@/clutter-gst
 cluttergstheaders_HEADERS = $(source_h) $(glib_enum_h)
+
+#
+# GStreamer plugin
+#
+
+plugin_source_c = 				\
+	$(srcdir)/clutter-gst-plugin.c	\
+	$(srcdir)/clutter-gst-video-sink.c	\
+	$(srcdir)/clutter-gst-auto-video-sink.c	\
+	$(srcdir)/clutter-gst-auto-video-sink.h	\
+	$(NULL)
+
+libgstclutter_la_SOURCES =	\
+	$(plugin_source_c)      \
+	$(NULL)
+
+plugin_LTLIBRARIES = libgstclutter.la
+
+libgstclutter_la_LIBADD  = $(PLUGIN_LIBS) $(HW_LIBS)
+libgstclutter_la_LDFLAGS =	\
+	$(GL_LDFLAGS)		\
+	-module -avoid-version	\
+	-no-undefined		\
+	$(NULL)
 
 #
 # Introspection data

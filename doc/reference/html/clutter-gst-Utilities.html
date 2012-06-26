@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Utilities</title>
 <meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
-<link rel="home" href="index.html" title="Clutter Gst 1.4.6 Reference Manual">
+<link rel="home" href="index.html" title="Clutter Gst 1.6.0 Reference Manual">
 <link rel="up" href="ch02.html" title="Clutter Actors And Objects">
 <link rel="prev" href="ClutterGstVideoSink.html" title="ClutterGstVideoSink">
 <link rel="next" href="clutter-gst-Versioning-Macros.html" title="Versioning Macros">
@@ -17,7 +17,7 @@
 <td><a accesskey="p" href="ClutterGstVideoSink.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
 <td><a accesskey="u" href="ch02.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
 <td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
-<th width="100%" align="center">Clutter Gst 1.4.6
+<th width="100%" align="center">Clutter Gst 1.6.0
  Reference Manual</th>
 <td><a accesskey="n" href="clutter-gst-Versioning-Macros.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
 </tr>
@@ -38,14 +38,14 @@
 </tr></table></div>
 <div class="refsynopsisdiv">
 <a name="clutter-gst-Utilities.synopsis"></a><h2>Synopsis</h2>
-<pre class="synopsis"><a href="/usr/share/gtk-doc/html/clutter/clutter-General.html#ClutterInitError"><span class="returnvalue">ClutterInitError</span></a>    <a class="link" href="clutter-gst-Utilities.html#clutter-gst-init" title="clutter_gst_init ()">clutter_gst_init</a>                    (<em class="parameter"><code><span class="type">int</span> *argc</code></em>,
+<pre class="synopsis"><span class="returnvalue">ClutterInitError</span>    <a class="link" href="clutter-gst-Utilities.html#clutter-gst-init" title="clutter_gst_init ()">clutter_gst_init</a>                    (<em class="parameter"><code><span class="type">int</span> *argc</code></em>,
                                                          <em class="parameter"><code><span class="type">char</span> ***argv</code></em>);
-<a href="/usr/share/gtk-doc/html/clutter/clutter-General.html#ClutterInitError"><span class="returnvalue">ClutterInitError</span></a>    <a class="link" href="clutter-gst-Utilities.html#clutter-gst-init-with-args" title="clutter_gst_init_with_args ()">clutter_gst_init_with_args</a>          (<em class="parameter"><code><span class="type">int</span> *argc</code></em>,
+<span class="returnvalue">ClutterInitError</span>    <a class="link" href="clutter-gst-Utilities.html#clutter-gst-init-with-args" title="clutter_gst_init_with_args ()">clutter_gst_init_with_args</a>          (<em class="parameter"><code><span class="type">int</span> *argc</code></em>,
                                                          <em class="parameter"><code><span class="type">char</span> ***argv</code></em>,
                                                          <em class="parameter"><code>const <span class="type">char</span> *parameter_string</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Commandline-option-parser.html#GOptionEntry"><span class="type">GOptionEntry</span></a> *entries</code></em>,
+                                                         <em class="parameter"><code><span class="type">GOptionEntry</span> *entries</code></em>,
                                                          <em class="parameter"><code>const <span class="type">char</span> *translation_domain</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Error-Reporting.html#GError"><span class="type">GError</span></a> **error</code></em>);
+                                                         <em class="parameter"><code><span class="type">GError</span> **error</code></em>);
 </pre>
 </div>
 <div class="refsect1">
@@ -60,7 +60,7 @@ example:
 <p>
 </p>
 <div class="example">
-<a name="id2620719"></a><p class="title"><b>Example 1. Initializing the Clutter-Gst library</b></p>
+<a name="id2721303"></a><p class="title"><b>Example 1. Initializing the Clutter-Gst library</b></p>
 <div class="example-contents">
   <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
     <tbody>
@@ -93,13 +93,13 @@ don't want to pass the command line arguments to GStreamer, Clutter and
 Clutter-Gst.
 </p>
 <p>
-You can also use a <a href="http://library.gnome.org/devel/glib/unstable/glib-Commandline-option-parser.html#GOptionEntry"><span class="type">GOptionEntry</span></a> array to initialize your own parameters
+You can also use a <span class="type">GOptionEntry</span> array to initialize your own parameters
 as shown in the next code fragment:
 </p>
 <p>
 </p>
 <div class="example">
-<a name="id2638726"></a><p class="title"><b>Example 2. Initializing the Clutter-Gst library with additional options</b></p>
+<a name="id2699838"></a><p class="title"><b>Example 2. Initializing the Clutter-Gst library with additional options</b></p>
 <div class="example-contents">
   <table class="listing_frame" border="0" cellpadding="0" cellspacing="0">
     <tbody>
@@ -136,30 +136,30 @@ as shown in the next code fragment:
 30</pre></td>
         <td class="listing_code"><pre class="programlisting"><span class="keyword">static</span><span class="normal"> </span><span class="usertype">GOptionEntry</span><span class="normal"> options</span><span class="symbol">[]</span><span class="normal"> </span><span class="symbol">=</span>
 <span class="cbracket">{</span>
-<span class="normal">  </span><span class="cbracket">{</span><span class="normal"> </span><span class="string">"framerate"</span><span class="symbol">,</span><span class="normal"> </span><span class="string">'f'</span><span class="symbol">,</span><span class="normal"> </span><span class="number">0</span><span class="symbol">,</span><span class="normal"> <a href="http://library.gnome.org/devel/glib/unstable/glib-Commandline-option-parser.html#G-OPTION-ARG-INT:CAPS">G_OPTION_ARG_INT</a></span><span class="symbol">,</span><span class="normal"> </span><span class="symbol">&amp;</span><span class="normal">opt_framerate</span><span class="symbol">,</span>
-<span class="normal">    </span><span class="string">"Number of frames per second"</span><span class="symbol">,</span><span class="normal"> <a href="http://library.gnome.org/devel/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a> </span><span class="cbracket">}</span><span class="symbol">,</span>
-<span class="normal">  </span><span class="cbracket">{</span><span class="normal"> </span><span class="string">"fourcc"</span><span class="symbol">,</span><span class="normal"> </span><span class="string">'o'</span><span class="symbol">,</span><span class="normal"> </span><span class="number">0</span><span class="symbol">,</span><span class="normal"> <a href="http://library.gnome.org/devel/glib/unstable/glib-Commandline-option-parser.html#G-OPTION-ARG-STRING:CAPS">G_OPTION_ARG_STRING</a></span><span class="symbol">,</span>
-<span class="normal">     </span><span class="symbol">&amp;</span><span class="normal">opt_fourcc</span><span class="symbol">,</span><span class="normal"> </span><span class="string">"Fourcc of the wanted YUV format"</span><span class="symbol">,</span><span class="normal"> <a href="http://library.gnome.org/devel/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a> </span><span class="cbracket">}</span><span class="symbol">,</span>
-<span class="normal">  </span><span class="cbracket">{</span><span class="normal"> <a href="http://library.gnome.org/devel/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a> </span><span class="cbracket">}</span>
+<span class="normal">  </span><span class="cbracket">{</span><span class="normal"> </span><span class="string">"framerate"</span><span class="symbol">,</span><span class="normal"> </span><span class="string">'f'</span><span class="symbol">,</span><span class="normal"> </span><span class="number">0</span><span class="symbol">,</span><span class="normal"> G_OPTION_ARG_INT</span><span class="symbol">,</span><span class="normal"> </span><span class="symbol">&amp;</span><span class="normal">opt_framerate</span><span class="symbol">,</span>
+<span class="normal">    </span><span class="string">"Number of frames per second"</span><span class="symbol">,</span><span class="normal"> NULL </span><span class="cbracket">}</span><span class="symbol">,</span>
+<span class="normal">  </span><span class="cbracket">{</span><span class="normal"> </span><span class="string">"fourcc"</span><span class="symbol">,</span><span class="normal"> </span><span class="string">'o'</span><span class="symbol">,</span><span class="normal"> </span><span class="number">0</span><span class="symbol">,</span><span class="normal"> G_OPTION_ARG_STRING</span><span class="symbol">,</span>
+<span class="normal">     </span><span class="symbol">&amp;</span><span class="normal">opt_fourcc</span><span class="symbol">,</span><span class="normal"> </span><span class="string">"Fourcc of the wanted YUV format"</span><span class="symbol">,</span><span class="normal"> NULL </span><span class="cbracket">}</span><span class="symbol">,</span>
+<span class="normal">  </span><span class="cbracket">{</span><span class="normal"> NULL </span><span class="cbracket">}</span>
 <span class="cbracket">}</span><span class="symbol">;</span>
 
 <span class="type">int</span>
 <span class="function">main</span><span class="normal"> </span><span class="symbol">(</span><span class="type">int</span><span class="normal"> argc</span><span class="symbol">,</span><span class="normal"> </span><span class="type">char</span><span class="normal"> </span><span class="symbol">*</span><span class="normal">argv</span><span class="symbol">[])</span>
 <span class="cbracket">{</span>
-<span class="normal">   </span><span class="usertype">GError</span><span class="normal">           </span><span class="symbol">*</span><span class="normal">error </span><span class="symbol">=</span><span class="normal"> <a href="http://library.gnome.org/devel/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a></span><span class="symbol">;</span>
+<span class="normal">   </span><span class="usertype">GError</span><span class="normal">           </span><span class="symbol">*</span><span class="normal">error </span><span class="symbol">=</span><span class="normal"> NULL</span><span class="symbol">;</span>
 <span class="normal">   </span><span class="usertype">gboolean</span><span class="normal">          result</span><span class="symbol">;</span>
 
-<span class="normal">   </span><span class="keyword">if</span><span class="normal"> </span><span class="symbol">(!</span><span class="function"><a href="http://library.gnome.org/devel/glib/unstable/glib-Threads.html#g-thread-supported">g_thread_supported</a></span><span class="normal"> </span><span class="symbol">())</span>
-<span class="normal">     </span><span class="function"><a href="http://library.gnome.org/devel/glib/unstable/glib-Threads.html#g-thread-init">g_thread_init</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal"><a href="http://library.gnome.org/devel/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a></span><span class="symbol">);</span>
+<span class="normal">   </span><span class="keyword">if</span><span class="normal"> </span><span class="symbol">(!</span><span class="function">g_thread_supported</span><span class="normal"> </span><span class="symbol">())</span>
+<span class="normal">     </span><span class="function">g_thread_init</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">NULL</span><span class="symbol">);</span>
 
 <span class="normal">   result </span><span class="symbol">=</span><span class="normal"> </span><span class="function"><a href="clutter-gst-Utilities.html#clutter-gst-init-with-args">clutter_gst_init_with_args</a></span><span class="normal"> </span><span class="symbol">(&amp;</span><span class="normal">argc</span><span class="symbol">,</span><span class="normal"> </span><span class="symbol">&amp;</span><span class="normal">argv</span><span class="symbol">,</span>
 <span class="normal">                                        </span><span class="string">" - Test YUV frames uploading"</span><span class="symbol">,</span>
-<span class="normal">                                        options</span><span class="symbol">,</span><span class="normal"> <a href="http://library.gnome.org/devel/glib/unstable/glib-Standard-Macros.html#NULL:CAPS">NULL</a></span><span class="symbol">,</span><span class="normal"> </span><span class="symbol">&amp;</span><span class="normal">error</span><span class="symbol">);</span>
+<span class="normal">                                        options</span><span class="symbol">,</span><span class="normal"> NULL</span><span class="symbol">,</span><span class="normal"> </span><span class="symbol">&amp;</span><span class="normal">error</span><span class="symbol">);</span>
 
 <span class="normal">   </span><span class="keyword">if</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">error</span><span class="symbol">)</span>
 <span class="normal">     </span><span class="cbracket">{</span>
-<span class="normal">       </span><span class="function"><a href="http://library.gnome.org/devel/glib/unstable/glib-Warnings-and-Assertions.html#g-print">g_print</a></span><span class="normal"> </span><span class="symbol">(</span><span class="string">"%s</span><span class="specialchar">\n</span><span class="string">"</span><span class="symbol">,</span><span class="normal"> error</span><span class="symbol">-&gt;</span><span class="normal">message</span><span class="symbol">);</span>
-<span class="normal">       </span><span class="function"><a href="http://library.gnome.org/devel/glib/unstable/glib-Error-Reporting.html#g-error-free">g_error_free</a></span><span class="normal"> </span><span class="symbol">(</span><span class="normal">error</span><span class="symbol">);</span>
+<span class="normal">       </span><span class="function">g_print</span><span class="normal"> </span><span class="symbol">(</span><span class="string">"%s</span><span class="specialchar">\n</span><span class="string">"</span><span class="symbol">,</span><span class="normal"> error</span><span class="symbol">-&gt;</span><span class="normal">message</span><span class="symbol">);</span>
+<span class="normal">       </span><span class="function">g_error_free</span><span class="normal"> </span><span class="symbol">(</span><span class="normal">error</span><span class="symbol">);</span>
 <span class="normal">       </span><span class="keyword">return</span><span class="normal"> EXIT_FAILURE</span><span class="symbol">;</span>
 <span class="normal">     </span><span class="cbracket">}</span>
 <span class="normal">  </span><span class="symbol">...</span>
@@ -177,7 +177,7 @@ as shown in the next code fragment:
 <a name="clutter-gst-Utilities.details"></a><h2>Details</h2>
 <div class="refsect2">
 <a name="clutter-gst-init"></a><h3>clutter_gst_init ()</h3>
-<pre class="programlisting"><a href="/usr/share/gtk-doc/html/clutter/clutter-General.html#ClutterInitError"><span class="returnvalue">ClutterInitError</span></a>    clutter_gst_init                    (<em class="parameter"><code><span class="type">int</span> *argc</code></em>,
+<pre class="programlisting"><span class="returnvalue">ClutterInitError</span>    clutter_gst_init                    (<em class="parameter"><code><span class="type">int</span> *argc</code></em>,
                                                          <em class="parameter"><code><span class="type">char</span> ***argv</code></em>);</pre>
 <p>
 Utility function to initialize both Clutter and GStreamer.
@@ -185,7 +185,7 @@ Utility function to initialize both Clutter and GStreamer.
 <p>
 This function should be called before calling any other GLib functions. If
 this is not an option, your program must initialise the GLib thread system
-using <a href="http://library.gnome.org/devel/glib/unstable/glib-Threads.html#g-thread-init"><code class="function">g_thread_init()</code></a> before any other GLib functions are called.
+using <code class="function">g_thread_init()</code> before any other GLib functions are called.
 </p>
 <div class="variablelist"><table border="0">
 <col align="left" valign="top">
@@ -202,7 +202,7 @@ using <a href="http://library.gnome.org/devel/glib/unstable/glib-Threads.html#g-
 </tr>
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
-<td>A <a href="/usr/share/gtk-doc/html/clutter/clutter-General.html#ClutterInitError"><span class="type">ClutterInitError</span></a>.</td>
+<td>A <span class="type">ClutterInitError</span>.</td>
 </tr>
 </tbody>
 </table></div>
@@ -210,20 +210,20 @@ using <a href="http://library.gnome.org/devel/glib/unstable/glib-Threads.html#g-
 <hr>
 <div class="refsect2">
 <a name="clutter-gst-init-with-args"></a><h3>clutter_gst_init_with_args ()</h3>
-<pre class="programlisting"><a href="/usr/share/gtk-doc/html/clutter/clutter-General.html#ClutterInitError"><span class="returnvalue">ClutterInitError</span></a>    clutter_gst_init_with_args          (<em class="parameter"><code><span class="type">int</span> *argc</code></em>,
+<pre class="programlisting"><span class="returnvalue">ClutterInitError</span>    clutter_gst_init_with_args          (<em class="parameter"><code><span class="type">int</span> *argc</code></em>,
                                                          <em class="parameter"><code><span class="type">char</span> ***argv</code></em>,
                                                          <em class="parameter"><code>const <span class="type">char</span> *parameter_string</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Commandline-option-parser.html#GOptionEntry"><span class="type">GOptionEntry</span></a> *entries</code></em>,
+                                                         <em class="parameter"><code><span class="type">GOptionEntry</span> *entries</code></em>,
                                                          <em class="parameter"><code>const <span class="type">char</span> *translation_domain</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Error-Reporting.html#GError"><span class="type">GError</span></a> **error</code></em>);</pre>
+                                                         <em class="parameter"><code><span class="type">GError</span> **error</code></em>);</pre>
 <p>
 This function does the same work as <a class="link" href="clutter-gst-Utilities.html#clutter-gst-init" title="clutter_gst_init ()"><code class="function">clutter_gst_init()</code></a>. Additionally, it
 allows you to add your own command line options, and it automatically
 generates nicely formatted --help output. Clutter's and GStreamer's
-<a href="http://library.gnome.org/devel/glib/unstable/glib-Commandline-option-parser.html#GOptionGroup"><span class="type">GOptionGroup</span></a>s are added to the set of available options.
+<span class="type">GOptionGroup</span>s are added to the set of available options.
 </p>
 <p>
-Your program must initialise the GLib thread system using <a href="http://library.gnome.org/devel/glib/unstable/glib-Threads.html#g-thread-init"><code class="function">g_thread_init()</code></a>
+Your program must initialise the GLib thread system using <code class="function">g_thread_init()</code>
 before any other GLib functions are called.
 </p>
 <div class="variablelist"><table border="0">
@@ -248,14 +248,14 @@ the first line of <code class="option">--help</code> output, after
 </tr>
 <tr>
 <td><p><span class="term"><em class="parameter"><code>entries</code></em> :</span></p></td>
-<td>a <a href="http://library.gnome.org/devel/glib/unstable/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>-terminated array of <a href="http://library.gnome.org/devel/glib/unstable/glib-Commandline-option-parser.html#GOptionEntry"><span class="type">GOptionEntry</span></a>s
+<td>a <code class="literal">NULL</code>-terminated array of <span class="type">GOptionEntry</span>s
 describing the options of your program</td>
 </tr>
 <tr>
 <td><p><span class="term"><em class="parameter"><code>translation_domain</code></em> :</span></p></td>
 <td>a translation domain to use for translating
 the <code class="option">--help</code> output for the options in <em class="parameter"><code>entries</code></em>
-with <code class="function">gettext()</code>, or <a href="http://library.gnome.org/devel/glib/unstable/glib-Standard-Macros.html#NULL:CAPS"><code class="literal">NULL</code></a>
+with <code class="function">gettext()</code>, or <code class="literal">NULL</code>
 </td>
 </tr>
 <tr>
@@ -265,7 +265,7 @@ with <code class="function">gettext()</code>, or <a href="http://library.gnome.o
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
 <td>
-<a href="/usr/share/gtk-doc/html/clutter/clutter-General.html#CLUTTER-INIT-SUCCESS:CAPS"><code class="literal">CLUTTER_INIT_SUCCESS</code></a> on success, a negative integer
+<code class="literal">CLUTTER_INIT_SUCCESS</code> on success, a negative integer
 on failure.</td>
 </tr>
 </tbody>

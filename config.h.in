@@ -15,6 +15,9 @@
 /* Define to 1 if you have the `getpagesize' function. */
 #undef HAVE_GETPAGESIZE
 
+/* "Defined if building Clutter with HW decoder support" */
+#undef HAVE_HW_DECODER_SUPPORT
+
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 

@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>ClutterGstPlayer</title>
 <meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
-<link rel="home" href="index.html" title="Clutter Gst 1.4.6 Reference Manual">
+<link rel="home" href="index.html" title="Clutter Gst 1.6.0 Reference Manual">
 <link rel="up" href="ch02.html" title="Clutter Actors And Objects">
 <link rel="prev" href="ch02.html" title="Clutter Actors And Objects">
 <link rel="next" href="ClutterGstVideoTexture.html" title="ClutterGstVideoTexture">
@@ -17,7 +17,7 @@
 <td><a accesskey="p" href="ch02.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
 <td><a accesskey="u" href="ch02.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
 <td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
-<th width="100%" align="center">Clutter Gst 1.4.6
+<th width="100%" align="center">Clutter Gst 1.6.0
  Reference Manual</th>
 <td><a accesskey="n" href="ClutterGstVideoTexture.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
 </tr>
@@ -50,14 +50,14 @@
 <a name="ClutterGstPlayer.synopsis"></a><h2>Synopsis</h2>
 <pre class="synopsis">                    <a class="link" href="ClutterGstPlayer.html#ClutterGstPlayer-struct" title="ClutterGstPlayer">ClutterGstPlayer</a>;
 struct              <a class="link" href="ClutterGstPlayer.html#ClutterGstPlayerIface" title="struct ClutterGstPlayerIface">ClutterGstPlayerIface</a>;
-<span class="returnvalue">void</span>                <a class="link" href="ClutterGstPlayer.html#clutter-gst-player-class-init" title="clutter_gst_player_class_init ()">clutter_gst_player_class_init</a>       (<em class="parameter"><code><a href="http://library.gnome.org/devel/gobject/unstable/gobject-The-Base-Object-Type.html#GObjectClass"><span class="type">GObjectClass</span></a> *object_class</code></em>);
-<a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a class="link" href="ClutterGstPlayer.html#clutter-gst-player-init" title="clutter_gst_player_init ()">clutter_gst_player_init</a>             (<em class="parameter"><code><a class="link" href="ClutterGstPlayer.html" title="ClutterGstPlayer"><span class="type">ClutterGstPlayer</span></a> *player</code></em>);
+<span class="returnvalue">void</span>                <a class="link" href="ClutterGstPlayer.html#clutter-gst-player-class-init" title="clutter_gst_player_class_init ()">clutter_gst_player_class_init</a>       (<em class="parameter"><code><span class="type">GObjectClass</span> *object_class</code></em>);
+<span class="returnvalue">gboolean</span>            <a class="link" href="ClutterGstPlayer.html#clutter-gst-player-init" title="clutter_gst_player_init ()">clutter_gst_player_init</a>             (<em class="parameter"><code><a class="link" href="ClutterGstPlayer.html" title="ClutterGstPlayer"><span class="type">ClutterGstPlayer</span></a> *player</code></em>);
 <span class="returnvalue">void</span>                <a class="link" href="ClutterGstPlayer.html#clutter-gst-player-deinit" title="clutter_gst_player_deinit ()">clutter_gst_player_deinit</a>           (<em class="parameter"><code><a class="link" href="ClutterGstPlayer.html" title="ClutterGstPlayer"><span class="type">ClutterGstPlayer</span></a> *player</code></em>);
-<a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstElement.html"><span class="returnvalue">GstElement</span></a> *        <a class="link" href="ClutterGstPlayer.html#clutter-gst-player-get-pipeline" title="clutter_gst_player_get_pipeline ()">clutter_gst_player_get_pipeline</a>     (<em class="parameter"><code><a class="link" href="ClutterGstPlayer.html" title="ClutterGstPlayer"><span class="type">ClutterGstPlayer</span></a> *player</code></em>);
-<a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            <a class="link" href="ClutterGstPlayer.html#clutter-gst-player-get-idle" title="clutter_gst_player_get_idle ()">clutter_gst_player_get_idle</a>         (<em class="parameter"><code><a class="link" href="ClutterGstPlayer.html" title="ClutterGstPlayer"><span class="type">ClutterGstPlayer</span></a> *player</code></em>);
-<a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *             <a class="link" href="ClutterGstPlayer.html#clutter-gst-player-get-user-agent" title="clutter_gst_player_get_user_agent ()">clutter_gst_player_get_user_agent</a>   (<em class="parameter"><code><a class="link" href="ClutterGstPlayer.html" title="ClutterGstPlayer"><span class="type">ClutterGstPlayer</span></a> *player</code></em>);
+<span class="returnvalue">GstElement</span> *        <a class="link" href="ClutterGstPlayer.html#clutter-gst-player-get-pipeline" title="clutter_gst_player_get_pipeline ()">clutter_gst_player_get_pipeline</a>     (<em class="parameter"><code><a class="link" href="ClutterGstPlayer.html" title="ClutterGstPlayer"><span class="type">ClutterGstPlayer</span></a> *player</code></em>);
+<span class="returnvalue">gboolean</span>            <a class="link" href="ClutterGstPlayer.html#clutter-gst-player-get-idle" title="clutter_gst_player_get_idle ()">clutter_gst_player_get_idle</a>         (<em class="parameter"><code><a class="link" href="ClutterGstPlayer.html" title="ClutterGstPlayer"><span class="type">ClutterGstPlayer</span></a> *player</code></em>);
+<span class="returnvalue">gchar</span> *             <a class="link" href="ClutterGstPlayer.html#clutter-gst-player-get-user-agent" title="clutter_gst_player_get_user_agent ()">clutter_gst_player_get_user_agent</a>   (<em class="parameter"><code><a class="link" href="ClutterGstPlayer.html" title="ClutterGstPlayer"><span class="type">ClutterGstPlayer</span></a> *player</code></em>);
 <span class="returnvalue">void</span>                <a class="link" href="ClutterGstPlayer.html#clutter-gst-player-set-user-agent" title="clutter_gst_player_set_user_agent ()">clutter_gst_player_set_user_agent</a>   (<em class="parameter"><code><a class="link" href="ClutterGstPlayer.html" title="ClutterGstPlayer"><span class="type">ClutterGstPlayer</span></a> *player</code></em>,
-                                                         <em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *user_agent</code></em>);
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *user_agent</code></em>);
 <span class="returnvalue">void</span>                <a class="link" href="ClutterGstPlayer.html#clutter-gst-player-set-seek-flags" title="clutter_gst_player_set_seek_flags ()">clutter_gst_player_set_seek_flags</a>   (<em class="parameter"><code><a class="link" href="ClutterGstPlayer.html" title="ClutterGstPlayer"><span class="type">ClutterGstPlayer</span></a> *player</code></em>,
                                                          <em class="parameter"><code><span class="type">ClutterGstSeekFlags</span> flags</code></em>);
 <span class="returnvalue">ClutterGstSeekFlags</span> <a class="link" href="ClutterGstPlayer.html#clutter-gst-player-get-seek-flags" title="clutter_gst_player_get_seek_flags ()">clutter_gst_player_get_seek_flags</a>   (<em class="parameter"><code><a class="link" href="ClutterGstPlayer.html" title="ClutterGstPlayer"><span class="type">ClutterGstPlayer</span></a> *player</code></em>);
@@ -66,18 +66,18 @@ struct              <a class="link" href="ClutterGstPlayer.html#ClutterGstPlayer
 <span class="returnvalue">void</span>                <a class="link" href="ClutterGstPlayer.html#clutter-gst-player-set-buffering-mode" title="clutter_gst_player_set_buffering_mode ()">clutter_gst_player_set_buffering_mode</a>
                                                         (<em class="parameter"><code><a class="link" href="ClutterGstPlayer.html" title="ClutterGstPlayer"><span class="type">ClutterGstPlayer</span></a> *player</code></em>,
                                                          <em class="parameter"><code><span class="type">ClutterGstBufferingMode</span> mode</code></em>);
-<a href="http://library.gnome.org/devel/glib/unstable/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *             <a class="link" href="ClutterGstPlayer.html#clutter-gst-player-get-audio-streams" title="clutter_gst_player_get_audio_streams ()">clutter_gst_player_get_audio_streams</a>
+<span class="returnvalue">GList</span> *             <a class="link" href="ClutterGstPlayer.html#clutter-gst-player-get-audio-streams" title="clutter_gst_player_get_audio_streams ()">clutter_gst_player_get_audio_streams</a>
                                                         (<em class="parameter"><code><a class="link" href="ClutterGstPlayer.html" title="ClutterGstPlayer"><span class="type">ClutterGstPlayer</span></a> *player</code></em>);
-<a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="returnvalue">gint</span></a>                <a class="link" href="ClutterGstPlayer.html#clutter-gst-player-get-audio-stream" title="clutter_gst_player_get_audio_stream ()">clutter_gst_player_get_audio_stream</a> (<em class="parameter"><code><a class="link" href="ClutterGstPlayer.html" title="ClutterGstPlayer"><span class="type">ClutterGstPlayer</span></a> *player</code></em>);
+<span class="returnvalue">gint</span>                <a class="link" href="ClutterGstPlayer.html#clutter-gst-player-get-audio-stream" title="clutter_gst_player_get_audio_stream ()">clutter_gst_player_get_audio_stream</a> (<em class="parameter"><code><a class="link" href="ClutterGstPlayer.html" title="ClutterGstPlayer"><span class="type">ClutterGstPlayer</span></a> *player</code></em>);
 <span class="returnvalue">void</span>                <a class="link" href="ClutterGstPlayer.html#clutter-gst-player-set-audio-stream" title="clutter_gst_player_set_audio_stream ()">clutter_gst_player_set_audio_stream</a> (<em class="parameter"><code><a class="link" href="ClutterGstPlayer.html" title="ClutterGstPlayer"><span class="type">ClutterGstPlayer</span></a> *player</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a> index_</code></em>);
-<a href="http://library.gnome.org/devel/glib/unstable/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *             <a class="link" href="ClutterGstPlayer.html#clutter-gst-player-get-subtitle-tracks" title="clutter_gst_player_get_subtitle_tracks ()">clutter_gst_player_get_subtitle_tracks</a>
+                                                         <em class="parameter"><code><span class="type">gint</span> index_</code></em>);
+<span class="returnvalue">GList</span> *             <a class="link" href="ClutterGstPlayer.html#clutter-gst-player-get-subtitle-tracks" title="clutter_gst_player_get_subtitle_tracks ()">clutter_gst_player_get_subtitle_tracks</a>
                                                         (<em class="parameter"><code><a class="link" href="ClutterGstPlayer.html" title="ClutterGstPlayer"><span class="type">ClutterGstPlayer</span></a> *player</code></em>);
-<a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="returnvalue">gint</span></a>                <a class="link" href="ClutterGstPlayer.html#clutter-gst-player-get-subtitle-track" title="clutter_gst_player_get_subtitle_track ()">clutter_gst_player_get_subtitle_track</a>
+<span class="returnvalue">gint</span>                <a class="link" href="ClutterGstPlayer.html#clutter-gst-player-get-subtitle-track" title="clutter_gst_player_get_subtitle_track ()">clutter_gst_player_get_subtitle_track</a>
                                                         (<em class="parameter"><code><a class="link" href="ClutterGstPlayer.html" title="ClutterGstPlayer"><span class="type">ClutterGstPlayer</span></a> *player</code></em>);
 <span class="returnvalue">void</span>                <a class="link" href="ClutterGstPlayer.html#clutter-gst-player-set-subtitle-track" title="clutter_gst_player_set_subtitle_track ()">clutter_gst_player_set_subtitle_track</a>
                                                         (<em class="parameter"><code><a class="link" href="ClutterGstPlayer.html" title="ClutterGstPlayer"><span class="type">ClutterGstPlayer</span></a> *player</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a> index_</code></em>);
+                                                         <em class="parameter"><code><span class="type">gint</span> index_</code></em>);
 </pre>
 </div>
 <div class="refsect1">
@@ -91,7 +91,7 @@ struct              <a class="link" href="ClutterGstPlayer.html#ClutterGstPlayer
 <a name="ClutterGstPlayer.prerequisites"></a><h2>Prerequisites</h2>
 <p>
 ClutterGstPlayer requires
- <a href="/usr/share/gtk-doc/html/clutter/ClutterMedia.html">ClutterMedia</a> and  <a href="http://library.gnome.org/devel/gobject/unstable/gobject-The-Base-Object-Type.html#GObject">GObject</a>.</p>
+ ClutterMedia and  GObject.</p>
 </div>
 <div class="refsect1">
 <a name="ClutterGstPlayer.implementations"></a><h2>Known Implementations</h2>
@@ -102,19 +102,20 @@ ClutterGstPlayer is implemented by
 <div class="refsect1">
 <a name="ClutterGstPlayer.properties"></a><h2>Properties</h2>
 <pre class="synopsis">
-  "<a class="link" href="ClutterGstPlayer.html#ClutterGstPlayer--audio-stream" title='The "audio-stream" property'>audio-stream</a>"             <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a>                  : Read / Write
-  "<a class="link" href="ClutterGstPlayer.html#ClutterGstPlayer--audio-streams" title='The "audio-streams" property'>audio-streams</a>"            <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>              : Read
-  "<a class="link" href="ClutterGstPlayer.html#ClutterGstPlayer--idle" title='The "idle" property'>idle</a>"                     <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a>              : Read
+  "<a class="link" href="ClutterGstPlayer.html#ClutterGstPlayer--audio-stream" title='The "audio-stream" property'>audio-stream</a>"             <span class="type">gint</span>                  : Read / Write
+  "<a class="link" href="ClutterGstPlayer.html#ClutterGstPlayer--audio-streams" title='The "audio-streams" property'>audio-streams</a>"            <span class="type">gpointer</span>              : Read
+  "<a class="link" href="ClutterGstPlayer.html#ClutterGstPlayer--idle" title='The "idle" property'>idle</a>"                     <span class="type">gboolean</span>              : Read
+  "<a class="link" href="ClutterGstPlayer.html#ClutterGstPlayer--in-seek" title='The "in-seek" property'>in-seek</a>"                  <span class="type">gboolean</span>              : Read
   "<a class="link" href="ClutterGstPlayer.html#ClutterGstPlayer--seek-flags" title='The "seek-flags" property'>seek-flags</a>"               <span class="type">ClutterGstSeekFlags</span>   : Read / Write
-  "<a class="link" href="ClutterGstPlayer.html#ClutterGstPlayer--subtitle-track" title='The "subtitle-track" property'>subtitle-track</a>"           <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a>                  : Read / Write
-  "<a class="link" href="ClutterGstPlayer.html#ClutterGstPlayer--subtitle-tracks" title='The "subtitle-tracks" property'>subtitle-tracks</a>"          <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>              : Read
-  "<a class="link" href="ClutterGstPlayer.html#ClutterGstPlayer--user-agent" title='The "user-agent" property'>user-agent</a>"               <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write
+  "<a class="link" href="ClutterGstPlayer.html#ClutterGstPlayer--subtitle-track" title='The "subtitle-track" property'>subtitle-track</a>"           <span class="type">gint</span>                  : Read / Write
+  "<a class="link" href="ClutterGstPlayer.html#ClutterGstPlayer--subtitle-tracks" title='The "subtitle-tracks" property'>subtitle-tracks</a>"          <span class="type">gpointer</span>              : Read
+  "<a class="link" href="ClutterGstPlayer.html#ClutterGstPlayer--user-agent" title='The "user-agent" property'>user-agent</a>"               <span class="type">gchar</span>*                : Read / Write
 </pre>
 </div>
 <div class="refsect1">
 <a name="ClutterGstPlayer.signals"></a><h2>Signals</h2>
 <pre class="synopsis">
-  "<a class="link" href="ClutterGstPlayer.html#ClutterGstPlayer-download-buffering" title='The "download-buffering" signal'>download-buffering</a>"                             : <a href="http://library.gnome.org/devel/gobject/unstable/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a>
+  "<a class="link" href="ClutterGstPlayer.html#ClutterGstPlayer-download-buffering" title='The "download-buffering" signal'>download-buffering</a>"                             : <code class="literal">Run Last</code>
 </pre>
 </div>
 <div class="refsect1">
@@ -126,11 +127,11 @@ ClutterGstPlayer is implemented by
  leaving you only tweak a few properties to get the desired behavior.
 </p>
 <p>
-<a class="link" href="ClutterGstPlayer.html" title="ClutterGstPlayer"><span class="type">ClutterGstPlayer</span></a> extends and implements <a href="/usr/share/gtk-doc/html/clutter/ClutterMedia.html"><span class="type">ClutterMedia</span></a> to create
+<a class="link" href="ClutterGstPlayer.html" title="ClutterGstPlayer"><span class="type">ClutterGstPlayer</span></a> extends and implements <span class="type">ClutterMedia</span> to create
 enhanced player.
 </p>
 <p>
-<a href="/usr/share/gtk-doc/html/clutter/ClutterMedia.html"><span class="type">ClutterMedia</span></a> is available since Clutter 0.2
+<span class="type">ClutterMedia</span> is available since Clutter 0.2
 </p>
 </div>
 <div class="refsect1">
@@ -174,7 +175,8 @@ directly accessed
 
   gboolean (*get_idle) (ClutterGstPlayer *player);
 
-  void (* _iface_reserved15) (void);
+  gboolean (*get_in_seek) (ClutterGstPlayer *player);
+
   void (* _iface_reserved16) (void);
   void (* _iface_reserved17) (void);
   void (* _iface_reserved18) (void);
@@ -274,7 +276,7 @@ Interface vtable for <a class="link" href="ClutterGstPlayer.html" title="Clutter
 <td></td>
 </tr>
 <tr>
-<td><p><span class="term"><em class="structfield"><code><a name="ClutterGstPlayerIface.-iface-reserved15"></a>_iface_reserved15</code></em> ()</span></p></td>
+<td><p><span class="term"><em class="structfield"><code><a name="ClutterGstPlayerIface.get-in-seek"></a>get_in_seek</code></em> ()</span></p></td>
 <td></td>
 </tr>
 <tr>
@@ -405,10 +407,10 @@ signal</td>
 <hr>
 <div class="refsect2">
 <a name="clutter-gst-player-class-init"></a><h3>clutter_gst_player_class_init ()</h3>
-<pre class="programlisting"><span class="returnvalue">void</span>                clutter_gst_player_class_init       (<em class="parameter"><code><a href="http://library.gnome.org/devel/gobject/unstable/gobject-The-Base-Object-Type.html#GObjectClass"><span class="type">GObjectClass</span></a> *object_class</code></em>);</pre>
+<pre class="programlisting"><span class="returnvalue">void</span>                clutter_gst_player_class_init       (<em class="parameter"><code><span class="type">GObjectClass</span> *object_class</code></em>);</pre>
 <p>
 Adds the <a class="link" href="ClutterGstPlayer.html" title="ClutterGstPlayer"><span class="type">ClutterGstPlayer</span></a> properties to a class and surchages the
-set/get_property of <a href="http://library.gnome.org/devel/gobject/unstable/gobject-The-Base-Object-Type.html#GObjectClass"><span class="type">GObjectClass</span></a>. You should call this
+set/get_property of <span class="type">GObjectClass</span>. You should call this
 function at the end of the class_init method of the class
 implementing <a class="link" href="ClutterGstPlayer.html" title="ClutterGstPlayer"><span class="type">ClutterGstPlayer</span></a>.
 </p>
@@ -416,7 +418,7 @@ implementing <a class="link" href="ClutterGstPlayer.html" title="ClutterGstPlaye
 <col align="left" valign="top">
 <tbody><tr>
 <td><p><span class="term"><em class="parameter"><code>object_class</code></em> :</span></p></td>
-<td>a <a href="http://library.gnome.org/devel/gobject/unstable/gobject-The-Base-Object-Type.html#GObjectClass"><span class="type">GObjectClass</span></a>
+<td>a <span class="type">GObjectClass</span>
 </td>
 </tr></tbody>
 </table></div>
@@ -425,7 +427,7 @@ implementing <a class="link" href="ClutterGstPlayer.html" title="ClutterGstPlaye
 <hr>
 <div class="refsect2">
 <a name="clutter-gst-player-init"></a><h3>clutter_gst_player_init ()</h3>
-<pre class="programlisting"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            clutter_gst_player_init             (<em class="parameter"><code><a class="link" href="ClutterGstPlayer.html" title="ClutterGstPlayer"><span class="type">ClutterGstPlayer</span></a> *player</code></em>);</pre>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>            clutter_gst_player_init             (<em class="parameter"><code><a class="link" href="ClutterGstPlayer.html" title="ClutterGstPlayer"><span class="type">ClutterGstPlayer</span></a> *player</code></em>);</pre>
 <p>
 Initialize a <a class="link" href="ClutterGstPlayer.html" title="ClutterGstPlayer"><span class="type">ClutterGstPlayer</span></a> instance. You should call this
 function at the beginning of the init method of the class
@@ -474,9 +476,9 @@ called on the instance.
 <hr>
 <div class="refsect2">
 <a name="clutter-gst-player-get-pipeline"></a><h3>clutter_gst_player_get_pipeline ()</h3>
-<pre class="programlisting"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstElement.html"><span class="returnvalue">GstElement</span></a> *        clutter_gst_player_get_pipeline     (<em class="parameter"><code><a class="link" href="ClutterGstPlayer.html" title="ClutterGstPlayer"><span class="type">ClutterGstPlayer</span></a> *player</code></em>);</pre>
+<pre class="programlisting"><span class="returnvalue">GstElement</span> *        clutter_gst_player_get_pipeline     (<em class="parameter"><code><a class="link" href="ClutterGstPlayer.html" title="ClutterGstPlayer"><span class="type">ClutterGstPlayer</span></a> *player</code></em>);</pre>
 <p>
-Retrieves the <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstPipeline.html"><span class="type">GstPipeline</span></a> used by the <em class="parameter"><code>player</code></em>, for direct use with
+Retrieves the <span class="type">GstPipeline</span> used by the <em class="parameter"><code>player</code></em>, for direct use with
 GStreamer API.
 </p>
 <div class="variablelist"><table border="0">
@@ -489,7 +491,7 @@ GStreamer API.
 </tr>
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
-<td>the <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstPipeline.html"><span class="type">GstPipeline</span></a> element used by the player. <span class="annotation">[<a href="http://foldoc.org/transfer%20none"><span class="acronym">transfer none</span></a>]</span>
+<td>the <span class="type">GstPipeline</span> element used by the player. <span class="annotation">[<a href="http://foldoc.org/transfer%20none"><span class="acronym">transfer none</span></a>]</span>
 </td>
 </tr>
 </tbody>
@@ -499,7 +501,7 @@ GStreamer API.
 <hr>
 <div class="refsect2">
 <a name="clutter-gst-player-get-idle"></a><h3>clutter_gst_player_get_idle ()</h3>
-<pre class="programlisting"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="returnvalue">gboolean</span></a>            clutter_gst_player_get_idle         (<em class="parameter"><code><a class="link" href="ClutterGstPlayer.html" title="ClutterGstPlayer"><span class="type">ClutterGstPlayer</span></a> *player</code></em>);</pre>
+<pre class="programlisting"><span class="returnvalue">gboolean</span>            clutter_gst_player_get_idle         (<em class="parameter"><code><a class="link" href="ClutterGstPlayer.html" title="ClutterGstPlayer"><span class="type">ClutterGstPlayer</span></a> *player</code></em>);</pre>
 <p>
 Get the idle state of the pipeline.
 </p>
@@ -522,7 +524,7 @@ Get the idle state of the pipeline.
 <hr>
 <div class="refsect2">
 <a name="clutter-gst-player-get-user-agent"></a><h3>clutter_gst_player_get_user_agent ()</h3>
-<pre class="programlisting"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *             clutter_gst_player_get_user_agent   (<em class="parameter"><code><a class="link" href="ClutterGstPlayer.html" title="ClutterGstPlayer"><span class="type">ClutterGstPlayer</span></a> *player</code></em>);</pre>
+<pre class="programlisting"><span class="returnvalue">gchar</span> *             clutter_gst_player_get_user_agent   (<em class="parameter"><code><a class="link" href="ClutterGstPlayer.html" title="ClutterGstPlayer"><span class="type">ClutterGstPlayer</span></a> *player</code></em>);</pre>
 <p>
 Retrieves the user agent used when streaming.
 </p>
@@ -537,7 +539,7 @@ Retrieves the user agent used when streaming.
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
 <td>the user agent used. The returned string has to be freed with
-<a href="http://library.gnome.org/devel/glib/unstable/glib-Memory-Allocation.html#g-free"><code class="function">g_free()</code></a>
+<code class="function">g_free()</code>
 </td>
 </tr>
 </tbody>
@@ -548,7 +550,7 @@ Retrieves the user agent used when streaming.
 <div class="refsect2">
 <a name="clutter-gst-player-set-user-agent"></a><h3>clutter_gst_player_set_user_agent ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                clutter_gst_player_set_user_agent   (<em class="parameter"><code><a class="link" href="ClutterGstPlayer.html" title="ClutterGstPlayer"><span class="type">ClutterGstPlayer</span></a> *player</code></em>,
-                                                         <em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *user_agent</code></em>);</pre>
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *user_agent</code></em>);</pre>
 <p>
 Sets the user agent to use when streaming.
 </p>
@@ -671,7 +673,7 @@ Get the current value of the seek-flags property.
 <hr>
 <div class="refsect2">
 <a name="clutter-gst-player-get-audio-streams"></a><h3>clutter_gst_player_get_audio_streams ()</h3>
-<pre class="programlisting"><a href="http://library.gnome.org/devel/glib/unstable/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *             clutter_gst_player_get_audio_streams
+<pre class="programlisting"><span class="returnvalue">GList</span> *             clutter_gst_player_get_audio_streams
                                                         (<em class="parameter"><code><a class="link" href="ClutterGstPlayer.html" title="ClutterGstPlayer"><span class="type">ClutterGstPlayer</span></a> *player</code></em>);</pre>
 <p>
 Get the list of audio streams of the current media.
@@ -686,8 +688,8 @@ Get the list of audio streams of the current media.
 </tr>
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
-<td>a list of strings describing the available
-audio streams. <span class="annotation">[<a href="http://foldoc.org/transfer%20none"><span class="acronym">transfer none</span></a>]</span>
+<td>a list of
+strings describing the available audio streams. <span class="annotation">[<a href="http://foldoc.org/transfer%20none"><span class="acronym">transfer none</span></a>][<a href="http://foldoc.org/element-type"><span class="acronym">element-type</span></a> utf8]</span>
 </td>
 </tr>
 </tbody>
@@ -697,7 +699,7 @@ audio streams. <span class="annotation">[<a href="http://foldoc.org/transfer%20n
 <hr>
 <div class="refsect2">
 <a name="clutter-gst-player-get-audio-stream"></a><h3>clutter_gst_player_get_audio_stream ()</h3>
-<pre class="programlisting"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="returnvalue">gint</span></a>                clutter_gst_player_get_audio_stream (<em class="parameter"><code><a class="link" href="ClutterGstPlayer.html" title="ClutterGstPlayer"><span class="type">ClutterGstPlayer</span></a> *player</code></em>);</pre>
+<pre class="programlisting"><span class="returnvalue">gint</span>                clutter_gst_player_get_audio_stream (<em class="parameter"><code><a class="link" href="ClutterGstPlayer.html" title="ClutterGstPlayer"><span class="type">ClutterGstPlayer</span></a> *player</code></em>);</pre>
 <p>
 Get the current audio stream. The number returned in the index of the
 audio stream playing in the list returned by
@@ -724,7 +726,7 @@ audio stream</td>
 <div class="refsect2">
 <a name="clutter-gst-player-set-audio-stream"></a><h3>clutter_gst_player_set_audio_stream ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                clutter_gst_player_set_audio_stream (<em class="parameter"><code><a class="link" href="ClutterGstPlayer.html" title="ClutterGstPlayer"><span class="type">ClutterGstPlayer</span></a> *player</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a> index_</code></em>);</pre>
+                                                         <em class="parameter"><code><span class="type">gint</span> index_</code></em>);</pre>
 <p>
 Set the audio stream to play. <em class="parameter"><code>index_</code></em> is the index of the stream
 in the list returned by <a class="link" href="ClutterGstPlayer.html#clutter-gst-player-get-audio-streams" title="clutter_gst_player_get_audio_streams ()"><code class="function">clutter_gst_player_get_audio_streams()</code></a>.
@@ -748,7 +750,7 @@ in the list returned by <a class="link" href="ClutterGstPlayer.html#clutter-gst-
 <hr>
 <div class="refsect2">
 <a name="clutter-gst-player-get-subtitle-tracks"></a><h3>clutter_gst_player_get_subtitle_tracks ()</h3>
-<pre class="programlisting"><a href="http://library.gnome.org/devel/glib/unstable/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *             clutter_gst_player_get_subtitle_tracks
+<pre class="programlisting"><span class="returnvalue">GList</span> *             clutter_gst_player_get_subtitle_tracks
                                                         (<em class="parameter"><code><a class="link" href="ClutterGstPlayer.html" title="ClutterGstPlayer"><span class="type">ClutterGstPlayer</span></a> *player</code></em>);</pre>
 <p>
 Get the list of subtitles tracks of the current media.
@@ -763,8 +765,8 @@ Get the list of subtitles tracks of the current media.
 </tr>
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
-<td>a list of strings describing the available
-subtitles tracks. <span class="annotation">[<a href="http://foldoc.org/transfer%20none"><span class="acronym">transfer none</span></a>]</span>
+<td>a list of
+strings describing the available subtitles tracks. <span class="annotation">[<a href="http://foldoc.org/transfer%20none"><span class="acronym">transfer none</span></a>][<a href="http://foldoc.org/element-type"><span class="acronym">element-type</span></a> utf8]</span>
 </td>
 </tr>
 </tbody>
@@ -774,7 +776,7 @@ subtitles tracks. <span class="annotation">[<a href="http://foldoc.org/transfer%
 <hr>
 <div class="refsect2">
 <a name="clutter-gst-player-get-subtitle-track"></a><h3>clutter_gst_player_get_subtitle_track ()</h3>
-<pre class="programlisting"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="returnvalue">gint</span></a>                clutter_gst_player_get_subtitle_track
+<pre class="programlisting"><span class="returnvalue">gint</span>                clutter_gst_player_get_subtitle_track
                                                         (<em class="parameter"><code><a class="link" href="ClutterGstPlayer.html" title="ClutterGstPlayer"><span class="type">ClutterGstPlayer</span></a> *player</code></em>);</pre>
 <p>
 Get the current subtitles track. The number returned is the index of the
@@ -803,7 +805,7 @@ no subtitles track or if the subtitles have been turned off</td>
 <a name="clutter-gst-player-set-subtitle-track"></a><h3>clutter_gst_player_set_subtitle_track ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                clutter_gst_player_set_subtitle_track
                                                         (<em class="parameter"><code><a class="link" href="ClutterGstPlayer.html" title="ClutterGstPlayer"><span class="type">ClutterGstPlayer</span></a> *player</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a> index_</code></em>);</pre>
+                                                         <em class="parameter"><code><span class="type">gint</span> index_</code></em>);</pre>
 <p>
 Set the subtitles track to play. <em class="parameter"><code>index_</code></em> is the index of the stream
 in the list returned by <a class="link" href="ClutterGstPlayer.html#clutter-gst-player-get-subtitle-tracks" title="clutter_gst_player_get_subtitle_tracks ()"><code class="function">clutter_gst_player_get_subtitle_tracks()</code></a>.
@@ -832,7 +834,7 @@ If <em class="parameter"><code>index_</code></em> is -1, the subtitles are turne
 <a name="ClutterGstPlayer.property-details"></a><h2>Property Details</h2>
 <div class="refsect2">
 <a name="ClutterGstPlayer--audio-stream"></a><h3>The <code class="literal">"audio-stream"</code> property</h3>
-<pre class="programlisting">  "audio-stream"             <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a>                  : Read / Write</pre>
+<pre class="programlisting">  "audio-stream"             <span class="type">gint</span>                  : Read / Write</pre>
 <p>
 Index of the current audio stream.
 </p>
@@ -843,7 +845,7 @@ Index of the current audio stream.
 <hr>
 <div class="refsect2">
 <a name="ClutterGstPlayer--audio-streams"></a><h3>The <code class="literal">"audio-streams"</code> property</h3>
-<pre class="programlisting">  "audio-streams"            <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>              : Read</pre>
+<pre class="programlisting">  "audio-streams"            <span class="type">gpointer</span>              : Read</pre>
 <p>
 List of audio streams available on the current media.
 </p>
@@ -852,12 +854,22 @@ List of audio streams available on the current media.
 <hr>
 <div class="refsect2">
 <a name="ClutterGstPlayer--idle"></a><h3>The <code class="literal">"idle"</code> property</h3>
-<pre class="programlisting">  "idle"                     <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gboolean"><span class="type">gboolean</span></a>              : Read</pre>
+<pre class="programlisting">  "idle"                     <span class="type">gboolean</span>              : Read</pre>
 <p>
 Whether the <a class="link" href="ClutterGstPlayer.html" title="ClutterGstPlayer"><span class="type">ClutterGstPlayer</span></a> is in idle mode.
 </p>
 <p>Default value: TRUE</p>
 <p class="since">Since 1.4</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ClutterGstPlayer--in-seek"></a><h3>The <code class="literal">"in-seek"</code> property</h3>
+<pre class="programlisting">  "in-seek"                  <span class="type">gboolean</span>              : Read</pre>
+<p>
+Whether or not the stream is being seeked.
+</p>
+<p>Default value: FALSE</p>
+<p class="since">Since 1.6</p>
 </div>
 <hr>
 <div class="refsect2">
@@ -871,7 +883,7 @@ Flags to use when seeking.
 <hr>
 <div class="refsect2">
 <a name="ClutterGstPlayer--subtitle-track"></a><h3>The <code class="literal">"subtitle-track"</code> property</h3>
-<pre class="programlisting">  "subtitle-track"           <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a>                  : Read / Write</pre>
+<pre class="programlisting">  "subtitle-track"           <span class="type">gint</span>                  : Read / Write</pre>
 <p>Index of the current subtitles track.</p>
 <p>Allowed values: &gt;= -1</p>
 <p>Default value: -1</p>
@@ -879,13 +891,13 @@ Flags to use when seeking.
 <hr>
 <div class="refsect2">
 <a name="ClutterGstPlayer--subtitle-tracks"></a><h3>The <code class="literal">"subtitle-tracks"</code> property</h3>
-<pre class="programlisting">  "subtitle-tracks"          <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>              : Read</pre>
+<pre class="programlisting">  "subtitle-tracks"          <span class="type">gpointer</span>              : Read</pre>
 <p>List of the subtitles tracks of the media.</p>
 </div>
 <hr>
 <div class="refsect2">
 <a name="ClutterGstPlayer--user-agent"></a><h3>The <code class="literal">"user-agent"</code> property</h3>
-<pre class="programlisting">  "user-agent"               <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a>*                : Read / Write</pre>
+<pre class="programlisting">  "user-agent"               <span class="type">gchar</span>*                : Read / Write</pre>
 <p>
 The User Agent used by <a class="link" href="ClutterGstPlayer.html" title="ClutterGstPlayer"><span class="type">ClutterGstPlayer</span></a> with network protocols.
 </p>
@@ -898,9 +910,9 @@ The User Agent used by <a class="link" href="ClutterGstPlayer.html" title="Clutt
 <div class="refsect2">
 <a name="ClutterGstPlayer-download-buffering"></a><h3>The <code class="literal">"download-buffering"</code> signal</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                user_function                      (<a class="link" href="ClutterGstPlayer.html" title="ClutterGstPlayer"><span class="type">ClutterGstPlayer</span></a> *player,
-                                                        <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gdouble"><span class="type">gdouble</span></a>           start,
-                                                        <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gdouble"><span class="type">gdouble</span></a>           stop,
-                                                        <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gpointer"><span class="type">gpointer</span></a>          user_data)      : <a href="http://library.gnome.org/devel/gobject/unstable/gobject-Signals.html#G-SIGNAL-RUN-LAST:CAPS"><code class="literal">Run Last</code></a></pre>
+                                                        <span class="type">gdouble</span>           start,
+                                                        <span class="type">gdouble</span>           stop,
+                                                        <span class="type">gpointer</span>          user_data)      : <code class="literal">Run Last</code></pre>
 <p>
 The ::download-buffering signal is emitted each time their an
 update about the buffering of the current media.

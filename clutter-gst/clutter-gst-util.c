@@ -94,10 +94,17 @@
  * </example>
  */
 
+#include "config.h"
+
 #include <gst/gst.h>
 #include <clutter/clutter.h>
 
+#if defined (CLUTTER_WINDOWING_X11)
+#include <X11/Xlib.h>
+#endif
+
 #include "clutter-gst-debug.h"
+#include "clutter-gst-video-sink.h"
 #include "clutter-gst-util.h"
 
 static gboolean clutter_gst_is_initialized = FALSE;
@@ -123,6 +130,11 @@ clutter_gst_init (int    *argc,
 
   if (clutter_gst_is_initialized)
     return CLUTTER_INIT_SUCCESS;
+
+#if defined (CLUTTER_WINDOWING_X11)
+  /* Required by some GStreamer element like VA */
+  XInitThreads ();
+#endif
 
   gst_init (argc, argv);
   retval = clutter_init (argc, argv);
@@ -178,6 +190,11 @@ clutter_gst_init_with_args (int            *argc,
   if (clutter_gst_is_initialized)
     return CLUTTER_INIT_SUCCESS;
 
+#if defined (CLUTTER_WINDOWING_X11)
+  /* Required by some gstreamer element like VA */
+  XInitThreads ();
+#endif
+
   context = g_option_context_new (parameter_string);
 
   g_option_context_add_group (context, gst_init_get_option_group ());
@@ -202,3 +219,27 @@ clutter_gst_init_with_args (int            *argc,
   return CLUTTER_INIT_SUCCESS;
 }
 
+/**
+ * clutter_gst_video_sink_new:
+ * @texture: a #ClutterTexture
+ *
+ * Creates a new GStreamer video sink which uses @texture as the target
+ * for sinking a video stream from GStreamer.
+ *
+ * <note>This function has to be called from Clutter's main thread. While
+ * GStreamer will spawn threads to do its work, we want all the GL calls to
+ * happen in the same thread. Clutter-gst knows which thread it is by
+ * assuming this constructor is called from the Clutter thread.</note>
+ *
+ * Return value: a #GstElement for the newly created video sink
+ *
+ * Deprecated: 1.6: Use gst_element_factory_make ("cluttersink", ...) and the
+ * "texture" GObject property instead.
+ */
+GstElement *
+clutter_gst_video_sink_new (ClutterTexture *texture)
+{
+  return g_object_new (CLUTTER_GST_TYPE_VIDEO_SINK,
+                       "texture", texture,
+                       NULL);
+}

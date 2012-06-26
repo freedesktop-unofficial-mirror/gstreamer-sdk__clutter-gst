@@ -50,6 +50,11 @@ ClutterGstPlayer
 
 </para>
 
+<!-- ##### ARG ClutterGstPlayer:in-seek ##### -->
+<para>
+
+</para>
+
 <!-- ##### ARG ClutterGstPlayer:seek-flags ##### -->
 <para>
 
@@ -89,7 +94,7 @@ ClutterGstPlayer
 @get_subtitle_track: 
 @set_subtitle_track: 
 @get_idle: 
-@_iface_reserved15: 
+@get_in_seek: 
 @_iface_reserved16: 
 @_iface_reserved17: 
 @_iface_reserved18: 

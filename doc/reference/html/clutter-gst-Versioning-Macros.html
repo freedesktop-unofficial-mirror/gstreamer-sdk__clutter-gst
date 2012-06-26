@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Versioning Macros</title>
 <meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
-<link rel="home" href="index.html" title="Clutter Gst 1.4.6 Reference Manual">
+<link rel="home" href="index.html" title="Clutter Gst 1.6.0 Reference Manual">
 <link rel="up" href="ch02.html" title="Clutter Actors And Objects">
 <link rel="prev" href="clutter-gst-Utilities.html" title="Utilities">
 <link rel="next" href="license.html" title="Appendix A. License">
@@ -17,7 +17,7 @@
 <td><a accesskey="p" href="clutter-gst-Utilities.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
 <td><a accesskey="u" href="ch02.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
 <td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
-<th width="100%" align="center">Clutter Gst 1.4.6
+<th width="100%" align="center">Clutter Gst 1.6.0
  Reference Manual</th>
 <td><a accesskey="n" href="license.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
 </tr>
@@ -68,7 +68,7 @@ ClutterGst major version (e.g. "1", if <a class="link" href="clutter-gst-Version
 <hr>
 <div class="refsect2">
 <a name="CLUTTER-GST-MINOR-VERSION:CAPS"></a><h3>CLUTTER_GST_MINOR_VERSION</h3>
-<pre class="programlisting">#define CLUTTER_GST_MINOR_VERSION   (4)
+<pre class="programlisting">#define CLUTTER_GST_MINOR_VERSION   (6)
 </pre>
 <p>
 ClutterGst minor version (e.g. "2", if <a class="link" href="clutter-gst-Versioning-Macros.html#CLUTTER-GST-VERSION:CAPS" title="CLUTTER_GST_VERSION"><code class="literal">CLUTTER_GST_VERSION</code></a> is "1.2.3")
@@ -77,7 +77,7 @@ ClutterGst minor version (e.g. "2", if <a class="link" href="clutter-gst-Version
 <hr>
 <div class="refsect2">
 <a name="CLUTTER-GST-MICRO-VERSION:CAPS"></a><h3>CLUTTER_GST_MICRO_VERSION</h3>
-<pre class="programlisting">#define CLUTTER_GST_MICRO_VERSION   (6)
+<pre class="programlisting">#define CLUTTER_GST_MICRO_VERSION   (0)
 </pre>
 <p>
 ClutterGst micro version (e.g. "3", if <a class="link" href="clutter-gst-Versioning-Macros.html#CLUTTER-GST-VERSION:CAPS" title="CLUTTER_GST_VERSION"><code class="literal">CLUTTER_GST_VERSION</code></a> is "1.2.3")
@@ -86,7 +86,7 @@ ClutterGst micro version (e.g. "3", if <a class="link" href="clutter-gst-Version
 <hr>
 <div class="refsect2">
 <a name="CLUTTER-GST-VERSION:CAPS"></a><h3>CLUTTER_GST_VERSION</h3>
-<pre class="programlisting">#define CLUTTER_GST_VERSION         (1.4.6)
+<pre class="programlisting">#define CLUTTER_GST_VERSION         (1.6.0)
 </pre>
 <p>
 ClutterGst full version (e.g. "1.2.3")
@@ -95,7 +95,7 @@ ClutterGst full version (e.g. "1.2.3")
 <hr>
 <div class="refsect2">
 <a name="CLUTTER-GST-VERSION-S:CAPS"></a><h3>CLUTTER_GST_VERSION_S</h3>
-<pre class="programlisting">#define CLUTTER_GST_VERSION_S       "1.4.6"
+<pre class="programlisting">#define CLUTTER_GST_VERSION_S       "1.6.0"
 </pre>
 <p>
 ClutterGst full version, encoded as a string.
@@ -114,7 +114,7 @@ ClutterGst full version, encoded as an hexadecimal value.
 <a name="CLUTTER-GST-CHECK-VERSION:CAPS"></a><h3>CLUTTER_GST_CHECK_VERSION()</h3>
 <pre class="programlisting">#define             CLUTTER_GST_CHECK_VERSION(major,minor,micro)</pre>
 <p>
-Evaluates to <a href="http://library.gnome.org/devel/glib/unstable/glib-Standard-Macros.html#TRUE:CAPS"><code class="literal">TRUE</code></a> if the version of ClutterGst is greater than
+Evaluates to <code class="literal">TRUE</code> if the version of ClutterGst is greater than
 the <em class="parameter"><code>major</code></em>, <em class="parameter"><code>minor</code></em> and <em class="parameter"><code>micro</code></em> values.
 </p>
 <div class="variablelist"><table border="0">

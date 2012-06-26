@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>ClutterGstVideoSink</title>
 <meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
-<link rel="home" href="index.html" title="Clutter Gst 1.4.6 Reference Manual">
+<link rel="home" href="index.html" title="Clutter Gst 1.6.0 Reference Manual">
 <link rel="up" href="ch02.html" title="Clutter Actors And Objects">
 <link rel="prev" href="ClutterGstVideoTexture.html" title="ClutterGstVideoTexture">
 <link rel="next" href="clutter-gst-Utilities.html" title="Utilities">
@@ -17,7 +17,7 @@
 <td><a accesskey="p" href="ClutterGstVideoTexture.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
 <td><a accesskey="u" href="ch02.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
 <td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
-<th width="100%" align="center">Clutter Gst 1.4.6
+<th width="100%" align="center">Clutter Gst 1.6.0
  Reference Manual</th>
 <td><a accesskey="n" href="clutter-gst-Utilities.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
 </tr>
@@ -46,16 +46,16 @@
 <a name="ClutterGstVideoSink.synopsis"></a><h2>Synopsis</h2>
 <pre class="synopsis">struct              <a class="link" href="ClutterGstVideoSink.html#ClutterGstVideoSink-struct" title="struct ClutterGstVideoSink">ClutterGstVideoSink</a>;
 struct              <a class="link" href="ClutterGstVideoSink.html#ClutterGstVideoSinkClass" title="struct ClutterGstVideoSinkClass">ClutterGstVideoSinkClass</a>;
-<a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstElement.html"><span class="returnvalue">GstElement</span></a> *        <a class="link" href="ClutterGstVideoSink.html#clutter-gst-video-sink-new" title="clutter_gst_video_sink_new ()">clutter_gst_video_sink_new</a>          (<em class="parameter"><code><a href="/usr/share/gtk-doc/html/clutter/ClutterTexture.html"><span class="type">ClutterTexture</span></a> *texture</code></em>);
+<span class="returnvalue">GstElement</span> *        <a class="link" href="ClutterGstVideoSink.html#clutter-gst-video-sink-new" title="clutter_gst_video_sink_new ()">clutter_gst_video_sink_new</a>          (<em class="parameter"><code><span class="type">ClutterTexture</span> *texture</code></em>);
 </pre>
 </div>
 <div class="refsect1">
 <a name="ClutterGstVideoSink.object-hierarchy"></a><h2>Object Hierarchy</h2>
 <pre class="synopsis">
-  <a href="http://library.gnome.org/devel/gobject/unstable/gobject-The-Base-Object-Type.html#GObject">GObject</a>
-   +----<a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstObject.html">GstObject</a>
-         +----<a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstElement.html">GstElement</a>
-               +----<a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer-libs/html/GstBaseSink.html">GstBaseSink</a>
+  GObject
+   +----GstObject
+         +----GstElement
+               +----GstBaseSink
                      +----ClutterGstVideoSink
 </pre>
 </div>
@@ -63,20 +63,20 @@ struct              <a class="link" href="ClutterGstVideoSink.html#ClutterGstVid
 <a name="ClutterGstVideoSink.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
 <p>
 ClutterGstVideoSink implements
- <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstImplementsInterface.html">GstImplementsInterface</a> and  <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gst-plugins-base-libs/html/gst-plugins-base-libs-gstnavigation.html#GstNavigation">GstNavigation</a>.</p>
+ GstImplementsInterface and  GstNavigation.</p>
 </div>
 <div class="refsect1">
 <a name="ClutterGstVideoSink.properties"></a><h2>Properties</h2>
 <pre class="synopsis">
-  "<a class="link" href="ClutterGstVideoSink.html#ClutterGstVideoSink--texture" title='The "texture" property'>texture</a>"                  <a href="/usr/share/gtk-doc/html/clutter/ClutterTexture.html"><span class="type">ClutterTexture</span></a>*       : Read / Write
-  "<a class="link" href="ClutterGstVideoSink.html#ClutterGstVideoSink--update-priority" title='The "update-priority" property'>update-priority</a>"          <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a>                  : Read / Write
+  "<a class="link" href="ClutterGstVideoSink.html#ClutterGstVideoSink--texture" title='The "texture" property'>texture</a>"                  <span class="type">ClutterTexture</span>*       : Read / Write
+  "<a class="link" href="ClutterGstVideoSink.html#ClutterGstVideoSink--update-priority" title='The "update-priority" property'>update-priority</a>"          <span class="type">gint</span>                  : Read / Write
 </pre>
 </div>
 <div class="refsect1">
 <a name="ClutterGstVideoSink.description"></a><h2>Description</h2>
 <p>
 <a class="link" href="ClutterGstVideoSink.html" title="ClutterGstVideoSink"><span class="type">ClutterGstVideoSink</span></a> is a GStreamer sink element that sends
-data to a <a href="/usr/share/gtk-doc/html/clutter/ClutterTexture.html"><span class="type">ClutterTexture</span></a>.
+data to a <span class="type">ClutterTexture</span>.
 </p>
 </div>
 <div class="refsect1">
@@ -85,7 +85,7 @@ data to a <a href="/usr/share/gtk-doc/html/clutter/ClutterTexture.html"><span cl
 <a name="ClutterGstVideoSink-struct"></a><h3>struct ClutterGstVideoSink</h3>
 <pre class="programlisting">struct ClutterGstVideoSink;</pre>
 <p>
-Class implementing a GStreamer sink element for <a href="/usr/share/gtk-doc/html/clutter/ClutterTexture.html"><span class="type">ClutterTexture</span></a>s.
+Class implementing a GStreamer sink element for <span class="type">ClutterTexture</span>s.
 </p>
 <p>
 The <a class="link" href="ClutterGstVideoSink.html" title="ClutterGstVideoSink"><span class="type">ClutterGstVideoSink</span></a> structure contains only private data and should
@@ -105,7 +105,12 @@ Base class for <a class="link" href="ClutterGstVideoSink.html" title="ClutterGst
 <hr>
 <div class="refsect2">
 <a name="clutter-gst-video-sink-new"></a><h3>clutter_gst_video_sink_new ()</h3>
-<pre class="programlisting"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstElement.html"><span class="returnvalue">GstElement</span></a> *        clutter_gst_video_sink_new          (<em class="parameter"><code><a href="/usr/share/gtk-doc/html/clutter/ClutterTexture.html"><span class="type">ClutterTexture</span></a> *texture</code></em>);</pre>
+<pre class="programlisting"><span class="returnvalue">GstElement</span> *        clutter_gst_video_sink_new          (<em class="parameter"><code><span class="type">ClutterTexture</span> *texture</code></em>);</pre>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">Warning</h3>
+<p><code class="literal">clutter_gst_video_sink_new</code> has been deprecated since version 1.6 and should not be used in newly-written code. Use gst_element_factory_make ("cluttersink", ...) and the
+"texture" GObject property instead.</p>
+</div>
 <p>
 Creates a new GStreamer video sink which uses <em class="parameter"><code>texture</code></em> as the target
 for sinking a video stream from GStreamer.
@@ -124,12 +129,12 @@ assuming this constructor is called from the Clutter thread.</div>
 <tbody>
 <tr>
 <td><p><span class="term"><em class="parameter"><code>texture</code></em> :</span></p></td>
-<td>a <a href="/usr/share/gtk-doc/html/clutter/ClutterTexture.html"><span class="type">ClutterTexture</span></a>
+<td>a <span class="type">ClutterTexture</span>
 </td>
 </tr>
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
-<td>a <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstElement.html"><span class="type">GstElement</span></a> for the newly created video sink</td>
+<td>a <span class="type">GstElement</span> for the newly created video sink</td>
 </tr>
 </tbody>
 </table></div>
@@ -139,20 +144,20 @@ assuming this constructor is called from the Clutter thread.</div>
 <a name="ClutterGstVideoSink.property-details"></a><h2>Property Details</h2>
 <div class="refsect2">
 <a name="ClutterGstVideoSink--texture"></a><h3>The <code class="literal">"texture"</code> property</h3>
-<pre class="programlisting">  "texture"                  <a href="/usr/share/gtk-doc/html/clutter/ClutterTexture.html"><span class="type">ClutterTexture</span></a>*       : Read / Write</pre>
+<pre class="programlisting">  "texture"                  <span class="type">ClutterTexture</span>*       : Read / Write</pre>
 <p>
 This is the texture the video is decoded into. It can be any
-<a href="/usr/share/gtk-doc/html/clutter/ClutterTexture.html"><span class="type">ClutterTexture</span></a>, however Cluter-Gst has a handy subclass,
-<a class="link" href="ClutterGstVideoTexture.html" title="ClutterGstVideoTexture"><span class="type">ClutterGstVideoTexture</span></a>, that implements the <a href="/usr/share/gtk-doc/html/clutter/ClutterMedia.html"><span class="type">ClutterMedia</span></a>
+<span class="type">ClutterTexture</span>, however Cluter-Gst has a handy subclass,
+<a class="link" href="ClutterGstVideoTexture.html" title="ClutterGstVideoTexture"><span class="type">ClutterGstVideoTexture</span></a>, that implements the <span class="type">ClutterMedia</span>
 interface.
 </p>
 </div>
 <hr>
 <div class="refsect2">
 <a name="ClutterGstVideoSink--update-priority"></a><h3>The <code class="literal">"update-priority"</code> property</h3>
-<pre class="programlisting">  "update-priority"          <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a>                  : Read / Write</pre>
+<pre class="programlisting">  "update-priority"          <span class="type">gint</span>                  : Read / Write</pre>
 <p>
-Clutter-Gst installs a <a href="http://library.gnome.org/devel/glib/unstable/glib-The-Main-Event-Loop.html#GSource"><span class="type">GSource</span></a> to signal that a new frame is ready to
+Clutter-Gst installs a <span class="type">GSource</span> to signal that a new frame is ready to
 the Clutter thread. This property allows to tweak the priority of the
 source (Lower value is higher priority).
 </p>

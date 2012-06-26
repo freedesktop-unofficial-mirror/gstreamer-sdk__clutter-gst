@@ -2,8 +2,8 @@
 # An odd micro number indicates in-progress developmen
 # An even micro number indicates a released version.
 m4_define(clutter_gst_major_version, 1)
-m4_define(clutter_gst_minor_version, 4)
-m4_define(clutter_gst_micro_version, 6)
+m4_define(clutter_gst_minor_version, 6)
+m4_define(clutter_gst_micro_version, 0)
 
 m4_define(clutter_api_version, 1.0)
 m4_define([clutter_gst_api_version], [1.0])
@@ -26,6 +26,8 @@ AC_CONFIG_SRCDIR([clutter-gst/clutter-gst.h])
 AM_CONFIG_HEADER([config.h])
 
 AM_INIT_AUTOMAKE([1.9 -Wno-portability foreign no-dist-gzip dist-xz tar-ustar])
+
+echo \#buildapi-variable-no-builddir >/dev/null
 
 CLUTTER_GST_MAJOR_VERSION=clutter_gst_major_version
 CLUTTER_GST_MINOR_VERSION=clutter_gst_minor_version
@@ -77,8 +79,9 @@ AC_SUBST([CLUTTER_GST_RELEASE_STATUS], [clutter_gst_release_status])
 
 # pkg-config requirements
 GLIB_REQ_VERSION=2.18.0
-CLUTTER_REQ_VERSION=1.4.0
+CLUTTER_REQ_VERSION=1.6.0
 GSTREAMER_REQ_VERSION=0.10.26
+GST_PLUGINS_BAD_REQ_VERSION=0.10.22.1
 
 AC_SUBST(GLIB_REQ_VERSION)
 AC_SUBST(CLUTTER_REQ_VERSION)
@@ -99,7 +102,6 @@ LT_INIT([disable-static])
 AC_PROG_CC
 AM_PROG_CC_C_O
 AC_PROG_SED
-DOLT
 AC_PATH_PROG([GLIB_MKENUMS], [glib-mkenums])
 AC_PATH_PROG([GLIB_GENMARSHAL], [glib-genmarshal])
 
@@ -136,15 +138,33 @@ AM_CONDITIONAL([HAVE_PYTHON], [test "x$have_python" = "xyes"])
 
 dnl ========================================================================
 
-pkg_modules="clutter-1.0 >= $CLUTTER_REQ_VERSION gio-2.0 >= $GLIB_REQ_VERSION"
-PKG_CHECK_MODULES(CLUTTER_GST, [$pkg_modules])
+PKG_CHECK_MODULES(CLUTTER_GST,
+                  [clutter-1.0 >= $CLUTTER_REQ_VERSION
+                   gio-2.0 >= $GLIB_REQ_VERSION])
 
 dnl ========================================================================
 
 GST_MAJORMINOR=0.10
 
-pkg_modules="gstreamer-$GST_MAJORMINOR >= $GSTREAMER_REQ_VERSION gstreamer-plugins-base-$GST_MAJORMINOR gstreamer-base-$GST_MAJORMINOR gstreamer-interfaces-$GST_MAJORMINOR gstreamer-video-$GST_MAJORMINOR gstreamer-audio-$GST_MAJORMINOR gstreamer-tag-$GST_MAJORMINOR"
-PKG_CHECK_MODULES(GST, [$pkg_modules])
+PKG_CHECK_MODULES(GST,
+                  [gstreamer-$GST_MAJORMINOR >= $GSTREAMER_REQ_VERSION
+                   gstreamer-plugins-base-$GST_MAJORMINOR
+                   gstreamer-base-$GST_MAJORMINOR
+                   gstreamer-interfaces-$GST_MAJORMINOR
+                   gstreamer-video-$GST_MAJORMINOR
+                   gstreamer-audio-$GST_MAJORMINOR
+                   gstreamer-tag-$GST_MAJORMINOR])
+
+dnl libs used by the plugin
+PKG_CHECK_MODULES([PLUGIN],
+                  [clutter-1.0 >= $CLUTTER_REQ_VERSION
+                   gstreamer-$GST_MAJORMINOR >= $GSTREAMER_REQ_VERSION
+                   gstreamer-base-$GST_MAJORMINOR
+                   gstreamer-interfaces-$GST_MAJORMINOR ])
+
+dnl define location of gstreamer plugin directory
+plugindir="\$(libdir)/gstreamer-$GST_MAJORMINOR"
+AC_SUBST(plugindir)
 
 dnl ========================================================================
 dnl GL inclusion and link. We depend on GL for the single glGetIntegerv()
@@ -191,13 +211,25 @@ AS_IF([test "x$have_cogl_1_8" != xyes],
       ])
 
 dnl ========================================================================
+dnl Experimental support for hardware accelerated decoders.
 
-m4_define([maintainer_flags_default], [yes])
+PKG_CHECK_MODULES(HW,
+                 [gstreamer-basevideo-$GST_MAJORMINOR >= $GST_PLUGINS_BAD_REQ_VERSION],
+                 [
+                   have_hw_decoder_support=yes
+                   AC_DEFINE([HAVE_HW_DECODER_SUPPORT], [1],
+                             ["Defined if building Clutter with HW decoder support"])
+                 ],[ have_hw_decoder_support=no ])
+
+dnl ========================================================================
+
+m4_define([maintainer_default], [m4_if(clutter_gst_release_status,
+                                       [git], [yes], [no])])
 AC_ARG_ENABLE([maintainer-flags],
               [AC_HELP_STRING([--enable-maintainer-flags=@<:@no/yes@:>@],
-                              [Use strict compiler flags @<:@default=maintainer_flags_default@:>@])],
+                              [Use strict compiler flags @<:@default=]maintainer_default[@:>@])],
               [],
-              [enable_maintainer_flags=maintainer_flags_default])
+              enable_maintainer_flags=maintainer_default)
 
 AS_IF([test "x$enable_maintainer_flags" = "xyes" && test "x$GCC" = "xyes"],
       [
@@ -212,12 +244,13 @@ AC_SUBST(MAINTAINER_CFLAGS)
 
 dnl === Enable debug level ====================================================
 
-m4_define([debug_default], [m4_if(m4_eval(clutter_gst_minor_version % 2), [1], [yes], [minimum])])
+m4_define([debug_default], [m4_if(clutter_gst_release_status,
+                                  [git], [yes], [minimum])])
 AC_ARG_ENABLE([debug],
               [AC_HELP_STRING([--enable-debug=@<:@no/minimum/yes@:>@],
-                              [Control Clutter-Gst debugging level @<:@default=debug_default@:>@])],
+                              [Control Clutter-Gst debugging level @<:@default=]debug_default[@:>@])],
               [],
-              [enable_debug=debug_default])
+              enable_debug=debug_default)
 
 AS_CASE([$enable_debug],
 
@@ -290,4 +323,5 @@ echo ""
 echo " • Extra:"
 echo "        API documentation : ${enable_gtk_doc}"
 echo "        Introspection data: ${enable_introspection}"
+echo "        HW Decoder support: ${have_hw_decoder_support}"
 echo ""

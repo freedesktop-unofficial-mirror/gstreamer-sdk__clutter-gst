@@ -1,20 +1,64 @@
-clutter-gst 1.4.6 (18/01/2012)
+clutter-gst 1.6.0 (25/06/2012)
 ===============================================================================
 
-List of changes since 1.4.4
+List of changes since 1.6.0
 
- o Fix reffing/unreffing behaviour of ClutterGstVideoTexture
+ o None. This stable release is the same as 1.5.6.
 
-clutter-gst 1.4.4 (27/10/2011)
+clutter-gst 1.5.6 (25/05/2012)
+===============================================================================
+
+List of changes since 1.5.4
+
+ o Fix play/pause of autocluttersink,
+
+ o Add a "in-seek" property to the player to be notified when the pipeline
+   is seeking,
+
+ o Various build and smaller fixes.
+
+Many Thanks to:
+
+    Josep Torra
+    Tomas Frydrych
+    Adrian Bunk
+    Lionel Landwerlin
+    Michael Wood
+
+clutter-gst 1.5.4 (23/02/2012)
+===============================================================================
+
+List of changes since 1.5.2
+
+ o Fix compilation with cogl 1.9.x
+
+clutter-gst 1.5.2 (25/01/2012)
 ===============================================================================
 
 List of changes since 1.4.2
 
- o Build fixes, including compiling with glib 2.31
+ o Add a standalone gstreamer plugin. Clutter-gst gstreamer elements are now
+   available just like any other GStreamer elements, that includes working with
+   gst-launch.
 
-Many thanks to:
+ o Add support for video/x-surface ("hardware" surfaces) that can be converted
+   to opengl textures. (Requires -bad 0.10.22.1)
 
+ o Addition of a new element, autocluttersink, a bin that picks up clutter-
+   compatible sinks automatically. This allows an eco-system of 3rd party
+   decoders and (clutter) sinks to be autoplugged.
+
+ o Various small fixes
+
+Many Thanks to:
+
+    Nicolas Dufresne
+    Josep Torra
+    Lionel Landwerlin
+    Neil Roberts
+    Colin Walters
     Laurent Bigonville
+    Thomas Wood
 
 clutter-gst 1.4.2 (03/10/2011)
 ===============================================================================

@@ -43,7 +43,7 @@
 #endif
 
 #include "clutter-gst-video-sink.h"
-#include "clutter-gst-video-texture.h"
+#include "clutter-gst-util.h"
 #include "clutter-gst-private.h"
 #include "clutter-gst-shaders.h"
 
@@ -59,6 +59,15 @@
 #include <gst/video/gstvideosink.h>
 #include <gst/interfaces/navigation.h>
 #include <gst/riff/riff-ids.h>
+
+#ifdef HAVE_HW_DECODER_SUPPORT
+#define GST_USE_UNSTABLE_API 1
+#include <gst/video/gstsurfacebuffer.h>
+#endif
+
+#if defined (CLUTTER_WINDOWING_X11)
+#include <X11/Xlib.h>
+#endif
 
 #include <glib.h>
 #include <string.h>
@@ -107,17 +116,25 @@ static gchar *yv12_to_rgba_shader = \
      FRAGMENT_SHADER_END
      "}";
 
+#define BASE_SINK_CAPS GST_VIDEO_CAPS_YUV("AYUV") ";" \
+                       GST_VIDEO_CAPS_YUV("YV12") ";" \
+                       GST_VIDEO_CAPS_YUV("I420") ";" \
+                       GST_VIDEO_CAPS_RGBA        ";" \
+                       GST_VIDEO_CAPS_BGRA        ";" \
+                       GST_VIDEO_CAPS_RGB         ";" \
+                       GST_VIDEO_CAPS_BGR
+
+#ifdef HAVE_HW_DECODER_SUPPORT
+#define SINK_CAPS GST_VIDEO_CAPS_SURFACE ", opengl = true;" BASE_SINK_CAPS
+#else
+#define SINK_CAPS BASE_SINK_CAPS
+#endif
+
 static GstStaticPadTemplate sinktemplate_all
  = GST_STATIC_PAD_TEMPLATE ("sink",
                             GST_PAD_SINK,
                             GST_PAD_ALWAYS,
-                            GST_STATIC_CAPS (GST_VIDEO_CAPS_YUV("AYUV") ";" \
-                                             GST_VIDEO_CAPS_YUV("YV12") ";" \
-                                             GST_VIDEO_CAPS_YUV("I420") ";" \
-                                             GST_VIDEO_CAPS_RGBA        ";" \
-                                             GST_VIDEO_CAPS_BGRA        ";" \
-                                             GST_VIDEO_CAPS_RGB         ";" \
-                                             GST_VIDEO_CAPS_BGR));
+                            GST_STATIC_CAPS (SINK_CAPS));
 
 GST_DEBUG_CATEGORY_STATIC (clutter_gst_video_sink_debug);
 #define GST_CAT_DEFAULT clutter_gst_video_sink_debug
@@ -145,6 +162,7 @@ typedef enum
   CLUTTER_GST_AYUV,
   CLUTTER_GST_YV12,
   CLUTTER_GST_I420,
+  CLUTTER_GST_SURFACE
 } ClutterGstVideoFormat;
 
 /*
@@ -170,6 +188,8 @@ typedef struct _ClutterGstSource
   ClutterGstVideoSink *sink;
   GMutex              *buffer_lock;   /* mutex for the buffer */
   GstBuffer           *buffer;
+  gboolean             has_new_caps;
+  gboolean             stage_lost;
 } ClutterGstSource;
 
 /*
@@ -213,13 +233,17 @@ struct _ClutterGstVideoSinkPrivate
 
   GMainContext            *clutter_main_context;
   ClutterGstSource        *source;
+  int                      priority;
 
   GSList                  *renderers;
   GstCaps                 *caps;
   ClutterGstRenderer      *renderer;
-  ClutterGstRendererState  renderer_state;
 
   GArray                  *signal_handler_ids;
+
+#ifdef HAVE_HW_DECODER_SUPPORT
+  GstSurfaceConverter     *converter;
+#endif
 };
 
 #define GstNavigationClass GstNavigationInterface
@@ -243,6 +267,7 @@ static GSourceFuncs gst_source_funcs;
 static ClutterGstSource *
 clutter_gst_source_new (ClutterGstVideoSink *sink)
 {
+  ClutterGstVideoSinkPrivate *priv = sink->priv;
   GSource *source;
   ClutterGstSource *gst_source;
 
@@ -250,7 +275,7 @@ clutter_gst_source_new (ClutterGstVideoSink *sink)
   gst_source = (ClutterGstSource *) source;
 
   g_source_set_can_recurse (source, TRUE);
-  g_source_set_priority (source, CLUTTER_GST_DEFAULT_PRIORITY);
+  g_source_set_priority (source, priv->priority);
 
   gst_source->sink = sink;
   gst_source->buffer_lock = g_mutex_new ();
@@ -272,21 +297,6 @@ clutter_gst_source_finalize (GSource *source)
   g_mutex_free (gst_source->buffer_lock);
 }
 
-static void
-clutter_gst_source_push (ClutterGstSource *gst_source,
-                         GstBuffer        *buffer)
-{
-  ClutterGstVideoSinkPrivate *priv = gst_source->sink->priv;
-
-  g_mutex_lock (gst_source->buffer_lock);
-  if (gst_source->buffer)
-    gst_buffer_unref (gst_source->buffer);
-  gst_source->buffer = gst_buffer_ref (buffer);
-  g_mutex_unlock (gst_source->buffer_lock);
-
-  g_main_context_wakeup (priv->clutter_main_context);
-}
-
 static gboolean
 clutter_gst_source_prepare (GSource *source,
                             gint    *timeout)
@@ -306,6 +316,211 @@ clutter_gst_source_check (GSource *source)
   return gst_source->buffer != NULL;
 }
 
+static ClutterGstRenderer *
+clutter_gst_find_renderer_by_format (ClutterGstVideoSink  *sink,
+                                     ClutterGstVideoFormat format)
+{
+  ClutterGstVideoSinkPrivate *priv = sink->priv;
+  ClutterGstRenderer *renderer = NULL;
+  GSList *element;
+
+  for (element = priv->renderers; element; element = g_slist_next(element))
+    {
+      ClutterGstRenderer *candidate = (ClutterGstRenderer *)element->data;
+
+      if (candidate->format == format)
+        {
+          renderer = candidate;
+          break;
+        }
+    }
+
+  return renderer;
+}
+
+static void
+ensure_texture_pixel_aspect_ratio (ClutterGstVideoSink *sink)
+{
+  ClutterGstVideoSinkPrivate *priv = sink->priv;
+  GParamSpec *pspec;
+  GValue par = {0, };
+
+  if (priv->texture == NULL)
+    return;
+
+  pspec = g_object_class_find_property (G_OBJECT_GET_CLASS (priv->texture),
+                                        "pixel-aspect-ratio");
+  if (pspec)
+    {
+      g_value_init (&par, GST_TYPE_FRACTION);
+      gst_value_set_fraction (&par, priv->par_n, priv->par_d);
+      g_object_set_property (G_OBJECT(priv->texture),
+                             "pixel-aspect-ratio", &par);
+      g_value_unset (&par);
+    }
+}
+
+static gboolean
+clutter_gst_parse_caps (GstCaps             *caps,
+                        ClutterGstVideoSink *sink,
+                        gboolean             save)
+{
+  ClutterGstVideoSinkPrivate *priv = sink->priv;
+  GstCaps                    *intersection;
+  GstStructure               *structure;
+  gboolean                    ret;
+  const GValue               *fps;
+  const GValue               *par;
+  gint                        width, height;
+  guint32                     fourcc;
+  int                         red_mask, blue_mask;
+  ClutterGstVideoFormat       format;
+  gboolean                    bgr;
+  ClutterGstRenderer         *renderer;
+
+  intersection = gst_caps_intersect (priv->caps, caps);
+  if (gst_caps_is_empty (intersection))
+    return FALSE;
+
+  gst_caps_unref (intersection);
+
+  structure = gst_caps_get_structure (caps, 0);
+
+  ret  = gst_structure_get_int (structure, "width", &width);
+  ret &= gst_structure_get_int (structure, "height", &height);
+  fps  = gst_structure_get_value (structure, "framerate");
+  ret &= (fps != NULL);
+
+  par  = gst_structure_get_value (structure, "pixel-aspect-ratio");
+
+  if (!ret)
+    return FALSE;
+
+  ret = gst_structure_get_fourcc (structure, "format", &fourcc);
+  if (ret && (fourcc == GST_MAKE_FOURCC ('Y', 'V', '1', '2')))
+    {
+      format = CLUTTER_GST_YV12;
+    }
+  else if (ret && (fourcc == GST_MAKE_FOURCC ('I', '4', '2', '0')))
+    {
+      format = CLUTTER_GST_I420;
+    }
+  else if (ret && (fourcc == GST_MAKE_FOURCC ('A', 'Y', 'U', 'V')))
+    {
+      format = CLUTTER_GST_AYUV;
+      bgr = FALSE;
+    }
+#ifdef HAVE_HW_DECODER_SUPPORT
+  else if (gst_structure_has_name (structure, GST_VIDEO_CAPS_SURFACE))
+    {
+      format = CLUTTER_GST_SURFACE;
+    }
+#endif
+  else
+    {
+      guint32 mask;
+      gst_structure_get_int (structure, "red_mask", &red_mask);
+      gst_structure_get_int (structure, "blue_mask", &blue_mask);
+
+      mask = red_mask | blue_mask;
+      if (mask < 0x1000000)
+        {
+          format = CLUTTER_GST_RGB24;
+          bgr = ((guint) red_mask == 0xff0000) ? FALSE : TRUE;
+        }
+      else
+        {
+          format = CLUTTER_GST_RGB32;
+          bgr = ((guint) red_mask == 0xff000000) ? FALSE : TRUE;
+        }
+    }
+
+  /* find a renderer that can display our format */
+  renderer = clutter_gst_find_renderer_by_format (sink, format);
+  if (G_UNLIKELY (renderer == NULL))
+    {
+      GST_ERROR_OBJECT (sink, "could not find a suitable renderer");
+      return FALSE;
+    }
+
+  if (save)
+    {
+      priv->width  = width;
+      priv->height = height;
+
+      /* We dont yet use fps or pixel aspect into but handy to have */
+      priv->fps_n  = gst_value_get_fraction_numerator (fps);
+      priv->fps_d  = gst_value_get_fraction_denominator (fps);
+
+      if (par)
+        {
+          priv->par_n = gst_value_get_fraction_numerator (par);
+          priv->par_d = gst_value_get_fraction_denominator (par);
+
+          /* If we happen to use a ClutterGstVideoTexture, now is to good time
+           * to instruct it about the pixel aspect ratio so we can have a
+           * correct natural width/height */
+          ensure_texture_pixel_aspect_ratio (sink);
+        }
+      else
+        priv->par_n = priv->par_d = 1;
+
+      priv->format = format;
+      priv->bgr = bgr;
+
+      priv->renderer = renderer;
+      GST_INFO_OBJECT (sink, "using the %s renderer", priv->renderer->name);
+    }
+
+  return TRUE;
+}
+
+static gboolean
+on_stage_destroyed (ClutterStage *stage,
+                    ClutterEvent *event,
+                    gpointer      user_data)
+{
+  ClutterGstSource *gst_source = user_data;
+  ClutterGstVideoSinkPrivate *priv = gst_source->sink->priv;
+
+  g_mutex_lock (gst_source->buffer_lock);
+
+  clutter_actor_hide (CLUTTER_ACTOR (stage));
+  clutter_container_remove_actor (CLUTTER_CONTAINER (stage),
+      CLUTTER_ACTOR (priv->texture));
+
+  if (gst_source->buffer)
+    gst_buffer_unref (gst_source->buffer);
+
+  gst_source->stage_lost = TRUE;
+  gst_source->buffer = NULL;
+  priv->texture = NULL;
+
+  g_mutex_unlock (gst_source->buffer_lock);
+
+  return TRUE;
+}
+
+static void
+on_stage_allocation_changed (ClutterStage          *stage,
+                             ClutterActorBox       *box,
+                             ClutterAllocationFlags flags,
+                             gpointer               user_data)
+{
+  ClutterGstSource *gst_source = user_data;
+  ClutterGstVideoSinkPrivate *priv = gst_source->sink->priv;
+  gint width, height;
+
+  if (gst_source->stage_lost)
+    return;
+
+  width = (gint) (box->x2 - box->x1);
+  height = (gint) (box->y2 - box->y1);
+
+  GST_DEBUG ("Size changed to %i/%i", width, height);
+  clutter_actor_set_size (CLUTTER_ACTOR (priv->texture), width, height);
+}
+
 static gboolean
 clutter_gst_source_dispatch (GSource     *source,
                              GSourceFunc  callback,
@@ -315,22 +530,53 @@ clutter_gst_source_dispatch (GSource     *source,
   ClutterGstVideoSinkPrivate *priv = gst_source->sink->priv;
   GstBuffer *buffer;
 
-  /* The initialization / free functions of the renderers have to be called in
-   * the clutter thread (OpenGL context) */
-  if (G_UNLIKELY (priv->renderer_state == CLUTTER_GST_RENDERER_NEED_GC))
+  g_mutex_lock (gst_source->buffer_lock);
+
+  if (G_UNLIKELY (gst_source->has_new_caps))
     {
-      priv->renderer->deinit (gst_source->sink);
-      priv->renderer_state = CLUTTER_GST_RENDERER_STOPPED;
-    }
-  if (G_UNLIKELY (priv->renderer_state == CLUTTER_GST_RENDERER_STOPPED))
-    {
+      GstCaps *caps = GST_BUFFER_CAPS (gst_source->buffer);
+
+      if (priv->renderer)
+        priv->renderer->deinit (gst_source->sink);
+
+      clutter_gst_parse_caps (caps, gst_source->sink, TRUE);
+      gst_source->has_new_caps = FALSE;
+
+      if (!priv->texture)
+        {
+          ClutterActor *stage = clutter_stage_get_default ();
+          ClutterActor *actor = g_object_new (CLUTTER_TYPE_TEXTURE,
+                                              "disable-slicing", TRUE,
+                                              NULL);
+
+          priv->texture = CLUTTER_TEXTURE (actor);
+          clutter_stage_set_user_resizable (CLUTTER_STAGE (stage), TRUE);
+          clutter_container_add_actor (CLUTTER_CONTAINER (stage), actor);
+          clutter_stage_set_no_clear_hint (CLUTTER_STAGE (stage), TRUE);
+
+          g_signal_connect (stage, "delete-event",
+                            G_CALLBACK (on_stage_destroyed), gst_source);
+          g_signal_connect (stage, "allocation-changed",
+                            G_CALLBACK (on_stage_allocation_changed), gst_source);
+
+          clutter_gst_parse_caps (caps, gst_source->sink, TRUE);
+          clutter_actor_set_size (stage, priv->width, priv->height);
+          clutter_actor_show (stage);
+        }
+      else
+        {
+          clutter_gst_parse_caps (caps, gst_source->sink, TRUE);
+        }
+
       priv->renderer->init (gst_source->sink);
-      priv->renderer_state = CLUTTER_GST_RENDERER_RUNNING;
+      gst_source->has_new_caps = FALSE;
+
+      ensure_texture_pixel_aspect_ratio (gst_source->sink);
     }
 
-  g_mutex_lock (gst_source->buffer_lock);
   buffer = gst_source->buffer;
   gst_source->buffer = NULL;
+
   g_mutex_unlock (gst_source->buffer_lock);
 
   if (buffer)
@@ -356,8 +602,9 @@ clutter_gst_video_sink_set_priority (ClutterGstVideoSink *sink,
   ClutterGstVideoSinkPrivate *priv = sink->priv;
 
   GST_INFO ("GSource priority: %d", priority);
-
-  g_source_set_priority ((GSource *) priv->source, priority);
+  priv->priority = priority;
+  if (priv->source)
+    g_source_set_priority ((GSource *) priv->source, priority);
 }
 
 /*
@@ -802,6 +1049,86 @@ static ClutterGstRenderer ayuv_glsl_renderer =
   clutter_gst_ayuv_upload,
 };
 
+/*
+ * HW Surfaces
+ */
+
+#ifdef HAVE_HW_DECODER_SUPPORT
+static void
+clutter_gst_hw_init (ClutterGstVideoSink *sink)
+{
+  ClutterGstVideoSinkPrivate *priv = sink->priv;
+  CoglHandle tex;
+  CoglHandle material;
+
+  /* Default texture is 1x1, let's replace it with one big enough. */
+  tex = cogl_texture_new_with_size (priv->width, priv->height,
+                                    CLUTTER_GST_TEXTURE_FLAGS,
+                                    COGL_PIXEL_FORMAT_BGRA_8888);
+
+  material = cogl_material_new ();
+  cogl_material_set_layer (material, 0, tex);
+  clutter_texture_set_cogl_material (priv->texture, material);
+
+  cogl_object_unref (tex);
+  cogl_object_unref (material);
+}
+
+static void
+clutter_gst_hw_deinit (ClutterGstVideoSink *sink)
+{
+  ClutterGstVideoSinkPrivate *priv = sink->priv;
+
+  if (priv->converter != NULL)
+    g_object_unref (priv->converter);
+  priv->converter = NULL;
+}
+
+static void
+clutter_gst_hw_upload (ClutterGstVideoSink *sink,
+                       GstBuffer           *buffer)
+{
+  ClutterGstVideoSinkPrivate *priv = sink->priv;
+  GstSurfaceBuffer *surface;
+
+  g_return_if_fail (GST_IS_SURFACE_BUFFER (buffer));
+  surface = GST_SURFACE_BUFFER (buffer);
+
+  if (G_UNLIKELY (priv->converter == NULL)) {
+    CoglHandle tex;
+    GLuint gl_texture;
+    GLenum gl_target;
+    GValue value = {0};
+
+    tex = clutter_texture_get_cogl_texture (priv->texture);
+    cogl_texture_get_gl_texture (tex, &gl_texture, &gl_target);
+    g_return_if_fail (gl_target == GL_TEXTURE_2D);
+
+    g_value_init (&value, G_TYPE_UINT);
+    g_value_set_uint (&value, gl_texture);
+
+    priv->converter = gst_surface_buffer_create_converter (surface, "opengl", &value);
+    g_return_if_fail (priv->converter);
+  }
+
+  gst_surface_converter_upload (priv->converter, surface);
+
+  /* The texture is dirty, schedule a redraw */
+  clutter_actor_queue_redraw (CLUTTER_ACTOR (priv->texture));
+}
+
+static ClutterGstRenderer hw_renderer =
+{
+  "HW surface",
+  CLUTTER_GST_SURFACE,
+  0,
+  GST_STATIC_CAPS (GST_VIDEO_CAPS_SURFACE ", opengl=true"),
+  clutter_gst_hw_init,
+  clutter_gst_hw_deinit,
+  clutter_gst_hw_upload,
+};
+#endif
+
 static GSList *
 clutter_gst_build_renderers_list (void)
 {
@@ -823,6 +1150,9 @@ clutter_gst_build_renderers_list (void)
       &i420_fp_renderer,
 #endif
       &ayuv_glsl_renderer,
+#ifdef HAVE_HW_DECODER_SUPPORT
+      &hw_renderer,
+#endif
       NULL
     };
 
@@ -874,28 +1204,6 @@ clutter_gst_build_caps (GSList *renderers)
   g_slist_foreach (renderers, append_cap, caps);
 
   return caps;
-}
-
-static ClutterGstRenderer *
-clutter_gst_find_renderer_by_format (ClutterGstVideoSink  *sink,
-                                     ClutterGstVideoFormat format)
-{
-  ClutterGstVideoSinkPrivate *priv = sink->priv;
-  ClutterGstRenderer *renderer = NULL;
-  GSList *element;
-
-  for (element = priv->renderers; element; element = g_slist_next(element))
-    {
-      ClutterGstRenderer *candidate = (ClutterGstRenderer *)element->data;
-
-      if (candidate->format == format)
-        {
-          renderer = candidate;
-          break;
-        }
-    }
-
-  return renderer;
 }
 
 static void
@@ -990,9 +1298,9 @@ clutter_gst_video_sink_init (ClutterGstVideoSink      *sink,
 
   priv->renderers = clutter_gst_build_renderers_list ();
   priv->caps = clutter_gst_build_caps (priv->renderers);
-  priv->renderer_state = CLUTTER_GST_RENDERER_STOPPED;
 
   priv->signal_handler_ids = g_array_new (FALSE, TRUE, sizeof (gulong));
+  priv->priority = CLUTTER_GST_DEFAULT_PRIORITY;
 }
 
 static GstFlowReturn
@@ -1000,8 +1308,28 @@ clutter_gst_video_sink_render (GstBaseSink *bsink,
                                GstBuffer   *buffer)
 {
   ClutterGstVideoSink *sink = CLUTTER_GST_VIDEO_SINK (bsink);
+  ClutterGstVideoSinkPrivate *priv = sink->priv;
+  ClutterGstSource *gst_source = priv->source;
 
-  clutter_gst_source_push (sink->priv->source, buffer);
+
+  g_mutex_lock (gst_source->buffer_lock);
+
+  if (gst_source->stage_lost)
+    {
+      GST_ELEMENT_ERROR (bsink, RESOURCE, CLOSE,
+          ("The window has been closed."),
+          ("The window has been closed."));
+      g_mutex_unlock (gst_source->buffer_lock);
+      return GST_FLOW_ERROR;
+    }
+
+  if (gst_source->buffer)
+    gst_buffer_unref (gst_source->buffer);
+  gst_source->buffer = gst_buffer_ref (buffer);
+
+  g_mutex_unlock (gst_source->buffer_lock);
+
+  g_main_context_wakeup (priv->clutter_main_context);
 
   return GST_FLOW_OK;
 }
@@ -1021,104 +1349,16 @@ clutter_gst_video_sink_set_caps (GstBaseSink *bsink,
 {
   ClutterGstVideoSink        *sink;
   ClutterGstVideoSinkPrivate *priv;
-  GstCaps                    *intersection;
-  GstStructure               *structure;
-  gboolean                    ret;
-  const GValue               *fps;
-  const GValue               *par;
-  gint                        width, height;
-  guint32                     fourcc;
-  int                         red_mask, blue_mask;
 
   sink = CLUTTER_GST_VIDEO_SINK(bsink);
   priv = sink->priv;
 
-  intersection = gst_caps_intersect (priv->caps, caps);
-  if (gst_caps_is_empty (intersection))
+  if (!clutter_gst_parse_caps (caps, sink, FALSE))
     return FALSE;
 
-  gst_caps_unref (intersection);
-
-  structure = gst_caps_get_structure (caps, 0);
-
-  ret  = gst_structure_get_int (structure, "width", &width);
-  ret &= gst_structure_get_int (structure, "height", &height);
-  fps  = gst_structure_get_value (structure, "framerate");
-  ret &= (fps != NULL);
-
-  par  = gst_structure_get_value (structure, "pixel-aspect-ratio");
-
-  if (!ret)
-    return FALSE;
-
-  priv->width  = width;
-  priv->height = height;
-
-  /* We dont yet use fps or pixel aspect into but handy to have */
-  priv->fps_n  = gst_value_get_fraction_numerator (fps);
-  priv->fps_d  = gst_value_get_fraction_denominator (fps);
-
-  if (par)
-    {
-      priv->par_n = gst_value_get_fraction_numerator (par);
-      priv->par_d = gst_value_get_fraction_denominator (par);
-    }
-  else
-    priv->par_n = priv->par_d = 1;
-
-  /* If we happen to use a ClutterGstVideoTexture, now is to good time to
-   * instruct it about the pixel aspect ratio so we can have a correct
-   * natural width/height */
-  if (CLUTTER_GST_IS_VIDEO_TEXTURE (priv->texture))
-    {
-      ClutterGstVideoTexture *texture =
-        (ClutterGstVideoTexture *) priv->texture;
-
-      _clutter_gst_video_texture_set_par (texture, priv->par_n, priv->par_d);
-    }
-
-  ret = gst_structure_get_fourcc (structure, "format", &fourcc);
-  if (ret && (fourcc == GST_MAKE_FOURCC ('Y', 'V', '1', '2')))
-    {
-      priv->format = CLUTTER_GST_YV12;
-    }
-  else if (ret && (fourcc == GST_MAKE_FOURCC ('I', '4', '2', '0')))
-    {
-      priv->format = CLUTTER_GST_I420;
-    }
-  else if (ret && (fourcc == GST_MAKE_FOURCC ('A', 'Y', 'U', 'V')))
-    {
-      priv->format = CLUTTER_GST_AYUV;
-      priv->bgr = FALSE;
-    }
-  else
-    {
-      guint32 mask;
-      gst_structure_get_int (structure, "red_mask", &red_mask);
-      gst_structure_get_int (structure, "blue_mask", &blue_mask);
-
-      mask = red_mask | blue_mask;
-      if (mask < 0x1000000)
-        {
-          priv->format = CLUTTER_GST_RGB24;
-          priv->bgr = (red_mask == 0xff0000) ? FALSE : TRUE;
-        }
-      else
-        {
-          priv->format = CLUTTER_GST_RGB32;
-          priv->bgr = (red_mask == 0xff000000) ? FALSE : TRUE;
-        }
-    }
-
-  /* find a renderer that can display our format */
-  priv->renderer = clutter_gst_find_renderer_by_format (sink, priv->format);
-  if (G_UNLIKELY (priv->renderer == NULL))
-    {
-      GST_ERROR_OBJECT (sink, "could not find a suitable renderer");
-      return FALSE;
-    }
-
-  GST_INFO_OBJECT (sink, "using the %s renderer", priv->renderer->name);
+  g_mutex_lock (priv->source->buffer_lock);
+  priv->source->has_new_caps = TRUE;
+  g_mutex_unlock (priv->source->buffer_lock);
 
   return TRUE;
 }
@@ -1132,11 +1372,10 @@ clutter_gst_video_sink_dispose (GObject *object)
   self = CLUTTER_GST_VIDEO_SINK (object);
   priv = self->priv;
 
-  if (priv->renderer_state == CLUTTER_GST_RENDERER_RUNNING ||
-      priv->renderer_state == CLUTTER_GST_RENDERER_NEED_GC)
+  if (priv->renderer)
     {
       priv->renderer->deinit (self);
-      priv->renderer_state = CLUTTER_GST_RENDERER_STOPPED;
+      priv->renderer = NULL;
     }
 
   if (priv->texture)
@@ -1244,7 +1483,7 @@ clutter_gst_video_sink_get_property (GObject *object,
       g_value_set_object (value, priv->texture);
       break;
     case PROP_UPDATE_PRIORITY:
-      g_value_set_int (value, g_source_get_priority ((GSource *) priv->source));
+      g_value_set_int (value, priv->priority);
       break;
     default:
       G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -1279,8 +1518,6 @@ clutter_gst_video_sink_stop (GstBaseSink *base_sink)
       priv->source = NULL;
     }
 
-  priv->renderer_state = CLUTTER_GST_RENDERER_STOPPED;
-
   return TRUE;
 }
 
@@ -1290,6 +1527,11 @@ clutter_gst_video_sink_class_init (ClutterGstVideoSinkClass *klass)
   GObjectClass *gobject_class = G_OBJECT_CLASS (klass);
   GstBaseSinkClass *gstbase_sink_class = GST_BASE_SINK_CLASS (klass);
   GParamSpec *pspec;
+
+  GST_DEBUG_CATEGORY_INIT (clutter_gst_video_sink_debug,
+			   "cluttersink",
+			   0,
+			   "clutter video sink");
 
   g_type_class_add_private (klass, sizeof (ClutterGstVideoSinkPrivate));
 
@@ -1337,27 +1579,6 @@ clutter_gst_video_sink_class_init (ClutterGstVideoSinkClass *klass)
                             CLUTTER_GST_DEFAULT_PRIORITY,
                             CLUTTER_GST_PARAM_READWRITE);
   g_object_class_install_property (gobject_class, PROP_UPDATE_PRIORITY, pspec);
-}
-
-/**
- * clutter_gst_video_sink_new:
- * @texture: a #ClutterTexture
- *
- * Creates a new GStreamer video sink which uses @texture as the target
- * for sinking a video stream from GStreamer.
- *
- * <note>This function has to be called from Clutter's main thread. While
- * GStreamer will spawn threads to do its work, we want all the GL calls to
- * happen in the same thread. Clutter-gst knows which thread it is by
- * assuming this constructor is called from the Clutter thread.</note>
- * Return value: a #GstElement for the newly created video sink
- */
-GstElement *
-clutter_gst_video_sink_new (ClutterTexture *texture)
-{
-  return g_object_new (CLUTTER_GST_TYPE_VIDEO_SINK,
-                       "texture", texture,
-                       NULL);
 }
 
 static void
@@ -1416,29 +1637,3 @@ clutter_gst_navigation_interface_init (GstNavigationInterface *iface)
 {
   iface->send_event = clutter_gst_navigation_send_event;
 }
-
-static gboolean
-plugin_init (GstPlugin *plugin)
-{
-  gboolean ret = gst_element_register (plugin,
-                                             "cluttersink",
-                                       GST_RANK_PRIMARY,
-                                       CLUTTER_GST_TYPE_VIDEO_SINK);
-
-  GST_DEBUG_CATEGORY_INIT (clutter_gst_video_sink_debug,
-                                 "cluttersink",
-                                 0,
-                                 "clutter video sink");
-
-  return ret;
-}
-
-GST_PLUGIN_DEFINE_STATIC (GST_VERSION_MAJOR,
-                          GST_VERSION_MINOR,
-                          "cluttersink",
-                          "Element to render to Clutter textures",
-                          plugin_init,
-                          VERSION,
-                          "LGPL", /* license */
-                          PACKAGE,
-                          "http://www.clutter-project.org");

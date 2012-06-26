@@ -4,7 +4,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>ClutterGstVideoTexture</title>
 <meta name="generator" content="DocBook XSL Stylesheets V1.76.1">
-<link rel="home" href="index.html" title="Clutter Gst 1.4.6 Reference Manual">
+<link rel="home" href="index.html" title="Clutter Gst 1.6.0 Reference Manual">
 <link rel="up" href="ch02.html" title="Clutter Actors And Objects">
 <link rel="prev" href="ClutterGstPlayer.html" title="ClutterGstPlayer">
 <link rel="next" href="ClutterGstVideoSink.html" title="ClutterGstVideoSink">
@@ -17,7 +17,7 @@
 <td><a accesskey="p" href="ClutterGstPlayer.html"><img src="left.png" width="24" height="24" border="0" alt="Prev"></a></td>
 <td><a accesskey="u" href="ch02.html"><img src="up.png" width="24" height="24" border="0" alt="Up"></a></td>
 <td><a accesskey="h" href="index.html"><img src="home.png" width="24" height="24" border="0" alt="Home"></a></td>
-<th width="100%" align="center">Clutter Gst 1.4.6
+<th width="100%" align="center">Clutter Gst 1.6.0
  Reference Manual</th>
 <td><a accesskey="n" href="ClutterGstVideoSink.html"><img src="right.png" width="24" height="24" border="0" alt="Next"></a></td>
 </tr>
@@ -46,19 +46,19 @@
 <a name="ClutterGstVideoTexture.synopsis"></a><h2>Synopsis</h2>
 <pre class="synopsis">struct              <a class="link" href="ClutterGstVideoTexture.html#ClutterGstVideoTexture-struct" title="struct ClutterGstVideoTexture">ClutterGstVideoTexture</a>;
 struct              <a class="link" href="ClutterGstVideoTexture.html#ClutterGstVideoTextureClass" title="struct ClutterGstVideoTextureClass">ClutterGstVideoTextureClass</a>;
-<a href="/usr/share/gtk-doc/html/clutter/ClutterActor.html"><span class="returnvalue">ClutterActor</span></a> *      <a class="link" href="ClutterGstVideoTexture.html#clutter-gst-video-texture-new" title="clutter_gst_video_texture_new ()">clutter_gst_video_texture_new</a>       (<em class="parameter"><code><span class="type">void</span></code></em>);
-<a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstElement.html"><span class="returnvalue">GstElement</span></a> *        <a class="link" href="ClutterGstVideoTexture.html#clutter-gst-video-texture-get-pipeline" title="clutter_gst_video_texture_get_pipeline ()">clutter_gst_video_texture_get_pipeline</a>
+<span class="returnvalue">ClutterActor</span> *      <a class="link" href="ClutterGstVideoTexture.html#clutter-gst-video-texture-new" title="clutter_gst_video_texture_new ()">clutter_gst_video_texture_new</a>       (<em class="parameter"><code><span class="type">void</span></code></em>);
+<span class="returnvalue">GstElement</span> *        <a class="link" href="ClutterGstVideoTexture.html#clutter-gst-video-texture-get-pipeline" title="clutter_gst_video_texture_get_pipeline ()">clutter_gst_video_texture_get_pipeline</a>
                                                         (<em class="parameter"><code><a class="link" href="ClutterGstVideoTexture.html" title="ClutterGstVideoTexture"><span class="type">ClutterGstVideoTexture</span></a> *texture</code></em>);
-<span class="returnvalue">CoglHandle</span>          <a class="link" href="ClutterGstVideoTexture.html#clutter-gst-video-texture-get-idle-material" title="clutter_gst_video_texture_get_idle_material ()">clutter_gst_video_texture_get_idle_material</a>
+<a href="/home/damien/mex/install/share/gtk-doc/html/cogl/cogl-General-API.html#CoglHandle"><span class="returnvalue">CoglHandle</span></a>          <a class="link" href="ClutterGstVideoTexture.html#clutter-gst-video-texture-get-idle-material" title="clutter_gst_video_texture_get_idle_material ()">clutter_gst_video_texture_get_idle_material</a>
                                                         (<em class="parameter"><code><a class="link" href="ClutterGstVideoTexture.html" title="ClutterGstVideoTexture"><span class="type">ClutterGstVideoTexture</span></a> *texture</code></em>);
 <span class="returnvalue">void</span>                <a class="link" href="ClutterGstVideoTexture.html#clutter-gst-video-texture-set-idle-material" title="clutter_gst_video_texture_set_idle_material ()">clutter_gst_video_texture_set_idle_material</a>
                                                         (<em class="parameter"><code><a class="link" href="ClutterGstVideoTexture.html" title="ClutterGstVideoTexture"><span class="type">ClutterGstVideoTexture</span></a> *texture</code></em>,
-                                                         <em class="parameter"><code><span class="type">CoglHandle</span> material</code></em>);
-<a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *             <a class="link" href="ClutterGstVideoTexture.html#clutter-gst-video-texture-get-user-agent" title="clutter_gst_video_texture_get_user_agent ()">clutter_gst_video_texture_get_user_agent</a>
+                                                         <em class="parameter"><code><a href="/home/damien/mex/install/share/gtk-doc/html/cogl/cogl-General-API.html#CoglHandle"><span class="type">CoglHandle</span></a> material</code></em>);
+<span class="returnvalue">gchar</span> *             <a class="link" href="ClutterGstVideoTexture.html#clutter-gst-video-texture-get-user-agent" title="clutter_gst_video_texture_get_user_agent ()">clutter_gst_video_texture_get_user_agent</a>
                                                         (<em class="parameter"><code><a class="link" href="ClutterGstVideoTexture.html" title="ClutterGstVideoTexture"><span class="type">ClutterGstVideoTexture</span></a> *texture</code></em>);
 <span class="returnvalue">void</span>                <a class="link" href="ClutterGstVideoTexture.html#clutter-gst-video-texture-set-user-agent" title="clutter_gst_video_texture_set_user_agent ()">clutter_gst_video_texture_set_user_agent</a>
                                                         (<em class="parameter"><code><a class="link" href="ClutterGstVideoTexture.html" title="ClutterGstVideoTexture"><span class="type">ClutterGstVideoTexture</span></a> *texture</code></em>,
-                                                         <em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *user_agent</code></em>);
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *user_agent</code></em>);
 <span class="returnvalue">void</span>                <a class="link" href="ClutterGstVideoTexture.html#clutter-gst-video-texture-set-seek-flags" title="clutter_gst_video_texture_set_seek_flags ()">clutter_gst_video_texture_set_seek_flags</a>
                                                         (<em class="parameter"><code><a class="link" href="ClutterGstVideoTexture.html" title="ClutterGstVideoTexture"><span class="type">ClutterGstVideoTexture</span></a> *texture</code></em>,
                                                          <em class="parameter"><code><span class="type">ClutterGstSeekFlags</span> flags</code></em>);
@@ -69,29 +69,29 @@ struct              <a class="link" href="ClutterGstVideoTexture.html#ClutterGst
 <span class="returnvalue">void</span>                <a class="link" href="ClutterGstVideoTexture.html#clutter-gst-video-texture-set-buffering-mode" title="clutter_gst_video_texture_set_buffering_mode ()">clutter_gst_video_texture_set_buffering_mode</a>
                                                         (<em class="parameter"><code><a class="link" href="ClutterGstVideoTexture.html" title="ClutterGstVideoTexture"><span class="type">ClutterGstVideoTexture</span></a> *texture</code></em>,
                                                          <em class="parameter"><code><span class="type">ClutterGstBufferingMode</span> mode</code></em>);
-<a href="http://library.gnome.org/devel/glib/unstable/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *             <a class="link" href="ClutterGstVideoTexture.html#clutter-gst-video-texture-get-audio-streams" title="clutter_gst_video_texture_get_audio_streams ()">clutter_gst_video_texture_get_audio_streams</a>
+<span class="returnvalue">GList</span> *             <a class="link" href="ClutterGstVideoTexture.html#clutter-gst-video-texture-get-audio-streams" title="clutter_gst_video_texture_get_audio_streams ()">clutter_gst_video_texture_get_audio_streams</a>
                                                         (<em class="parameter"><code><a class="link" href="ClutterGstVideoTexture.html" title="ClutterGstVideoTexture"><span class="type">ClutterGstVideoTexture</span></a> *texture</code></em>);
-<a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="returnvalue">gint</span></a>                <a class="link" href="ClutterGstVideoTexture.html#clutter-gst-video-texture-get-audio-stream" title="clutter_gst_video_texture_get_audio_stream ()">clutter_gst_video_texture_get_audio_stream</a>
+<span class="returnvalue">gint</span>                <a class="link" href="ClutterGstVideoTexture.html#clutter-gst-video-texture-get-audio-stream" title="clutter_gst_video_texture_get_audio_stream ()">clutter_gst_video_texture_get_audio_stream</a>
                                                         (<em class="parameter"><code><a class="link" href="ClutterGstVideoTexture.html" title="ClutterGstVideoTexture"><span class="type">ClutterGstVideoTexture</span></a> *texture</code></em>);
 <span class="returnvalue">void</span>                <a class="link" href="ClutterGstVideoTexture.html#clutter-gst-video-texture-set-audio-stream" title="clutter_gst_video_texture_set_audio_stream ()">clutter_gst_video_texture_set_audio_stream</a>
                                                         (<em class="parameter"><code><a class="link" href="ClutterGstVideoTexture.html" title="ClutterGstVideoTexture"><span class="type">ClutterGstVideoTexture</span></a> *texture</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a> index_</code></em>);
-<a href="http://library.gnome.org/devel/glib/unstable/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *             <a class="link" href="ClutterGstVideoTexture.html#clutter-gst-video-texture-get-subtitle-tracks" title="clutter_gst_video_texture_get_subtitle_tracks ()">clutter_gst_video_texture_get_subtitle_tracks</a>
+                                                         <em class="parameter"><code><span class="type">gint</span> index_</code></em>);
+<span class="returnvalue">GList</span> *             <a class="link" href="ClutterGstVideoTexture.html#clutter-gst-video-texture-get-subtitle-tracks" title="clutter_gst_video_texture_get_subtitle_tracks ()">clutter_gst_video_texture_get_subtitle_tracks</a>
                                                         (<em class="parameter"><code><a class="link" href="ClutterGstVideoTexture.html" title="ClutterGstVideoTexture"><span class="type">ClutterGstVideoTexture</span></a> *texture</code></em>);
-<a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="returnvalue">gint</span></a>                <a class="link" href="ClutterGstVideoTexture.html#clutter-gst-video-texture-get-subtitle-track" title="clutter_gst_video_texture_get_subtitle_track ()">clutter_gst_video_texture_get_subtitle_track</a>
+<span class="returnvalue">gint</span>                <a class="link" href="ClutterGstVideoTexture.html#clutter-gst-video-texture-get-subtitle-track" title="clutter_gst_video_texture_get_subtitle_track ()">clutter_gst_video_texture_get_subtitle_track</a>
                                                         (<em class="parameter"><code><a class="link" href="ClutterGstVideoTexture.html" title="ClutterGstVideoTexture"><span class="type">ClutterGstVideoTexture</span></a> *texture</code></em>);
 <span class="returnvalue">void</span>                <a class="link" href="ClutterGstVideoTexture.html#clutter-gst-video-texture-set-subtitle-track" title="clutter_gst_video_texture_set_subtitle_track ()">clutter_gst_video_texture_set_subtitle_track</a>
                                                         (<em class="parameter"><code><a class="link" href="ClutterGstVideoTexture.html" title="ClutterGstVideoTexture"><span class="type">ClutterGstVideoTexture</span></a> *texture</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a> index_</code></em>);
+                                                         <em class="parameter"><code><span class="type">gint</span> index_</code></em>);
 </pre>
 </div>
 <div class="refsect1">
 <a name="ClutterGstVideoTexture.object-hierarchy"></a><h2>Object Hierarchy</h2>
 <pre class="synopsis">
-  <a href="http://library.gnome.org/devel/gobject/unstable/gobject-The-Base-Object-Type.html#GObject">GObject</a>
-   +----<a href="http://library.gnome.org/devel/gobject/unstable/gobject-The-Base-Object-Type.html#GInitiallyUnowned">GInitiallyUnowned</a>
-         +----<a href="/usr/share/gtk-doc/html/clutter/ClutterActor.html">ClutterActor</a>
-               +----<a href="/usr/share/gtk-doc/html/clutter/ClutterTexture.html">ClutterTexture</a>
+  GObject
+   +----GInitiallyUnowned
+         +----ClutterActor
+               +----ClutterTexture
                      +----ClutterGstVideoTexture
 </pre>
 </div>
@@ -99,18 +99,19 @@ struct              <a class="link" href="ClutterGstVideoTexture.html#ClutterGst
 <a name="ClutterGstVideoTexture.implemented-interfaces"></a><h2>Implemented Interfaces</h2>
 <p>
 ClutterGstVideoTexture implements
- <a href="/usr/share/gtk-doc/html/clutter/ClutterScriptable.html">ClutterScriptable</a>,  <a href="/usr/share/gtk-doc/html/clutter/ClutterAnimatable.html">ClutterAnimatable</a>,  AtkImplementorIface,  <a href="/usr/share/gtk-doc/html/clutter/ClutterMedia.html">ClutterMedia</a> and  <a class="link" href="ClutterGstPlayer.html" title="ClutterGstPlayer">ClutterGstPlayer</a>.</p>
+ ClutterContainer,  ClutterScriptable,  ClutterAnimatable,  AtkImplementorIface,  ClutterMedia and  <a class="link" href="ClutterGstPlayer.html" title="ClutterGstPlayer">ClutterGstPlayer</a>.</p>
 </div>
 <div class="refsect1">
 <a name="ClutterGstVideoTexture.properties"></a><h2>Properties</h2>
 <pre class="synopsis">
-  "<a class="link" href="ClutterGstVideoTexture.html#ClutterGstVideoTexture--idle-material" title='The "idle-material" property'>idle-material</a>"            <span class="type">CoglHandle</span>*           : Read / Write
+  "<a class="link" href="ClutterGstVideoTexture.html#ClutterGstVideoTexture--idle-material" title='The "idle-material" property'>idle-material</a>"            <a href="/home/damien/mex/install/share/gtk-doc/html/cogl/cogl-General-API.html#CoglHandle"><span class="type">CoglHandle</span></a>*           : Read / Write
+  "<a class="link" href="ClutterGstVideoTexture.html#ClutterGstVideoTexture--pixel-aspect-ratio" title='The "pixel-aspect-ratio" property'>pixel-aspect-ratio</a>"       <span class="type">GstFraction</span>           : Read / Write
 </pre>
 </div>
 <div class="refsect1">
 <a name="ClutterGstVideoTexture.description"></a><h2>Description</h2>
 <p>
-<a class="link" href="ClutterGstVideoTexture.html" title="ClutterGstVideoTexture"><span class="type">ClutterGstVideoTexture</span></a> is a <a href="/usr/share/gtk-doc/html/clutter/ClutterTexture.html"><span class="type">ClutterTexture</span></a> that plays video files.
+<a class="link" href="ClutterGstVideoTexture.html" title="ClutterGstVideoTexture"><span class="type">ClutterGstVideoTexture</span></a> is a <span class="type">ClutterTexture</span> that plays video files.
 </p>
 </div>
 <div class="refsect1">
@@ -119,7 +120,7 @@ ClutterGstVideoTexture implements
 <a name="ClutterGstVideoTexture-struct"></a><h3>struct ClutterGstVideoTexture</h3>
 <pre class="programlisting">struct ClutterGstVideoTexture;</pre>
 <p>
-Subclass of <a href="/usr/share/gtk-doc/html/clutter/ClutterTexture.html"><span class="type">ClutterTexture</span></a> that displays videos using GStreamer.
+Subclass of <span class="type">ClutterTexture</span> that displays videos using GStreamer.
 </p>
 <p>
 The <a class="link" href="ClutterGstVideoTexture.html" title="ClutterGstVideoTexture"><span class="type">ClutterGstVideoTexture</span></a> structure contains only private data and
@@ -139,7 +140,7 @@ Base class for <a class="link" href="ClutterGstVideoTexture.html" title="Clutter
 <hr>
 <div class="refsect2">
 <a name="clutter-gst-video-texture-new"></a><h3>clutter_gst_video_texture_new ()</h3>
-<pre class="programlisting"><a href="/usr/share/gtk-doc/html/clutter/ClutterActor.html"><span class="returnvalue">ClutterActor</span></a> *      clutter_gst_video_texture_new       (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
+<pre class="programlisting"><span class="returnvalue">ClutterActor</span> *      clutter_gst_video_texture_new       (<em class="parameter"><code><span class="type">void</span></code></em>);</pre>
 <p>
 Creates a video texture.
 </p>
@@ -163,10 +164,10 @@ assuming this constructor is called from the Clutter thread.</div>
 <hr>
 <div class="refsect2">
 <a name="clutter-gst-video-texture-get-pipeline"></a><h3>clutter_gst_video_texture_get_pipeline ()</h3>
-<pre class="programlisting"><a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstElement.html"><span class="returnvalue">GstElement</span></a> *        clutter_gst_video_texture_get_pipeline
+<pre class="programlisting"><span class="returnvalue">GstElement</span> *        clutter_gst_video_texture_get_pipeline
                                                         (<em class="parameter"><code><a class="link" href="ClutterGstVideoTexture.html" title="ClutterGstVideoTexture"><span class="type">ClutterGstVideoTexture</span></a> *texture</code></em>);</pre>
 <p>
-Retrieves the <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/GstPipeline.html"><span class="type">GstPipeline</span></a> used by the <em class="parameter"><code>texture</code></em>, for direct use with
+Retrieves the <span class="type">GstPipeline</span> used by the <em class="parameter"><code>texture</code></em>, for direct use with
 GStreamer API.
 </p>
 <div class="variablelist"><table border="0">
@@ -188,7 +189,7 @@ GStreamer API.
 <hr>
 <div class="refsect2">
 <a name="clutter-gst-video-texture-get-idle-material"></a><h3>clutter_gst_video_texture_get_idle_material ()</h3>
-<pre class="programlisting"><span class="returnvalue">CoglHandle</span>          clutter_gst_video_texture_get_idle_material
+<pre class="programlisting"><a href="/home/damien/mex/install/share/gtk-doc/html/cogl/cogl-General-API.html#CoglHandle"><span class="returnvalue">CoglHandle</span></a>          clutter_gst_video_texture_get_idle_material
                                                         (<em class="parameter"><code><a class="link" href="ClutterGstVideoTexture.html" title="ClutterGstVideoTexture"><span class="type">ClutterGstVideoTexture</span></a> *texture</code></em>);</pre>
 <p>
 Retrieves the material used to draw when no media is being played.
@@ -203,7 +204,7 @@ Retrieves the material used to draw when no media is being played.
 </tr>
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
-<td>the <span class="type">CoglHandle</span> of the idle material. <span class="annotation">[<a href="http://foldoc.org/transfer%20none"><span class="acronym">transfer none</span></a>]</span>
+<td>the <a href="/home/damien/mex/install/share/gtk-doc/html/cogl/cogl-General-API.html#CoglHandle"><span class="type">CoglHandle</span></a> of the idle material. <span class="annotation">[<a href="http://foldoc.org/transfer%20none"><span class="acronym">transfer none</span></a>]</span>
 </td>
 </tr>
 </tbody>
@@ -215,14 +216,14 @@ Retrieves the material used to draw when no media is being played.
 <a name="clutter-gst-video-texture-set-idle-material"></a><h3>clutter_gst_video_texture_set_idle_material ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                clutter_gst_video_texture_set_idle_material
                                                         (<em class="parameter"><code><a class="link" href="ClutterGstVideoTexture.html" title="ClutterGstVideoTexture"><span class="type">ClutterGstVideoTexture</span></a> *texture</code></em>,
-                                                         <em class="parameter"><code><span class="type">CoglHandle</span> material</code></em>);</pre>
+                                                         <em class="parameter"><code><a href="/home/damien/mex/install/share/gtk-doc/html/cogl/cogl-General-API.html#CoglHandle"><span class="type">CoglHandle</span></a> material</code></em>);</pre>
 <p>
 Sets a material to use to draw when no media is being played. The
 <a class="link" href="ClutterGstVideoTexture.html" title="ClutterGstVideoTexture"><span class="type">ClutterGstVideoTexture</span></a> holds a reference of the <em class="parameter"><code>material</code></em>.
 </p>
 <p>
 The default idle material will paint the <a class="link" href="ClutterGstVideoTexture.html" title="ClutterGstVideoTexture"><span class="type">ClutterGstVideoTexture</span></a> in black.
-If <code class="literal">COGL_INVALID_HANDLE</code> is given as <em class="parameter"><code>material</code></em> to this function, this
+If <a href="/home/damien/mex/install/share/gtk-doc/html/cogl/cogl-General-API.html#COGL-INVALID-HANDLE:CAPS"><code class="literal">COGL_INVALID_HANDLE</code></a> is given as <em class="parameter"><code>material</code></em> to this function, this
 default idle material will be used.
 </p>
 <div class="variablelist"><table border="0">
@@ -244,7 +245,7 @@ default idle material will be used.
 <hr>
 <div class="refsect2">
 <a name="clutter-gst-video-texture-get-user-agent"></a><h3>clutter_gst_video_texture_get_user_agent ()</h3>
-<pre class="programlisting"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="returnvalue">gchar</span></a> *             clutter_gst_video_texture_get_user_agent
+<pre class="programlisting"><span class="returnvalue">gchar</span> *             clutter_gst_video_texture_get_user_agent
                                                         (<em class="parameter"><code><a class="link" href="ClutterGstVideoTexture.html" title="ClutterGstVideoTexture"><span class="type">ClutterGstVideoTexture</span></a> *texture</code></em>);</pre>
 <p>
 Retrieves the user agent used when streaming.
@@ -260,7 +261,7 @@ Retrieves the user agent used when streaming.
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
 <td>the user agent used. The returned string has to be freed with
-<a href="http://library.gnome.org/devel/glib/unstable/glib-Memory-Allocation.html#g-free"><code class="function">g_free()</code></a>
+<code class="function">g_free()</code>
 </td>
 </tr>
 </tbody>
@@ -272,7 +273,7 @@ Retrieves the user agent used when streaming.
 <a name="clutter-gst-video-texture-set-user-agent"></a><h3>clutter_gst_video_texture_set_user_agent ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                clutter_gst_video_texture_set_user_agent
                                                         (<em class="parameter"><code><a class="link" href="ClutterGstVideoTexture.html" title="ClutterGstVideoTexture"><span class="type">ClutterGstVideoTexture</span></a> *texture</code></em>,
-                                                         <em class="parameter"><code>const <a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gchar"><span class="type">gchar</span></a> *user_agent</code></em>);</pre>
+                                                         <em class="parameter"><code>const <span class="type">gchar</span> *user_agent</code></em>);</pre>
 <p>
 Sets the user agent to use when streaming.
 </p>
@@ -397,7 +398,7 @@ Get the current value of the seek-flags property.
 <hr>
 <div class="refsect2">
 <a name="clutter-gst-video-texture-get-audio-streams"></a><h3>clutter_gst_video_texture_get_audio_streams ()</h3>
-<pre class="programlisting"><a href="http://library.gnome.org/devel/glib/unstable/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *             clutter_gst_video_texture_get_audio_streams
+<pre class="programlisting"><span class="returnvalue">GList</span> *             clutter_gst_video_texture_get_audio_streams
                                                         (<em class="parameter"><code><a class="link" href="ClutterGstVideoTexture.html" title="ClutterGstVideoTexture"><span class="type">ClutterGstVideoTexture</span></a> *texture</code></em>);</pre>
 <p>
 Get the list of audio streams of the current media.
@@ -412,8 +413,8 @@ Get the list of audio streams of the current media.
 </tr>
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
-<td>a list of <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstTagList.html#GstTagList"><span class="type">GstTagList</span></a> describing the
-available audio streams. <span class="annotation">[<a href="http://foldoc.org/transfer%20none"><span class="acronym">transfer none</span></a>]</span>
+<td>a list of
+<span class="type">GstTagList</span> describing the available audio streams. <span class="annotation">[<a href="http://foldoc.org/transfer%20none"><span class="acronym">transfer none</span></a>][<a href="http://foldoc.org/element-type"><span class="acronym">element-type</span></a> Gst.TagList]</span>
 </td>
 </tr>
 </tbody>
@@ -423,7 +424,7 @@ available audio streams. <span class="annotation">[<a href="http://foldoc.org/tr
 <hr>
 <div class="refsect2">
 <a name="clutter-gst-video-texture-get-audio-stream"></a><h3>clutter_gst_video_texture_get_audio_stream ()</h3>
-<pre class="programlisting"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="returnvalue">gint</span></a>                clutter_gst_video_texture_get_audio_stream
+<pre class="programlisting"><span class="returnvalue">gint</span>                clutter_gst_video_texture_get_audio_stream
                                                         (<em class="parameter"><code><a class="link" href="ClutterGstVideoTexture.html" title="ClutterGstVideoTexture"><span class="type">ClutterGstVideoTexture</span></a> *texture</code></em>);</pre>
 <p>
 Get the current audio stream. The number returned in the index of the
@@ -452,7 +453,7 @@ audio stream</td>
 <a name="clutter-gst-video-texture-set-audio-stream"></a><h3>clutter_gst_video_texture_set_audio_stream ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                clutter_gst_video_texture_set_audio_stream
                                                         (<em class="parameter"><code><a class="link" href="ClutterGstVideoTexture.html" title="ClutterGstVideoTexture"><span class="type">ClutterGstVideoTexture</span></a> *texture</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a> index_</code></em>);</pre>
+                                                         <em class="parameter"><code><span class="type">gint</span> index_</code></em>);</pre>
 <p>
 Set the audio stream to play. <em class="parameter"><code>index_</code></em> is the index of the stream
 in the list returned by <a class="link" href="ClutterGstVideoTexture.html#clutter-gst-video-texture-get-audio-streams" title="clutter_gst_video_texture_get_audio_streams ()"><code class="function">clutter_gst_video_texture_get_audio_streams()</code></a>.
@@ -476,7 +477,7 @@ in the list returned by <a class="link" href="ClutterGstVideoTexture.html#clutte
 <hr>
 <div class="refsect2">
 <a name="clutter-gst-video-texture-get-subtitle-tracks"></a><h3>clutter_gst_video_texture_get_subtitle_tracks ()</h3>
-<pre class="programlisting"><a href="http://library.gnome.org/devel/glib/unstable/glib-Doubly-Linked-Lists.html#GList"><span class="returnvalue">GList</span></a> *             clutter_gst_video_texture_get_subtitle_tracks
+<pre class="programlisting"><span class="returnvalue">GList</span> *             clutter_gst_video_texture_get_subtitle_tracks
                                                         (<em class="parameter"><code><a class="link" href="ClutterGstVideoTexture.html" title="ClutterGstVideoTexture"><span class="type">ClutterGstVideoTexture</span></a> *texture</code></em>);</pre>
 <p>
 Get the list of subtitles tracks of the current media.
@@ -491,8 +492,8 @@ Get the list of subtitles tracks of the current media.
 </tr>
 <tr>
 <td><p><span class="term"><span class="emphasis"><em>Returns</em></span> :</span></p></td>
-<td>a list of <a href="http://gstreamer.freedesktop.org/data/doc/gstreamer/head/gstreamer/html/gstreamer-GstTagList.html#GstTagList"><span class="type">GstTagList</span></a> describing the
-available subtitles tracks. <span class="annotation">[<a href="http://foldoc.org/transfer%20none"><span class="acronym">transfer none</span></a>]</span>
+<td>a list
+of <span class="type">GstTagList</span> describing the available subtitles tracks. <span class="annotation">[<a href="http://foldoc.org/transfer%20none"><span class="acronym">transfer none</span></a>][<a href="http://foldoc.org/element-type"><span class="acronym">element-type</span></a> Gst.TagList]</span>
 </td>
 </tr>
 </tbody>
@@ -502,7 +503,7 @@ available subtitles tracks. <span class="annotation">[<a href="http://foldoc.org
 <hr>
 <div class="refsect2">
 <a name="clutter-gst-video-texture-get-subtitle-track"></a><h3>clutter_gst_video_texture_get_subtitle_track ()</h3>
-<pre class="programlisting"><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="returnvalue">gint</span></a>                clutter_gst_video_texture_get_subtitle_track
+<pre class="programlisting"><span class="returnvalue">gint</span>                clutter_gst_video_texture_get_subtitle_track
                                                         (<em class="parameter"><code><a class="link" href="ClutterGstVideoTexture.html" title="ClutterGstVideoTexture"><span class="type">ClutterGstVideoTexture</span></a> *texture</code></em>);</pre>
 <p>
 Get the current subtitles track. The number returned is the index of the
@@ -531,7 +532,7 @@ no subtitles track or if the subtitles have been turned off</td>
 <a name="clutter-gst-video-texture-set-subtitle-track"></a><h3>clutter_gst_video_texture_set_subtitle_track ()</h3>
 <pre class="programlisting"><span class="returnvalue">void</span>                clutter_gst_video_texture_set_subtitle_track
                                                         (<em class="parameter"><code><a class="link" href="ClutterGstVideoTexture.html" title="ClutterGstVideoTexture"><span class="type">ClutterGstVideoTexture</span></a> *texture</code></em>,
-                                                         <em class="parameter"><code><a href="http://library.gnome.org/devel/glib/unstable/glib-Basic-Types.html#gint"><span class="type">gint</span></a> index_</code></em>);</pre>
+                                                         <em class="parameter"><code><span class="type">gint</span> index_</code></em>);</pre>
 <p>
 Set the subtitles track to play. <em class="parameter"><code>index_</code></em> is the index of the stream
 in the list returned by <a class="link" href="ClutterGstVideoTexture.html#clutter-gst-video-texture-get-subtitle-tracks" title="clutter_gst_video_texture_get_subtitle_tracks ()"><code class="function">clutter_gst_video_texture_get_subtitle_tracks()</code></a>.
@@ -560,8 +561,14 @@ If <em class="parameter"><code>index_</code></em> is -1, the subtitles are turne
 <a name="ClutterGstVideoTexture.property-details"></a><h2>Property Details</h2>
 <div class="refsect2">
 <a name="ClutterGstVideoTexture--idle-material"></a><h3>The <code class="literal">"idle-material"</code> property</h3>
-<pre class="programlisting">  "idle-material"            <span class="type">CoglHandle</span>*           : Read / Write</pre>
+<pre class="programlisting">  "idle-material"            <a href="/home/damien/mex/install/share/gtk-doc/html/cogl/cogl-General-API.html#CoglHandle"><span class="type">CoglHandle</span></a>*           : Read / Write</pre>
 <p>Material to use for drawing when not playing.</p>
+</div>
+<hr>
+<div class="refsect2">
+<a name="ClutterGstVideoTexture--pixel-aspect-ratio"></a><h3>The <code class="literal">"pixel-aspect-ratio"</code> property</h3>
+<pre class="programlisting">  "pixel-aspect-ratio"       <span class="type">GstFraction</span>           : Read / Write</pre>
+<p>Pixel aspect ratio of incoming frames.</p>
 </div>
 </div>
 </div>

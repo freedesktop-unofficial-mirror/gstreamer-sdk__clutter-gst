@@ -57,6 +57,13 @@
 #include "clutter-gst-player.h"
 #include "clutter-gst-private.h"
 
+#if defined (CLUTTER_WINDOWING_X11) && defined (HAVE_HW_DECODER_SUPPORT)
+#define GST_USE_UNSTABLE_API 1
+#include <gst/video/videocontext.h>
+#include <clutter/x11/clutter-x11.h>
+#endif
+
+
 typedef ClutterGstPlayerIface       ClutterGstPlayerInterface;
 
 G_DEFINE_INTERFACE_WITH_CODE (ClutterGstPlayer, clutter_gst_player, G_TYPE_OBJECT,
@@ -108,7 +115,8 @@ enum
   PROP_AUDIO_STREAMS,
   PROP_AUDIO_STREAM,
   PROP_SUBTITLE_TRACKS,
-  PROP_SUBTITLE_TRACK
+  PROP_SUBTITLE_TRACK,
+  PROP_IN_SEEK
 };
 
 struct _ClutterGstPlayerIfacePrivate
@@ -408,13 +416,18 @@ set_subtitle_uri (ClutterGstPlayer *player,
                   const gchar      *uri)
 {
   ClutterGstPlayerPrivate *priv = PLAYER_GET_PRIVATE (player);
+  GstPlayFlags flags;
 
   if (!priv->pipeline)
     return;
 
   CLUTTER_GST_NOTE (MEDIA, "setting subtitle URI: %s", uri);
 
+  g_object_get (priv->pipeline, "flags", &flags, NULL);
+
   g_object_set (priv->pipeline, "suburi", uri, NULL);
+
+  g_object_set (priv->pipeline, "flags", flags, NULL);
 }
 
 static void
@@ -564,6 +577,17 @@ set_uri (ClutterGstPlayer *player,
 }
 
 static void
+set_in_seek (ClutterGstPlayer *player,
+             gboolean          seeking)
+{
+  ClutterGstPlayerPrivate *priv = PLAYER_GET_PRIVATE (player);
+
+  priv->in_seek = seeking;
+  g_object_notify (G_OBJECT (player), "in-seek");
+}
+
+
+static void
 set_playing (ClutterGstPlayer *player,
              gboolean          playing)
 {
@@ -581,7 +605,7 @@ set_playing (ClutterGstPlayer *player,
 
   if (priv->uri)
     {
-      priv->in_seek = FALSE;
+      set_in_seek (player, FALSE);
 
       gst_element_set_state (priv->pipeline, priv->target_state);
     }
@@ -673,7 +697,8 @@ set_progress (ClutterGstPlayer *player,
 		    position,
 		    GST_SEEK_TYPE_NONE, GST_CLOCK_TIME_NONE);
 
-  priv->in_seek = TRUE;
+  set_in_seek (player, TRUE);
+
   priv->stacked_progress = 0.0;
 
   CLUTTER_GST_NOTE (MEDIA, "set progress (seeked): %.02f", progress);
@@ -1165,7 +1190,7 @@ bus_message_async_done_cb (GstBus           *bus,
     {
       g_object_notify (G_OBJECT (player), "progress");
 
-      priv->in_seek = FALSE;
+      set_in_seek (player, FALSE);
 
       if (priv->stacked_progress)
         {
@@ -1188,6 +1213,8 @@ on_volume_changed_main_context (gpointer data)
 
   g_object_notify (G_OBJECT (player), "audio-volume");
 
+  g_object_unref (player);
+
   return FALSE;
 }
 
@@ -1200,7 +1227,7 @@ on_volume_changed (GstElement       *pipeline,
 		   GParamSpec       *pspec,
 		   ClutterGstPlayer *player)
 {
-  g_idle_add (on_volume_changed_main_context, player);
+  g_idle_add (on_volume_changed_main_context, g_object_ref (player));
 }
 
 static GList *
@@ -1240,6 +1267,8 @@ on_audio_changed_main_context (gpointer data)
 
   g_object_notify (G_OBJECT (player), "audio-streams");
 
+  g_object_unref (player);
+
   return FALSE;
 }
 
@@ -1248,7 +1277,7 @@ static void
 on_audio_changed (GstElement       *pipeline,
                   ClutterGstPlayer *player)
 {
-  g_idle_add (on_audio_changed_main_context, player);
+  g_idle_add (on_audio_changed_main_context, g_object_ref (player));
 }
 
 static void
@@ -1263,7 +1292,7 @@ on_audio_tags_changed (GstElement       *pipeline,
   if (current_stream != stream)
     return;
 
-  g_idle_add (on_audio_changed_main_context, player);
+  g_idle_add (on_audio_changed_main_context, g_object_ref (player));
 }
 
 static gboolean
@@ -1274,6 +1303,8 @@ on_current_audio_changed_main_context (gpointer data)
   CLUTTER_GST_NOTE (AUDIO_STREAM, "audio stream changed");
   g_object_notify (G_OBJECT (player), "audio-stream");
 
+  g_object_unref (player);
+
   return FALSE;
 }
 
@@ -1282,7 +1313,7 @@ on_current_audio_changed (GstElement       *pipeline,
                           GParamSpec       *pspec,
                           ClutterGstPlayer *player)
 {
-  g_idle_add (on_current_audio_changed_main_context, player);
+  g_idle_add (on_current_audio_changed_main_context, g_object_ref (player));
 }
 
 static gboolean
@@ -1298,6 +1329,8 @@ on_text_changed_main_context (gpointer data)
 
   g_object_notify (G_OBJECT (player), "subtitle-tracks");
 
+  g_object_unref (player);
+
   return FALSE;
 }
 
@@ -1306,7 +1339,7 @@ static void
 on_text_changed (GstElement       *pipeline,
                   ClutterGstPlayer *player)
 {
-  g_idle_add (on_text_changed_main_context, player);
+  g_idle_add (on_text_changed_main_context, g_object_ref (player));
 }
 
 static void
@@ -1314,7 +1347,7 @@ on_text_tags_changed (GstElement       *pipeline,
                        gint              stream,
                        ClutterGstPlayer *player)
 {
-  g_idle_add (on_text_changed_main_context, player);
+  g_idle_add (on_text_changed_main_context, g_object_ref (player));
 }
 
 static gboolean
@@ -1325,6 +1358,8 @@ on_current_text_changed_main_context (gpointer data)
   CLUTTER_GST_NOTE (AUDIO_STREAM, "text stream changed");
   g_object_notify (G_OBJECT (player), "subtitle-track");
 
+  g_object_unref (player);
+
   return FALSE;
 }
 
@@ -1333,7 +1368,7 @@ on_current_text_changed (GstElement       *pipeline,
                           GParamSpec       *pspec,
                           ClutterGstPlayer *player)
 {
-  g_idle_add (on_current_text_changed_main_context, player);
+  g_idle_add (on_current_text_changed_main_context, g_object_ref (player));
 }
 
 /* GObject's magic/madness */
@@ -1498,6 +1533,10 @@ clutter_gst_player_get_property (GObject    *object,
       }
       break;
 
+    case PROP_IN_SEEK:
+      g_value_set_boolean (value, priv->in_seek);
+      break;
+
     default:
       iface_priv = PLAYER_GET_CLASS_PRIVATE (object);
       iface_priv->get_property (object, property_id, value, pspec);
@@ -1571,6 +1610,8 @@ clutter_gst_player_class_init (GObjectClass *object_class)
                                     PROP_SUBTITLE_TRACKS, "subtitle-tracks");
   g_object_class_override_property (object_class,
                                     PROP_SUBTITLE_TRACK, "subtitle-track");
+  g_object_class_override_property (object_class,
+                                    PROP_IN_SEEK, "in-seek");
 }
 
 static GstElement *
@@ -1835,6 +1876,7 @@ clutter_gst_player_set_subtitle_track_impl (ClutterGstPlayer *player,
                                             gint              index_)
 {
   ClutterGstPlayerPrivate *priv;
+  GstPlayFlags flags;
 
   priv = PLAYER_GET_PRIVATE (player);
 
@@ -1843,9 +1885,19 @@ clutter_gst_player_set_subtitle_track_impl (ClutterGstPlayer *player,
 
   CLUTTER_GST_NOTE (SUBTITLES, "set subtitle track to #%d", index_);
 
-  g_object_set (G_OBJECT (priv->pipeline),
-                "current-text", index_,
-                NULL);
+  g_object_get (priv->pipeline, "flags", &flags, NULL);
+  flags &= ~GST_PLAY_FLAG_TEXT;
+  g_object_set (priv->pipeline, "flags", flags, NULL);
+
+  if (index_ >= 0)
+    {
+      g_object_set (G_OBJECT (priv->pipeline),
+                    "current-text", index_,
+                    NULL);
+
+      flags |= GST_PLAY_FLAG_TEXT;
+      g_object_set (priv->pipeline, "flags", flags, NULL);
+    }
 }
 
 static gboolean
@@ -1858,7 +1910,50 @@ clutter_gst_player_get_idle_impl (ClutterGstPlayer *player)
   return priv->is_idle;
 }
 
+static gboolean
+clutter_gst_player_get_in_seek_impl (ClutterGstPlayer *player)
+{
+  ClutterGstPlayerPrivate *priv;
+
+  priv = PLAYER_GET_PRIVATE (player);
+
+  return priv->in_seek;
+}
+
+
 /**/
+
+#if defined (CLUTTER_WINDOWING_X11) && defined (HAVE_HW_DECODER_SUPPORT)
+static GstBusSyncReply
+on_sync_message (GstBus * bus, GstMessage * message, gpointer user_data)
+{
+  Display *display = user_data;
+  GstVideoContext *context;
+  const gchar **types;
+
+  if (gst_video_context_message_parse_prepare (message, &types, &context)) {
+    gint i;
+
+    for (i = 0; types[i]; i++) {
+
+      if (!strcmp(types[i], "x11-display")) {
+        gst_video_context_set_context_pointer (context, "x11-display", display);
+      }
+      else if (!strcmp(types[i], "x11-display-name")) {
+        gst_video_context_set_context_string (context, "x11-display-name",
+            DisplayString (display));
+      } else {
+        continue;
+      }
+
+      gst_message_unref (message);
+      return GST_BUS_DROP;
+    }
+  }
+
+  return GST_BUS_PASS;
+}
+#endif
 
 /**
  * clutter_gst_player_init:
@@ -1904,6 +1999,7 @@ clutter_gst_player_init (ClutterGstPlayer *player)
   iface->get_subtitle_track = clutter_gst_player_get_subtitle_track_impl;
   iface->set_subtitle_track = clutter_gst_player_set_subtitle_track_impl;
   iface->get_idle = clutter_gst_player_get_idle_impl;
+  iface->get_in_seek = clutter_gst_player_get_in_seek_impl;
 
   priv = g_slice_new0 (ClutterGstPlayerPrivate);
   PLAYER_SET_PRIVATE (player, priv);
@@ -1975,6 +2071,11 @@ clutter_gst_player_init (ClutterGstPlayer *player)
   g_signal_connect (priv->pipeline, "notify::current-text",
                     G_CALLBACK (on_current_text_changed),
                     player);
+
+#if defined(CLUTTER_WINDOWING_X11) && defined (HAVE_HW_DECODER_SUPPORT)
+  gst_bus_set_sync_handler (priv->bus, on_sync_message,
+      clutter_x11_get_default_display ());
+#endif
 
   gst_object_unref (GST_OBJECT (priv->bus));
 
@@ -2133,6 +2234,22 @@ clutter_gst_player_default_init (ClutterGstPlayerIface *iface)
                             -1, G_MAXINT, -1,
                             CLUTTER_GST_PARAM_READWRITE);
   g_object_interface_install_property (iface, pspec);
+
+
+  /**
+   * ClutterGstPlayer:in-seek:
+   *
+   * Whether or not the stream is being seeked.
+   *
+   * Since: 1.6
+   */
+  pspec = g_param_spec_boolean ("in-seek",
+                                "In seek mode",
+                                "If currently seeking",
+                                FALSE,
+                                CLUTTER_GST_PARAM_READABLE);
+  g_object_interface_install_property (iface, pspec);
+
 
   /* Signals */
 
@@ -2334,8 +2451,8 @@ clutter_gst_player_set_buffering_mode (ClutterGstPlayer        *player,
  *
  * Get the list of audio streams of the current media.
  *
- * Return value: (transfer none): a list of strings describing the available
- * audio streams
+ * Return value: (transfer none) (element-type utf8): a list of
+ * strings describing the available audio streams
  *
  * Since: 1.4
  */
@@ -2405,8 +2522,8 @@ clutter_gst_player_set_audio_stream (ClutterGstPlayer *player,
  *
  * Get the list of subtitles tracks of the current media.
  *
- * Return value: (transfer none): a list of strings describing the available
- * subtitles tracks
+ * Return value: (transfer none) (element-type utf8): a list of
+ * strings describing the available subtitles tracks
  *
  * Since: 1.4
  */
@@ -2492,4 +2609,26 @@ clutter_gst_player_get_idle (ClutterGstPlayer *player)
   iface = CLUTTER_GST_PLAYER_GET_INTERFACE (player);
 
   return iface->get_idle (player);
+}
+
+/**
+ * clutter_gst_player_get_in_seek:
+ * @player: a #ClutterGstPlayer
+ *
+ * Whether the player is seeking.
+ *
+ * Return value: TRUE if the player is seeking, FALSE otherwise.
+ *
+ * Since: 1.6
+ */
+gboolean
+clutter_gst_player_get_in_seek (ClutterGstPlayer *player)
+{
+  ClutterGstPlayerIface *iface;
+
+  g_return_val_if_fail (CLUTTER_GST_IS_PLAYER (player), FALSE);
+
+  iface = CLUTTER_GST_PLAYER_GET_INTERFACE (player);
+
+  return iface->get_in_seek (player);
 }

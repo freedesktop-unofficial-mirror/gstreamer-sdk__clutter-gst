@@ -44,6 +44,7 @@
 
 #include <glib.h>
 #include <gio/gio.h>
+#include <gst/base/gstbasesink.h>
 #include <gst/video/video.h>
 
 #include "clutter-gst-debug.h"
@@ -51,7 +52,6 @@
 #include "clutter-gst-marshal.h"
 #include "clutter-gst-player.h"
 #include "clutter-gst-private.h"
-#include "clutter-gst-video-sink.h"
 #include "clutter-gst-video-texture.h"
 
 struct _ClutterGstVideoTexturePrivate
@@ -73,9 +73,10 @@ struct _ClutterGstVideoTexturePrivate
 };
 
 enum {
-  PROP_0,
+  PROP_0 = 32,  /* Avoid overlap with player properties */
 
-  PROP_IDLE_MATERIAL
+  PROP_IDLE_MATERIAL,
+  PROP_PAR
 };
 
 static void clutter_gst_video_texture_media_init (ClutterMediaIface *iface);
@@ -437,12 +438,17 @@ clutter_gst_video_texture_set_property (GObject      *object,
 				        GParamSpec   *pspec)
 {
   ClutterGstVideoTexture *video_texture = CLUTTER_GST_VIDEO_TEXTURE (object);
+  ClutterGstVideoTexturePrivate *priv = video_texture->priv;
 
   switch (property_id)
     {
     case PROP_IDLE_MATERIAL:
       clutter_gst_video_texture_set_idle_material (video_texture,
                                                    g_value_get_boxed (value));
+      break;
+    case PROP_PAR:
+      priv->par_n = gst_value_get_fraction_numerator (value);
+      priv->par_d = gst_value_get_fraction_denominator (value);
       break;
 
     default:
@@ -466,6 +472,9 @@ clutter_gst_video_texture_get_property (GObject    *object,
     {
     case PROP_IDLE_MATERIAL:
       g_value_set_boxed (value, priv->idle_material);
+      break;
+    case PROP_PAR:
+      gst_value_set_fraction (value, priv->par_n, priv->par_d);
       break;
 
     default:
@@ -503,6 +512,14 @@ clutter_gst_video_texture_class_init (ClutterGstVideoTextureClass *klass)
                               CLUTTER_GST_PARAM_READWRITE);
   g_object_class_install_property (object_class, PROP_IDLE_MATERIAL, pspec);
 
+  pspec = gst_param_spec_fraction ("pixel-aspect-ratio",
+                                   "Pixel Aspect Ratio",
+                                   "Pixel aspect ratio of incoming frames",
+                                   1, 100, 100, 1, 1, 1,
+                                   CLUTTER_GST_PARAM_READWRITE);
+  g_object_class_install_property (object_class, PROP_PAR, pspec);
+
+
   clutter_gst_player_class_init (object_class);
 }
 
@@ -513,6 +530,15 @@ idle_cb (ClutterGstVideoTexture *video_texture,
 {
   /* restore the idle material so we don't just display the last frame */
   clutter_actor_queue_redraw (CLUTTER_ACTOR (video_texture));
+}
+
+static void
+on_autocluttersink_element_added (GstBin                 *bin,
+				  GstElement             *element,
+				  ClutterGstVideoTexture *data)
+{
+  if (GST_IS_BASE_SINK (element))
+    g_object_set (G_OBJECT (element), "qos", TRUE, NULL);
 }
 
 static gboolean
@@ -528,8 +554,20 @@ setup_pipeline (ClutterGstVideoTexture *video_texture)
       return FALSE;
     }
 
-  video_sink = clutter_gst_video_sink_new (CLUTTER_TEXTURE (video_texture));
-  g_object_set (G_OBJECT (video_sink), "qos", TRUE, "sync", TRUE, NULL);
+  video_sink = gst_element_factory_make ("autocluttersink", NULL);
+  if (!video_sink)
+    {
+      g_critical ("Unable to get autocluttersink");
+      return FALSE;
+    }
+
+  g_signal_connect (video_sink,
+		    "element-added",
+		    G_CALLBACK (on_autocluttersink_element_added),
+		    video_texture);
+  g_object_set (G_OBJECT (video_sink),
+                "texture", CLUTTER_TEXTURE (video_texture),
+		NULL);
   g_object_set (G_OBJECT (pipeline),
                 "video-sink", video_sink,
                 "subtitle-font-desc", "Sans 16",
@@ -572,20 +610,6 @@ clutter_gst_video_texture_init (ClutterGstVideoTexture *video_texture)
 /*
  * Private symbols
  */
-
-/* This function is called from the sink set_caps(). we receive the first
- * buffer way after this so are told about the par before size_changed has
- * been fired */
-void
-_clutter_gst_video_texture_set_par (ClutterGstVideoTexture *texture,
-                                    guint                   par_n,
-                                    guint                   par_d)
-{
-  ClutterGstVideoTexturePrivate *priv = texture->priv;
-
-  priv->par_n = par_n;
-  priv->par_d = par_d;
-}
 
 /**
  * clutter_gst_video_texture_new:
@@ -786,8 +810,8 @@ clutter_gst_video_texture_set_buffering_mode (ClutterGstVideoTexture *texture,
  *
  * Get the list of audio streams of the current media.
  *
- * Return value: (transfer none): a list of #GstTagList describing the
- * available audio streams
+ * Return value: (transfer none) (element-type Gst.TagList): a list of
+ * #GstTagList describing the available audio streams
  *
  * Since: 1.4
  */
@@ -839,8 +863,8 @@ clutter_gst_video_texture_set_audio_stream (ClutterGstVideoTexture *texture,
  *
  * Get the list of subtitles tracks of the current media.
  *
- * Return value: (transfer none): a list of #GstTagList describing the
- * available subtitles tracks
+ * Return value: (transfer none) (element-type Gst.TagList): a list
+ * of #GstTagList describing the available subtitles tracks
  *
  * Since: 1.4
  */
