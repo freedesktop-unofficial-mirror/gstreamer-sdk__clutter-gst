@@ -213,13 +213,14 @@ AS_IF([test "x$have_cogl_1_8" != xyes],
 dnl ========================================================================
 dnl Experimental support for hardware accelerated decoders.
 
-PKG_CHECK_MODULES(HW,
-                 [gstreamer-basevideo-$GST_MAJORMINOR >= $GST_PLUGINS_BAD_REQ_VERSION],
-                 [
-                   have_hw_decoder_support=yes
-                   AC_DEFINE([HAVE_HW_DECODER_SUPPORT], [1],
-                             ["Defined if building Clutter with HW decoder support"])
-                 ],[ have_hw_decoder_support=no ])
+have_hw_decoder_support=no
+dnl PKG_CHECK_MODULES(HW,
+dnl                  [gstreamer-basevideo-$GST_MAJORMINOR >= $GST_PLUGINS_BAD_REQ_VERSION],
+dnl                  [
+dnl                    have_hw_decoder_support=yes
+dnl                    AC_DEFINE([HAVE_HW_DECODER_SUPPORT], [1],
+dnl                              ["Defined if building Clutter with HW decoder support"])
+dnl                  ],[ have_hw_decoder_support=no ])
 
 dnl ========================================================================
 
